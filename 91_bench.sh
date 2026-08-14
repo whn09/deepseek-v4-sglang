@@ -26,7 +26,8 @@ NAME="${NAME:-dsv4-bench}"
 
 RESULTS_DIR="${RESULTS_DIR:-$SCRIPT_DIR_HOST/results}"
 GIN=$([[ "$GDAKI" == "1" ]] && echo gda || echo proxy)
-TAG="${TAG:-n${NNODES}-${PHASE}-sm${NUM_SMS}-${GIN}-isl${ISL}-osl${OSL}-c${CONCURRENCY}}"
+A2A="${A2A:-deepep_v2}"
+TAG="${TAG:-${A2A}-n${NNODES}-${PHASE}-sm${NUM_SMS}-${GIN}-isl${ISL}-osl${OSL}-c${CONCURRENCY}}"
 mkdir -p "$RESULTS_DIR"
 LOG="$RESULTS_DIR/${TAG}.log"
 JSON="$RESULTS_DIR/${TAG}.json"

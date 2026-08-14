@@ -14,7 +14,10 @@ NVLink or IB; the open question is what it does on EFA.
 bash sync.sh                       # laptop -> both hosts
 # on EACH host (nvme is ephemeral, no broadcast between ranks):
 bash 00_download_model.sh          # 149 GB, ~5 min at Xet speed
-bash 10_build_image.sh             # CPU-only, ~6 min, safe while GPUs are busy
+# build ONCE, then ECR-sync -- never build per node (see "Image distribution"):
+ssh P6-B300-1 'cd deepseek-v4-sglang && bash 10_build_image.sh && bash 11_sync_image_ecr.sh push'
+ssh P6-B300-2 'cd deepseek-v4-sglang && bash 11_sync_image_ecr.sh pull'
+bash 11_sync_image_ecr.sh verify   # one image id on every host, or stop
 # 2-node run, leader first:
 ssh P6-B300-1 'cd deepseek-v4-sglang && bash 20_launch_node.sh 0'
 ssh P6-B300-2 'cd deepseek-v4-sglang && bash 20_launch_node.sh 1'
@@ -42,9 +45,38 @@ or FP8 payloads (`use_fp8_dispatch`; the only FP4 mention in the fork is
 `deep_ep/buffers/elastic.py:305  # TODO: consider FP4`), while the GEMM dtype is
 the MoE runner's business. FP4 weights would dispatch FP8 and still work.
 
-V4-Flash also happens to be *already* FP8 on disk — `fmt: e4m3`, `scale_fmt: ue8m0`,
-`weight_block_size: [128,128]` — which is what `--moe-runner-backend deep_gemm
---kv-cache-dtype fp8_e4m3` wants, so there is no quantization step.
+## Quantization: the experts really are FP4
+
+`config.json` advertises `quantization_config: {quant_method: fp8, fmt: e4m3,
+scale_fmt: ue8m0, weight_block_size: [128,128]}` — but that covers the dense and
+attention weights. The routed experts are separate and **MXFP4**:
+
+```
+config.json                     expert_dtype: fp4
+layers.0.attn.wo_a.weight       F8_E4M3  [8192, 4096]
+layers.0.ffn.experts.0.w1.weight  I8     [2048, 2048]   # 2 fp4 per byte -> K=4096
+layers.0.ffn.experts.0.w1.scale F8_E8M0  [2048,  128]   # 4096/128 = 32/scale
+```
+
+One E8M0 scale per 32 values is exactly `deep_gemm`'s fp4-expert recipe —
+`moe_runner/deep_gemm.py` sets `recipe_a, recipe_b = (1,128), (1,32)` when
+`quant_info.is_fp4_experts`. sglang auto-detects the layout
+(`model_config.py::try_detect_fp4_experts`), so **no env var is needed** and
+`--moe-runner-backend deep_gemm` is a valid pairing: FP8 activations at 1×128,
+FP4 weights at 1×32.
+
+Two things follow, and both matter for reading a result:
+
+- **This exact pairing is code-supported but PR-unvalidated.** The PR's accuracy
+  table ran `DeepSeek-V4-Flash-FP8` (FP8 experts); that repo 401s for us. So if
+  output quality is bad, suspect `deep_gemm` + fp4 experts before blaming EFA, and
+  cross-check with `A2A=megamoe` on the same weights.
+- **`SGLANG_DSV4_FP4_DEQUANT=1` is not an escape hatch here.** It asserts
+  `get_moe_runner_backend().is_auto()`, and the deepep_v2 handler resolves `auto`
+  to a concrete runner before quant methods are built, so the assert always fires.
+
+`wo_a` is already `F8_E4M3`, so the PR's `SGLANG_OPT_FP8_WO_A_GEMM=0` caveat
+("Blackwell with a BF16 `wo_a` checkpoint") does **not** apply.
 
 ## What "on EFA" requires
 
@@ -121,6 +153,33 @@ New knobs: `SGLANG_DEEPEP_V2_NUM_MAX_DISPATCH_TOKENS_PER_RANK` (default 128),
 `NCCL_CUMEM_ENABLE=1` is set in the image: without it the PR dies with
 `nccl.cu:104: Communicator does not support symmetric memory!`.
 
+The PR also requires **NCCL ≥ 2.30** (that is where the GIN headers the elastic
+backend needs land). The image builds `2.31.1` from the amazon fork, so this holds
+— worth re-asserting after any `NCCL_REF` bump, since the base image's own
+providers were 2.28.3/2.29.7.
+
+## Cross-check against the sglang cookbook
+
+The [cookbook's DeepSeek-V4 matrix](https://docs.sglang.io/cookbook/autoregressive/DeepSeek/DeepSeek-V4)
+has no `deepep_v2` rows (the PR is unmerged), but its b300 rows pin the
+model-level knobs. What it says vs. what this kit does:
+
+| knob | cookbook (b300, V4-Flash) | here | why |
+|---|---|---|---|
+| per-rank dispatch capacity | `SGLANG_DEEPEP_NUM_MAX_DISPATCH_TOKENS_PER_RANK=1024` | `..._V2_...=1024` | same number, v2's env name |
+| `num_sms` | `--deepep-config '{"normal_dispatch":{"num_sms":96},"normal_combine":{"num_sms":96}}'` | `SGLANG_DEEPEP_V2_NUM_SMS=20` | v1-only flag. 96 is unreachable for v2-on-EFA anyway: the GIN fork clamps at `kMaxSM=(256−2×17)/4=55`. Sweep 20/32/55. |
+| `--swa-full-tokens-ratio` | `0.1` | `0.1` (`SWA_RATIO`) | **was missing**; server default is 0.8, and V4 has `sliding_window: 128` |
+| `--kv-cache-dtype` | not passed (auto) | `auto` (`KV_DTYPE`) | **was wrongly pinned to `fp8_e4m3`**; V4 has its own compressed-KV/DSA path. The PR's table ran kv fp8 on the FP8-expert checkpoint — `KV_DTYPE=fp8_e4m3` reproduces that. |
+| `--tp` | `4` (Flash fits in 4 GPUs) | `16` (2×8) | tp4 is single-node, i.e. NVLink-only. EP=16 needs 16 ranks, which is the point. |
+| runner | `flashinfer_mxfp4` / `megamoe` / `humming` | `deep_gemm` | deepep_v2 accepts only `deep_gemm`/`triton`; deep_gemm has the fp4-expert recipe |
+| spec decode | `DSPARK` / EAGLE | off | keeps the a2a measurement clean; MTP+deepep_v2 is untested |
+| `SGLANG_DSV4_FP4_EXPERTS` | `0` only on h200 (sm90 has no FP4) | unset → auto-detect | b300 is sm103; the fp4 path is the fast one |
+
+Also in the cookbook and deliberately skipped: `--reasoning-parser deepseek-v4`,
+`--tool-call-parser deepseekv4` (serving ergonomics, irrelevant to a2a numbers),
+and `--cuda-graph-max-bs-decode` (this build accepts `--cuda-graph-max-bs` as its
+alias — checked against `--help`, not assumed).
+
 ## Files
 
 | | |
@@ -128,6 +187,7 @@ New knobs: `SGLANG_DEEPEP_V2_NUM_MAX_DISPATCH_TOKENS_PER_RANK` (default 128),
 | `env_common.sh` | paths, IPs, topology, NIC autodetect, preflight guards |
 | `00_download_model.sh` | weights → host NVMe (re-run after every instance restart) |
 | `10_build_image.sh` | builds out of `$BUILD_CTX_HOST` (see below) |
+| `11_sync_image_ecr.sh` | `push` / `pull` / `verify` — one image digest on every rank |
 | `20_launch_node.sh` | `bash 20_launch_node.sh 0\|1`; `PHASE=decode\|prefill` |
 | `90_smoke_test.sh` | health + "did it really take the deepep_v2 and GDA paths" |
 | `91_bench.sh` | `sglang.bench_serving`, results tagged with the knobs |
@@ -137,6 +197,18 @@ New knobs: `SGLANG_DEEPEP_V2_NUM_MAX_DISPATCH_TOKENS_PER_RANK` (default 128),
 than this repo because two required artifacts cannot be committed: the 627 MB EFA
 dev-channel tarball and the private DeepEP fork. Both are already staged there by
 the `ep-benchmarks-efa` kit.
+
+### Image distribution — build once, ECR-sync
+
+`579019700964.dkr.ecr.us-west-2.amazonaws.com/deepseek-v4-sglang:pr29525`.
+
+**Do not build the image separately on each node.** The Dockerfile pins the
+amazon NCCL fork to a *branch* (`staging`) and aws-ofi-nccl to `master`, and
+apt/pip resolve latest at build time — so two builds hours apart can put two
+different NCCL/libfabric stacks into one job. That failure mode is a hang or a
+plausible-but-wrong number, not an error message. `11_sync_image_ecr.sh verify`
+compares the local `$IMAGE` id (not the ECR tag, which a stale local build can
+shadow) across hosts and exits non-zero on a mismatch.
 
 ## Host notes
 

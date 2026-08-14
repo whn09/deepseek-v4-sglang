@@ -12,11 +12,27 @@
 # the a2a never leaves NVLink, so a single-node number says nothing about EFA.
 # Only NNODES=2 (mode `hybrid`) puts the dispatch/combine on the fabric.
 #
+# EXPERTS ARE MXFP4, and this is a deliberate deviation from the PR. The public
+# deepseek-ai/DeepSeek-V4-Flash checkpoint carries `expert_dtype: fp4`: routed
+# expert weights are stored as I8 (two fp4 per byte) with F8_E8M0 scales at one
+# scale per 32 values -- exactly deep_gemm's `recipe_b=(1,32)` fp4-expert path
+# (moe_runner/deep_gemm.py, `quant_info.is_fp4_experts`). sglang auto-detects the
+# layout (model_config.py `try_detect_fp4_experts`), so no env is needed. The
+# PR's own accuracy table used DeepSeek-V4-Flash-FP8 (FP8 experts), which is not
+# publicly readable, so this combination is code-supported but PR-unvalidated:
+# if generation comes out garbage, suspect deep_gemm+fp4 before blaming EFA, and
+# confirm with A2A=megamoe on the same weights.
+# Do NOT reach for SGLANG_DSV4_FP4_DEQUANT=1 -- it asserts the runner is `auto`,
+# and the deepep_v2 handler always resolves `auto` to a concrete runner first.
+#
 # Env knobs (defaults in env_common.sh):
 #   PHASE=decode|prefill  which of the PR's two published configs to launch.
 #   NUM_SMS=20            SGLANG_DEEPEP_V2_NUM_SMS; 0 lets DeepEP derive it.
 #   CAPACITY=1024         SGLANG_DEEPEP_V2_NUM_MAX_DISPATCH_TOKENS_PER_RANK.
 #   MODE=hybrid|direct    override the topology chosen from NNODES.
+#   A2A=deepep_v2|megamoe the backend under test, or the in-image baseline.
+#   KV_DTYPE=auto         --kv-cache-dtype; auto is what the cookbook uses for V4.
+#   SWA_RATIO=0.1         --swa-full-tokens-ratio (server default 0.8).
 #   GDAKI=1  TP  NNODES  PORT  NCCL_DEBUG  EXTRA_ARGS  EXTRA_ENV
 set -euo pipefail
 
@@ -30,6 +46,17 @@ NUM_SMS="${NUM_SMS:-20}"
 CAPACITY="${CAPACITY:-1024}"
 MODE="${MODE:-$([[ "$NNODES" -gt 1 ]] && echo hybrid || echo direct)}"
 NCCL_DEBUG="${NCCL_DEBUG:-WARN}"
+A2A="${A2A:-deepep_v2}"
+# The sglang cookbook's DeepSeek-V4 rows never pass --kv-cache-dtype, and V4
+# carries its own compressed-KV + DSA indexer path, so `auto` (= let the model
+# config decide) is the faithful default. The PR's own accuracy table ran kv fp8
+# on the FP8-expert checkpoint; set KV_DTYPE=fp8_e4m3 to reproduce that exactly.
+# Either way the deepep_v2 decode-graph gate keys off the DISPATCHER dtype and the
+# runner, not the KV dtype, so this does not silently drop CUDA graphs.
+KV_DTYPE="${KV_DTYPE:-auto}"
+# Server default is 0.8; every b300 V4 row in the cookbook that sets it uses 0.1,
+# which buys KV headroom on the SWA layers (config.json: sliding_window=128).
+SWA_RATIO="${SWA_RATIO:-0.1}"
 
 # --chunked-prefill-size is a GLOBAL budget that _handle_data_parallelism divides
 # by dp_size under DP attention; server_args then refuses to boot if the per-rank
@@ -63,6 +90,26 @@ else
     GIN_TYPE=2
     echo "=== Route A: NCCL_GIN_TYPE=2 (proxy GIN) ==="
 fi
+
+# A2A backend. deepep_v2 is the thing under test; megamoe is the attribution
+# baseline that works in THIS image -- DeepEP v1 does not, because the v2 fork
+# installs over the same `deep_ep` module name and 10_build_image.sh uninstalls
+# sgl-deep-ep. So a v1 comparison needs the other kit's image, not this one.
+case "$A2A" in
+    deepep_v2)
+        A2A_ARGS=(--moe-a2a-backend deepep_v2 --deepep-v2-mode "$MODE"
+                  --moe-runner-backend deep_gemm)
+        A2A_ENV=(-e SGLANG_DEEPEP_V2_NUM_SMS="$NUM_SMS"
+                 -e SGLANG_DEEPEP_V2_NUM_MAX_DISPATCH_TOKENS_PER_RANK="$CAPACITY")
+        ;;
+    megamoe)
+        # Runner is megamoe's own; passing --moe-runner-backend would fight it.
+        # Token budget from the cookbook's b300/V4 megamoe rows.
+        A2A_ARGS=(--moe-a2a-backend megamoe)
+        A2A_ENV=(-e SGLANG_OPT_DEEPGEMM_MEGA_MOE_NUM_MAX_TOKENS_PER_RANK=8320)
+        ;;
+    *) echo "A2A must be deepep_v2 or megamoe" >&2; exit 1 ;;
+esac
 
 # Phase configs, from the PR's own repro commands.
 case "$PHASE" in
@@ -108,8 +155,7 @@ docker run -d --name "$NAME" \
     -e NCCL_GIN_TYPE="$GIN_TYPE" \
     "${GIN_ARGS[@]}" \
     -e NCCL_DEBUG="$NCCL_DEBUG" \
-    -e SGLANG_DEEPEP_V2_NUM_SMS="$NUM_SMS" \
-    -e SGLANG_DEEPEP_V2_NUM_MAX_DISPATCH_TOKENS_PER_RANK="$CAPACITY" \
+    "${A2A_ENV[@]}" \
     ${EP_NIC_NAME:+-e EP_NIC_NAME=$EP_NIC_NAME} \
     ${EXTRA_ENV_ARGS} \
     -e PYTHONUNBUFFERED=1 -e PYTHONFAULTHANDLER=1 \
@@ -121,16 +167,16 @@ docker run -d --name "$NAME" \
       --trust-remote-code \
       --host 0.0.0.0 --port "$PORT" \
       --tp "$TP" --dp "$TP" --ep "$TP" --enable-dp-attention \
-      --moe-a2a-backend deepep_v2 --deepep-v2-mode "$MODE" \
-      --moe-runner-backend deep_gemm \
-      --kv-cache-dtype fp8_e4m3 \
+      "${A2A_ARGS[@]}" \
+      ${KV_DTYPE:+--kv-cache-dtype "$KV_DTYPE"} \
+      --swa-full-tokens-ratio "$SWA_RATIO" \
       --chunked-prefill-size "$CHUNKED" \
       "${PHASE_ARGS[@]}" \
       ${MULTINODE_ARGS[@]+"${MULTINODE_ARGS[@]}"} \
       ${EXTRA_ARGS:-}
 set +x
 
-echo "launched '$NAME' (phase=$PHASE mode=$MODE tp=$TP nnodes=$NNODES rank=$NODE_RANK"
-echo "          num_sms=$NUM_SMS capacity=$CAPACITY chunked=$CHUNKED gin=$GIN_TYPE)"
+echo "launched '$NAME' (a2a=$A2A phase=$PHASE mode=$MODE tp=$TP nnodes=$NNODES rank=$NODE_RANK"
+echo "          num_sms=$NUM_SMS capacity=$CAPACITY chunked=$CHUNKED kv=$KV_DTYPE swa=$SWA_RATIO gin=$GIN_TYPE)"
 echo "follow:  docker logs -f $NAME"
 echo "health:  curl -s localhost:${PORT}/health_generate"

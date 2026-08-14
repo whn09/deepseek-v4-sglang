@@ -23,6 +23,23 @@ SERVED_MODEL_NAME="${SERVED_MODEL_NAME:-$HF_REPO}"
 # (GIN) + aws-ofi-nccl + the DeepEP v2 EFA fork + sglang PR #29525.
 IMAGE="${IMAGE:-sglang-epv2-efa:pr29525}"
 
+# ---- image distribution ----
+# Build ONCE, then ECR-sync to the other nodes -- do not build per node. Two
+# independent builds are not the same image: the amazon NCCL fork is pinned to a
+# BRANCH (staging), aws-ofi-nccl to master, and apt/pip resolve latest, so a
+# rebuild hours later can ship a different NCCL into one rank of the same job.
+ECR_REGION="${ECR_REGION:-us-west-2}"          # the p6-b300 instances live here
+ECR_ACCOUNT="${ECR_ACCOUNT:-579019700964}"
+ECR_REPO="${ECR_REPO:-deepseek-v4-sglang}"
+ECR_TAG="${ECR_TAG:-${IMAGE##*:}}"
+ECR_REGISTRY="${ECR_REGISTRY:-${ECR_ACCOUNT}.dkr.ecr.${ECR_REGION}.amazonaws.com}"
+ECR_IMAGE="${ECR_IMAGE:-${ECR_REGISTRY}/${ECR_REPO}:${ECR_TAG}}"
+
+ecr_login() {
+    aws ecr get-login-password --region "$ECR_REGION" \
+      | docker login --username AWS --password-stdin "$ECR_REGISTRY" >/dev/null
+}
+
 # ---- JIT / autotune caches to persist on the host ----
 # "container path=host subdir". DeepEP v2 JITs its kernels on first use and the
 # cubin cache key includes the arch and every EP_* knob, so this is safe across
