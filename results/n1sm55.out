@@ -1,0 +1,4 @@
+n1sm55 c512 Input token throughput (tok/s):          168461.65 
+n1sm55 c512 P99 TTFT (ms):                           11032.50  
+n1sm55 c1024 Input token throughput (tok/s):          169127.33 
+n1sm55 c1024 P99 TTFT (ms):                           23240.86  

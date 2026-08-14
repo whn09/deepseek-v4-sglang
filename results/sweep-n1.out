@@ -1,0 +1,12 @@
+### prefill sweep  nnodes=1 tp=8 isl=4096 osl=8
+### started=2026-08-14T04:36:38Z
+conc   prompts  in_tok/s     out_tok/s    ttft_ms_mean ttft_ms_p99  req/s     
+### warmup (JIT compile; discarded)
+16     48       21973.2      42.9         1480.6       2102.1       5.36      
+32     96       25528.1      49.9         2336.3       5252.5       6.23      
+64     192      35419.8      69.2         3643.1       6374.6       8.65      
+128    384      37559.9      73.4         6572.0       14400.6      9.17      
+256    512      41432.3      80.9         12591.2      23884.0      10.12     
+512    512      31226.4      61.0         34903.7      65206.7      7.62      
+### finished=2026-08-14T04:42:55Z
+summary: /home/ubuntu/deepseek-v4-sglang/results/prefill-sweep-n1.txt

@@ -9,8 +9,12 @@
 # throughput, and does it admit a higher concurrency? So the sweep must be run
 # twice with only NNODES changed -- every other knob (per-rank chunk, per-rank
 # concurrency slots, ISL/OSL, num_sms) is held per-rank constant by construction:
-#   chunked-prefill-size = CAPACITY*TP    -> 1024 tokens/rank either way
-#   max-running-requests = 32*TP          -> 32 slots/rank either way
+#   chunked-prefill-size = CAPACITY*TP    -> CAPACITY tokens/rank either way
+#   max-running-requests = RUNNING_PER_RANK*TP -> same slots/rank either way
+# The published rows used CAPACITY=8192 and RUNNING_PER_RANK=32. CAPACITY matters
+# more than anything else measured here: at the cookbook's 1024 the single node
+# reads 41.4k tok/s and at 8192 it reads 162.8k, so a comparison run at the
+# default would be two crippled configs racing each other.
 # so the only thing that changes is how many ranks there are, and whether the a2a
 # crosses EFA (NNODES=2 -> hybrid) or stays on NVLink (NNODES=1 -> direct).
 #
