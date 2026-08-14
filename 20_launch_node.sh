@@ -114,12 +114,17 @@ esac
 # Phase configs, from the PR's own repro commands.
 case "$PHASE" in
     decode)
-        PHASE_ARGS=(--mem-fraction-static 0.70 --cuda-graph-max-bs 128) ;;
+        # --cuda-graph-max-bs is accepted but deprecated in this build ("use
+        # --cuda-graph-max-bs-decode instead"), and it only ever set the decode
+        # phase anyway.
+        PHASE_ARGS=(--mem-fraction-static 0.70 --cuda-graph-max-bs-decode 128) ;;
     prefill)
         # The deepep_v2 handler already forces the prefill graph off (the
-        # contiguous extend path needs a host readback); passing these makes it
-        # explicit and also drops the decode graph, matching the PR's prefill row.
-        PHASE_ARGS=(--mem-fraction-static 0.80 --disable-cuda-graph --disable-piecewise-cuda-graph) ;;
+        # contiguous extend path needs a host readback), verified by
+        # 12_preflight_args.sh -> `graph.prefill = disabled`. So only the decode
+        # graph needs dropping here; --disable-piecewise-cuda-graph would be
+        # redundant AND deprecated ("use --cuda-graph-backend-prefill=disabled").
+        PHASE_ARGS=(--mem-fraction-static 0.80 --disable-cuda-graph) ;;
     *) echo "PHASE must be decode or prefill" >&2; exit 1 ;;
 esac
 

@@ -146,6 +146,35 @@ Violating any of these makes the server refuse to boot, or boot into a fallback:
 - decode CUDA graph only on deep_gemm+fp8; prefill graph always off
 - `ep_size` forced to `tp_size`
 
+### What the resolution actually produces
+
+`12_preflight_args.sh` runs the exact argv through `ServerArgs` in a **CPU-only**
+container (~20 s) instead of discovering a rejection after 149 GB has loaded on 16
+ranks. Because no accelerator is visible it needs `--device cuda` explicitly, or
+`_handle_missing_default_values()` dies in `get_device()`. Output for the run under
+test (`deepep_v2` / `hybrid` / decode, tp=dp=ep=16):
+
+```
+Auto-detected DSV4 routed-expert layout: is_fp4_experts=True
+Hybrid SWA model detected. architectures=['DeepseekV4ForCausalLM']
+Use dsv4 attention backend for DeepseekV4ForCausalLM, setting page_size to 256.
+Setting KV cache dtype to fp8_e4m3 for DeepseekV4ForCausalLM.
+Setting max_running_requests to 256 for DeepseekV4ForCausalLM.
+DP attention is enabled. chunked prefill size is adjusted from 16384 to 1024.
+DeepEP v2 MoE is enabled. The expert parallel size is adjusted ... [16].
+  page_size = 256      chunked_prefill_size = 1024   kv_cache_dtype = fp8_e4m3
+  ep=tp=dp = 16        disable_shared_experts_fusion = True
+  graph.decode = full max_bs=128        graph.prefill = disabled
+```
+
+Three things to read carefully there:
+
+- **`--chunked-prefill-size` is global; the resolved field is per-rank.** 16384 → 1024
+  is `/ dp_size`, not a clamp. That per-rank number must be ≤ capacity **and** a
+  multiple of `page_size`; 1024 = capacity = 4×256. ✓
+- **`page_size` is 256**, chosen by the dsv4 attention backend — not the usual 1/64.
+- **The fp4-expert layout is auto-detected**, so no `SGLANG_DSV4_FP4_EXPERTS` needed.
+
 New knobs: `SGLANG_DEEPEP_V2_NUM_MAX_DISPATCH_TOKENS_PER_RANK` (default 128),
 `SGLANG_DEEPEP_V2_NUM_SMS` (0 = let DeepEP derive it), `--deepep-v2-mode
 {direct,hybrid}`, `--deepep-v2-dispatcher-output-dtype {auto,bf16,fp8}`.
@@ -169,7 +198,7 @@ model-level knobs. What it says vs. what this kit does:
 | per-rank dispatch capacity | `SGLANG_DEEPEP_NUM_MAX_DISPATCH_TOKENS_PER_RANK=1024` | `..._V2_...=1024` | same number, v2's env name |
 | `num_sms` | `--deepep-config '{"normal_dispatch":{"num_sms":96},"normal_combine":{"num_sms":96}}'` | `SGLANG_DEEPEP_V2_NUM_SMS=20` | v1-only flag. 96 is unreachable for v2-on-EFA anyway: the GIN fork clamps at `kMaxSM=(256−2×17)/4=55`. Sweep 20/32/55. |
 | `--swa-full-tokens-ratio` | `0.1` | `0.1` (`SWA_RATIO`) | **was missing**; server default is 0.8, and V4 has `sliding_window: 128` |
-| `--kv-cache-dtype` | not passed (auto) | `auto` (`KV_DTYPE`) | **was wrongly pinned to `fp8_e4m3`**; V4 has its own compressed-KV/DSA path. The PR's table ran kv fp8 on the FP8-expert checkpoint — `KV_DTYPE=fp8_e4m3` reproduces that. |
+| `--kv-cache-dtype` | not passed (auto) | `auto` (`KV_DTYPE`) | was pinned to `fp8_e4m3`, which the preflight shows is **redundant, not wrong**: V4 forces it (`Setting KV cache dtype to fp8_e4m3 for DeepseekV4ForCausalLM`). `auto` lets the model declare it. |
 | `--tp` | `4` (Flash fits in 4 GPUs) | `16` (2×8) | tp4 is single-node, i.e. NVLink-only. EP=16 needs 16 ranks, which is the point. |
 | runner | `flashinfer_mxfp4` / `megamoe` / `humming` | `deep_gemm` | deepep_v2 accepts only `deep_gemm`/`triton`; deep_gemm has the fp4-expert recipe |
 | spec decode | `DSPARK` / EAGLE | off | keeps the a2a measurement clean; MTP+deepep_v2 is untested |
@@ -188,10 +217,12 @@ alias — checked against `--help`, not assumed).
 | `00_download_model.sh` | weights → host NVMe (re-run after every instance restart) |
 | `10_build_image.sh` | builds out of `$BUILD_CTX_HOST` (see below) |
 | `11_sync_image_ecr.sh` | `push` / `pull` / `verify` — one image digest on every rank |
+| `12_preflight_args.sh` | resolve the argv through `ServerArgs`, CPU-only, no server |
 | `20_launch_node.sh` | `bash 20_launch_node.sh 0\|1`; `PHASE=decode\|prefill` |
 | `90_smoke_test.sh` | health + "did it really take the deepep_v2 and GDA paths" |
 | `91_bench.sh` | `sglang.bench_serving`, results tagged with the knobs |
 | `Dockerfile` | copied into the build context by `10_build_image.sh` |
+| `sync.sh` / `push.sh` | laptop → hosts, and laptop → GitHub via the jump host |
 
 `10_build_image.sh` builds from `/home/ubuntu/work/deepep-v2-efa-gdaki` rather
 than this repo because two required artifacts cannot be committed: the 627 MB EFA
