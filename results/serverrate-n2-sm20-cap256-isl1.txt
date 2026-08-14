@@ -1,0 +1,10 @@
+# decode prints=127 prefill prints=251
+# a prefill count comparable to the decode count means the client-side
+# output_throughput for those rows is NOT a decode measurement.
+ req/rank  gen tok/s/rank   step ms  samples
+        1             8.3    120.55        2
+        8           455.3     17.57       25
+       16           889.1     18.00       25
+       32          1696.0     18.87       25
+       64          3155.3     20.28       25
+      128          5900.8     21.69       25

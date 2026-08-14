@@ -11,7 +11,7 @@ decode?**
 | model | `DeepSeek-V4-Flash`, MXFP4 routed experts, `--moe-runner-backend deep_gemm`, 43 layers / 256 experts / topk 6 / hidden 4096 |
 | a2a | `deepep_v2`, `direct` on 1 node (NVLink) / `hybrid` on 2 nodes (EFA), `NCCL_GIN_TYPE=5` |
 | SM | `SGLANG_DEEPEP_V2_NUM_SMS=20` |
-| per-rank dispatch capacity | 2048 (`--chunked-prefill-size` = 2048×TP) |
+| per-rank dispatch capacity | 2048 (`--chunked-prefill-size` = 2048×TP) — **but see "The capacity knob": this is the wrong value for decode, and 256 is −16% on step time** |
 | per-rank concurrency slots | **128** (`--max-running-requests` = 128×TP → 1024 on 1 node, 2048 on 2) |
 | decode graph | `--cuda-graph-max-bs-decode 128`, `--mem-fraction-static 0.70`, `cuda graph: True` in every decode batch |
 | workload | `bench_serving --dataset-name random`, ISL 1024 / OSL 1024, `--random-range-ratio 1.0`, `--flush-cache`, 2 waves |
@@ -56,6 +56,70 @@ than that, so a ~200 µs delta is the right order. The two measurements agree.
 (≈63% per-node efficiency), and every individual token gets ~1.6× slower.** Decode
 scales far worse than prefill did (prefill was 1.62×).
 
+⚠️ **This table is at capacity 2048, and that turned out to be the wrong capacity
+for decode.** The +8.7 ms floor is not an EFA latency floor — it is largely a
+fixed-size payload, and it shrinks to +4.9 ms at capacity 256. See the next
+section; the 1.28× figure is specific to cap 2048.
+
+## The capacity knob: 2048 → 256 recovers half of the EFA penalty
+
+The tables above were all taken at **per-rank dispatch capacity 2048**, which is
+this stack's biggest decode mistake. Re-running the 2-node ladder at **capacity
+256** (the floor — per-rank chunk must be a multiple of `page_size=256`) with
+nothing else changed:
+
+| req/rank | 2 node cap 2048 | 2 node **cap 256** | Δ step | 2 node cap256 decode tok/s (×16) |
+|---|---|---|---|---|
+| 8 | 21.74 ms | **17.57 ms** | −19.2% | 7.3k |
+| 16 | 22.06 ms | **18.00 ms** | −18.4% | 14.2k |
+| 32 | 22.85 ms | **18.87 ms** | −17.4% | 27.1k |
+| 64 | 24.46 ms | **20.28 ms** | −17.1% | 50.5k |
+| 128 | 25.95 ms | **21.69 ms** | **−16.4%** | **94.4k** |
+
+```
+2 node cap2048 (hybrid/EFA):  step = 21.46 + 0.0351 x batch   ms
+2 node cap256  (hybrid/EFA):  step = 17.59 + 0.0341 x batch   ms
+```
+
+**The whole win is in the floor (−3.9 ms, −18%); the slope is unchanged (−3%).**
+That is exactly the signature expected, because the floor *is* the fixed-size
+dispatch. Aggregate at 128 req/rank: **80.1k → 94.4k decode tok/s (+17.9%)**, and
+the EFA crossing penalty drops from +8.7 ms to **+4.9 ms** over the 1-node
+cap2048 floor.
+
+### Why capacity is a decode perf knob at all
+
+`SGLANG_DEEPEP_V2_NUM_MAX_DISPATCH_TOKENS_PER_RANK` sizes the receive slab
+(`[num_local_experts, capacity × num_ranks, hidden]`), but sglang passes the
+**fixed cap** as the collective dispatch argument on *every* call — never the real
+token count (`sglang/srt/layers/moe/token_dispatcher/deepep_v2.py:376-383`):
+
+```python
+# num_max_tokens_per_rank is a COLLECTIVE dispatch arg (ElasticBuffer requires
+# the same value on all ranks). Keep it at the fixed buffer cap ...
+# Do NOT derive it from the local hidden_states.shape[0]: under ragged DP load
+# (or TP attention) the ranks would disagree on this collective arg.
+num_max_tokens = self.num_max_dispatch_tokens_per_rank
+```
+
+So a 128-token decode step declares 2048 tokens/rank on the wire. The check:
+2048 tok × 4096 hidden × 1 B (fp8 dispatch) = 8.4 MB, ÷ ~50 GB/s per-GPU EFA =
+**168 µs**, against the measured ~202 µs/layer of extra cost. **This is the
+explanation for the batch-independent 2-node floor** — it is not an EFA latency
+floor, it is a fixed-size payload.
+
+In DeepEP's standalone bench `--num-tokens` is simultaneously the token count
+*and* the buffer capacity; in sglang they are separate. Our cap-2048 decode rows
+were therefore the equivalent of `--num-tokens 2048`, not 128.
+
+### The A/B is protocol-clean
+
+The cap-256 ladder was run at ISL=1 (so prefill cannot contaminate the wall
+clock), while the original cap-2048 ladder was ISL=1024. Control point, cap 2048
+at ISL=1, 128 req/rank: **25.57 ms** vs 25.95 ms at ISL=1024 — protocol is worth
+1.5%, so the −16.4% is the capacity effect. (`results/ctrl-cap2048-isl1.log`,
+`results/serverrate-n2-sm20-cap256-isl1.txt`.)
+
 ## Client-side view, and why it is not a decode measurement
 
 What an OpenAI-compatible client actually sees on this mixed ISL 1024 / OSL 1024
@@ -73,17 +137,40 @@ workload:
 ⚠️ **Both shapes flatten at ~18–19.6k output tok/s, and the same ceiling on 8 and
 on 16 GPUs is the tell that it is not a decode ceiling** — a real one would move
 with the GPU count. Server-side, those same rows were decoding at 61.5k and 78.9k
-tok/s. The denominator is the problem: `output_throughput` is total output tokens
-over total wall clock, and on DP0 that wall clock contained **262 `Prefill batch`
-prints against 256 `Decode batch` prints** (1 node; 259 vs 256 on 2 nodes). A
-2048-prompt row still has 2.1M input tokens to chew, prefill runs ~8× faster per
-token than decode so it *looks* negligible per request, but the scheduler
-interleaves continuously and the client's wall clock absorbs all of it.
+tok/s (and 94.4k at cap 256, while the client still read 18.7k).
 
-Both tables are real; they answer different questions. Read the client table as
-"what one endpoint delivers on a mixed workload at this concurrency", and the
-server table as "what decode costs". Only the second is comparable across node
-counts.
+### Correction: the ceiling is **not** prefill interleave — root cause unknown
+
+An earlier version of this file (and the corresponding memory) attributed the
+ceiling to prefill/decode interleave in the client's wall-clock denominator
+(DP0 logged 262 `Prefill batch` prints against 256 `Decode batch` prints). **That
+explanation is insufficient — it was falsified by measurement.** What was
+actually established:
+
+- **It reproduces at ISL=1.** `ctrl-cap2048-isl1.json`: 2048 prompts,
+  `total_input_tokens 2048` (one token each, so there is essentially no prefill
+  work), and the client still read **18,696 out tok/s** while the server was
+  stepping at 25.57 ms → 80.1k tok/s. A ~4× gap with prefill removed.
+- **It is not one client's fault.** Four independent `bench_serving` processes
+  against the same endpoint summed to **20,472 tok/s** — the same ceiling, split
+  four ways.
+- **It is not tokenizer fan-out.** `--tokenizer-worker-num 8
+  --detokenizer-worker-num 8` booted correctly and made it *worse*: 13.2k vs 17.4k
+  at conc 2048 (whole ladder: 6581/10570/11258/15497/13178 vs
+  6595/11880/17110/17836/17404).
+- **The GPUs are starved, not slow.** Bucketing DP0's scheduler log by second
+  shows **60-second stretches with no batch prints at all**, and DP0's last
+  scheduler line lands ~2 minutes before the row finishes.
+- **Prefill admission is expensive even at ISL=1**: prefill lines read
+  `#new-seq: 1, #new-token: 256` at ~1410 input tok/s → **~182 ms per admitted
+  request, one sequence at a time**. That is where `p99_ttft_ms 23860` comes from,
+  and it is a plausible next place to look — but it was not proven to be the
+  ceiling.
+
+So: the client number is real as "what this endpoint delivered", the server number
+is real as "what decode cost", the ~4× between them is **unexplained**, and only
+the server number is comparable across node counts. Do not publish a mechanism for
+the client ceiling until one is measured.
 
 The 2-node ladder was measured twice (once before the server-side instrumentation
 existed, once after) and reproduces to ≤5.5% on every row — `decode-sweep-*-n2-sm20.txt`
@@ -106,6 +193,19 @@ because three of the four are silent when absent:
 
 ## What was not measured
 
+- **1 node at capacity 256** — the instances expired first. This is the important
+  gap: **the 2-node-vs-1-node ratio at matched capacity is unknown.** Do NOT quote
+  94.4k / 61.5k = 1.53× as a scaling figure; it races cap 256 against cap 2048.
+  The defensible claims are (a) 2n cap256 is **+17.9%** over 2n cap2048, and (b)
+  the 1.25–1.28× scaling figure holds *at cap 2048*. If capacity helps 1 node less
+  than it helps 2 (likely — the floor it shrinks is the EFA one), the true matched
+  ratio sits above 1.28×; if it helps equally, it stays there.
+- **Capacity 1024**, which is the value PR #29525 itself uses, and anything between
+  256 and 2048 — so 256 is "better than 2048", not "optimal".
+- **A decode row aligned to PR #29525's own protocol** (ISL=1 / OSL=1024 / 128
+  prompts / conc 128) for side-by-side with their H20/B200 table.
+- **`NUM_SMS=55` on 2-node decode at cap 256.** The floor moved, so the earlier
+  reasoning for skipping the SM sweep (below) is now weaker than it was.
 - **SM sweep on decode.** Skipped by decision. The standalone b300 regressions put
   12→55 SM at only −10% at 128 tok/rank because the floor dominates, and the floor
   is what the second node inflates here.

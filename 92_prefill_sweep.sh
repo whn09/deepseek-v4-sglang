@@ -48,7 +48,11 @@ if [[ "$ACTUAL_TP" != "$TP" ]]; then
     exit 1
 fi
 
-SUMMARY="${SUMMARY:-$SCRIPT_DIR_HOST/results/prefill-sweep-n${NNODES}.txt}"
+# Must match what 20_launch_node.sh was given -- and per-rank chunk (= CAPACITY)
+# is the strongest knob measured here, so it belongs in the filename. Without it
+# the `rm -f "$JSON"` below lets a run at one chunk size delete another's result.
+CAPACITY="${CAPACITY:-1024}"
+SUMMARY="${SUMMARY:-$SCRIPT_DIR_HOST/results/prefill-sweep-n${NNODES}-cap${CAPACITY}.txt}"
 mkdir -p "$(dirname "$SUMMARY")"
 
 {
@@ -68,7 +72,7 @@ A2A="${A2A:-deepep_v2}"
 if [[ "${WARMUP:-1}" == "1" ]]; then
     echo "### warmup (JIT compile; discarded)" | tee -a "$SUMMARY"
     ISL="$ISL" OSL="$OSL" NUM_PROMPTS=16 CONCURRENCY=16 PHASE=prefill TAG=warmup \
-        bash ./91_bench.sh >/dev/null 2>&1 || true
+        CAPACITY="$CAPACITY" bash ./91_bench.sh >/dev/null 2>&1 || true
 fi
 
 for C in $CONCS; do
@@ -76,12 +80,12 @@ for C in $CONCS; do
     [[ "$N" -gt "$MAX_PROMPTS" ]] && N="$MAX_PROMPTS"
     [[ "$N" -lt "$C" ]] && N="$C"
 
-    JSON="$SCRIPT_DIR_HOST/results/${A2A}-n${NNODES}-prefill-sm${NUM_SMS:-20}-${GIN}-isl${ISL}-osl${OSL}-c${C}.json"
+    JSON="$SCRIPT_DIR_HOST/results/${A2A}-n${NNODES}-prefill-sm${NUM_SMS:-20}-cap${CAPACITY}-${GIN}-isl${ISL}-osl${OSL}-c${C}.json"
     # Or a failed run silently reports the previous sweep's numbers.
     rm -f "$JSON"
 
     ISL="$ISL" OSL="$OSL" NUM_PROMPTS="$N" CONCURRENCY="$C" PHASE=prefill \
-        bash ./91_bench.sh >/dev/null 2>&1
+        CAPACITY="$CAPACITY" bash ./91_bench.sh >/dev/null 2>&1
 
     python3 - "$JSON" "$C" "$N" <<'PY' | tee -a "$SUMMARY"
 import json, sys

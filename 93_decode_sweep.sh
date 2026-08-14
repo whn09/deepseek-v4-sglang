@@ -62,7 +62,13 @@ fi
 
 A2A="${A2A:-deepep_v2}"
 GIN=$([[ "$GDAKI" == "1" ]] && echo gda || echo proxy)
-SUMMARY="${SUMMARY:-$SCRIPT_DIR_HOST/results/decode-sweep-${A2A}-n${NNODES}-sm${NUM_SMS:-20}.txt}"
+# Must match what 20_launch_node.sh was given. It is in the filename because the
+# PR states "smaller capacity is better for decode" and because a fixed-capacity
+# buffer is a candidate explanation for the batch-independent 2-node floor -- so
+# two capacities are two different experiments, and `rm -f "$JSON"` below would
+# otherwise have one delete the other.
+CAPACITY="${CAPACITY:-1024}"
+SUMMARY="${SUMMARY:-$SCRIPT_DIR_HOST/results/decode-sweep-${A2A}-n${NNODES}-sm${NUM_SMS:-20}-cap${CAPACITY}.txt}"
 mkdir -p "$(dirname "$SUMMARY")"
 
 {
@@ -79,7 +85,7 @@ mkdir -p "$(dirname "$SUMMARY")"
 if [[ "${WARMUP:-1}" == "1" ]]; then
     echo "### warmup (JIT compile; discarded)" | tee -a "$SUMMARY"
     ISL="$ISL" OSL=64 NUM_PROMPTS=16 CONCURRENCY=16 PHASE=decode TAG=warmup-decode \
-        bash ./91_bench.sh >/dev/null 2>&1 || true
+        CAPACITY="$CAPACITY" bash ./91_bench.sh >/dev/null 2>&1 || true
 fi
 
 for C in $CONCS; do
@@ -88,12 +94,12 @@ for C in $CONCS; do
     [[ "$N" -lt "$C" ]] && N="$C"
     PER_RANK=$((C / TP))
 
-    JSON="$SCRIPT_DIR_HOST/results/${A2A}-n${NNODES}-decode-sm${NUM_SMS:-20}-${GIN}-isl${ISL}-osl${OSL}-c${C}.json"
+    JSON="$SCRIPT_DIR_HOST/results/${A2A}-n${NNODES}-decode-sm${NUM_SMS:-20}-cap${CAPACITY}-${GIN}-isl${ISL}-osl${OSL}-c${C}.json"
     # Or a failed run silently reports the previous sweep's numbers.
     rm -f "$JSON"
 
     ISL="$ISL" OSL="$OSL" NUM_PROMPTS="$N" CONCURRENCY="$C" PHASE=decode \
-        bash ./91_bench.sh >/dev/null 2>&1
+        CAPACITY="$CAPACITY" bash ./91_bench.sh >/dev/null 2>&1
 
     python3 - "$JSON" "$C" "$PER_RANK" "$N" <<'PY' | tee -a "$SUMMARY"
 import json, sys

@@ -23,11 +23,15 @@ CONCURRENCY="${CONCURRENCY:-32}"
 NUM_SMS="${NUM_SMS:-20}"
 PHASE="${PHASE:-decode}"
 NAME="${NAME:-dsv4-bench}"
+# Only used to name the output. It must match what 20_launch_node.sh was given,
+# because the tag is the only record of it -- and 92/93 `rm -f` the JSON they are
+# about to write, so a capacity-blind tag lets one sweep delete another's results.
+CAPACITY="${CAPACITY:-1024}"
 
 RESULTS_DIR="${RESULTS_DIR:-$SCRIPT_DIR_HOST/results}"
 GIN=$([[ "$GDAKI" == "1" ]] && echo gda || echo proxy)
 A2A="${A2A:-deepep_v2}"
-TAG="${TAG:-${A2A}-n${NNODES}-${PHASE}-sm${NUM_SMS}-${GIN}-isl${ISL}-osl${OSL}-c${CONCURRENCY}}"
+TAG="${TAG:-${A2A}-n${NNODES}-${PHASE}-sm${NUM_SMS}-cap${CAPACITY}-${GIN}-isl${ISL}-osl${OSL}-c${CONCURRENCY}}"
 mkdir -p "$RESULTS_DIR"
 LOG="$RESULTS_DIR/${TAG}.log"
 JSON="$RESULTS_DIR/${TAG}.json"
@@ -38,7 +42,7 @@ echo "log  : ${LOG}"
 {
   echo "### tag=${TAG}"
   echo "### endpoint=${ENDPOINT} nnodes=${NNODES} tp=${TP} phase=${PHASE}"
-  echo "### num_sms=${NUM_SMS} gin=${GIN} image=${IMAGE}"
+  echo "### num_sms=${NUM_SMS} capacity=${CAPACITY} gin=${GIN} image=${IMAGE}"
   echo "### isl=${ISL} osl=${OSL} num_prompts=${NUM_PROMPTS} concurrency=${CONCURRENCY}"
   echo "### started=$(date -u +%FT%TZ)"
 } > "$LOG"
@@ -46,6 +50,11 @@ echo "log  : ${LOG}"
 # --flush-cache: the random dataset is seeded, so a second run replays the same
 # prompts and hits the radix cache from the first -- inflating output throughput
 # and collapsing TTFT.
+# FLUSH=0 drops it, which is required when several clients run CONCURRENTLY
+# against one server (a flush issued by client B lands in the middle of client
+# A's run) and is safe at ISL=1, where there is no prefix to reuse.
+FLUSH_ARGS=(--flush-cache)
+[[ "${FLUSH:-1}" == "0" ]] && FLUSH_ARGS=()
 #
 # --tokenizer must point at the local weights: the server reports its model_path
 # as /models/..., which bench_serving would otherwise try to resolve as an HF
@@ -70,7 +79,7 @@ docker run --rm --name "$NAME" --net=host \
     --random-range-ratio 1.0 \
     --num-prompts "$NUM_PROMPTS" \
     --max-concurrency "$CONCURRENCY" \
-    --flush-cache \
+    "${FLUSH_ARGS[@]}" \
     --output-file "/results/${TAG}.json" 2>&1 | tee -a "$LOG"
 
 rc=${PIPESTATUS[0]}
