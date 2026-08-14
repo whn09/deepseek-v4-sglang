@@ -1,0 +1,11 @@
+### 1 node, deepep_v2 direct, sm=20, CAPACITY=256, RUNNING_PER_RANK=128
+### ISL=1 OSL=1024 num_prompts=1024 concurrency=1024, WARMUP=0 FLUSH=0
+### server-side: median `gen throughput (token/s)` on DP0 / #running-req
+### transcribed from the container log; the instance was reclaimed before the
+### file could be rsync'd off the host, so this is the surviving record.
+
+ req/rank gen tok/s/rank   step ms        n
+      128         8889.5     14.40       25
+
+### Only the 128 req/rank rung was reached (~1 min of machine time left), so
+### there is no linear fit for this configuration -- do not extrapolate a floor.

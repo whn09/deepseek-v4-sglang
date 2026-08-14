@@ -87,6 +87,27 @@ dispatch. Aggregate at 128 req/rank: **80.1k → 94.4k decode tok/s (+17.9%)**, 
 the EFA crossing penalty drops from +8.7 ms to **+4.9 ms** over the 1-node
 cap2048 floor.
 
+### Matched-capacity scaling: 1.33×
+
+The 1-node cap-256 point was caught in the last minute of machine time — one rung
+only, 128 req/rank, 25 samples (`serverrate-n1-sm20-cap256-isl1.txt`):
+
+| 128 req/rank | 1 node | 2 node | 2n / 1n |
+|---|---|---|---|
+| step, cap 2048 | 16.65 ms | 25.95 ms | 1.56× slower/token |
+| step, **cap 256** | **14.40 ms** | **21.69 ms** | 1.51× slower/token |
+| decode tok/s, cap 2048 | 61.5k | 78.9k | **1.28×** |
+| decode tok/s, **cap 256** | **71.1k** | **94.4k** | **1.33×** |
+
+So capacity 256 helps *both* shapes (1 node −13.5% step / +15.6% tok/s; 2 nodes
+−16.4% / +17.9%) and it helps the 2-node shape slightly more, because the fixed
+payload it shrinks is the part that crosses EFA. **Matched-capacity scaling is
+1.33×, not the 1.53× a cap256-vs-cap2048 comparison would have claimed.** The
+crossing penalty at 128 req/rank goes 9.3 ms → **7.3 ms**.
+
+Only one rung was measured on 1-node cap256, so there is no linear fit for it —
+the floor/slope split is known for the 2-node shape only.
+
 ### Why capacity is a decode perf knob at all
 
 `SGLANG_DEEPEP_V2_NUM_MAX_DISPATCH_TOKENS_PER_RANK` sizes the receive slab
@@ -193,13 +214,11 @@ because three of the four are silent when absent:
 
 ## What was not measured
 
-- **1 node at capacity 256** — the instances expired first. This is the important
-  gap: **the 2-node-vs-1-node ratio at matched capacity is unknown.** Do NOT quote
-  94.4k / 61.5k = 1.53× as a scaling figure; it races cap 256 against cap 2048.
-  The defensible claims are (a) 2n cap256 is **+17.9%** over 2n cap2048, and (b)
-  the 1.25–1.28× scaling figure holds *at cap 2048*. If capacity helps 1 node less
-  than it helps 2 (likely — the floor it shrinks is the EFA one), the true matched
-  ratio sits above 1.28×; if it helps equally, it stays there.
+- **The 1-node cap-256 ladder below 128 req/rank** — only the 128 rung was caught
+  before the instances were reclaimed, so cap256 has a floor/slope fit on 2 nodes
+  and a single point on 1 node. The matched-capacity ratio (1.33×) is therefore
+  established at 128 req/rank only. Never quote 94.4k / 61.5k = 1.53×: that races
+  cap 256 against cap 2048.
 - **Capacity 1024**, which is the value PR #29525 itself uses, and anything between
   256 and 2048 — so 256 is "better than 2048", not "optimal".
 - **A decode row aligned to PR #29525's own protocol** (ISL=1 / OSL=1024 / 128
