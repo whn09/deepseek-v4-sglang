@@ -1,0 +1,14 @@
+.DS_Store
+*.log
+*.pyc
+__pycache__/
+
+# Measurement output is the point of the repo, so it is committed even though it
+# is *.log -- only stray build/run logs at the top level are ignored.
+!results/*.log
+
+# Build artifacts that must NOT be committed:
+#   the 627 MB EFA dev-channel installer tarball, and the private DeepEP v2 fork.
+# Both are staged on the hosts under $BUILD_CTX_HOST -- see 10_build_image.sh.
+aws-efa-installer*.tar.gz
+deepep-src/
