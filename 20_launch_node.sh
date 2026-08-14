@@ -33,6 +33,7 @@
 #   A2A=deepep_v2|megamoe the backend under test, or the in-image baseline.
 #   KV_DTYPE=auto         --kv-cache-dtype; auto is what the cookbook uses for V4.
 #   SWA_RATIO=0.1         --swa-full-tokens-ratio (server default 0.8).
+#   RUNNING_PER_RANK=32   per-rank concurrency slots; MAX_RUNNING=this*TP.
 #   GDAKI=1  TP  NNODES  PORT  NCCL_DEBUG  EXTRA_ARGS  EXTRA_ENV
 set -euo pipefail
 
@@ -63,6 +64,15 @@ SWA_RATIO="${SWA_RATIO:-0.1}"
 # result exceeds CAPACITY (server_args.py, the deepep_v2 handler). dp_size == TP
 # here, so this is the largest legal value. Must stay a multiple of page_size.
 CHUNKED="${CHUNKED:-$((CAPACITY * TP))}"
+
+# --max-running-requests is ALSO a global budget that DP attention divides by
+# dp_size. V4 auto-sets it to 256, so at dp=8 each rank admits 32 and at dp=16
+# each rank admits only 16 -- i.e. the total concurrency ceiling would stay 256
+# no matter how many nodes you add, and "2 nodes serve more concurrency" would be
+# untestable for a purely configural reason. Pinning PER-RANK slots instead makes
+# node count the only variable: 32*TP -> 256 on one node, 512 on two.
+RUNNING_PER_RANK="${RUNNING_PER_RANK:-32}"
+MAX_RUNNING="${MAX_RUNNING:-$((RUNNING_PER_RANK * TP))}"
 
 require_idle_gpus
 require_epv2_image "$IMAGE"
@@ -102,13 +112,32 @@ case "$A2A" in
         A2A_ENV=(-e SGLANG_DEEPEP_V2_NUM_SMS="$NUM_SMS"
                  -e SGLANG_DEEPEP_V2_NUM_MAX_DISPATCH_TOKENS_PER_RANK="$CAPACITY")
         ;;
+    none)
+        # The only NON-DeepEP a2a that actually crosses nodes in this image, and
+        # the cleanest possible control: EP geometry, weights, runner and per-rank
+        # chunk all stay identical, and the ONLY thing that changes is that the
+        # ElasticBuffer is replaced by sglang's all-gather StandardDispatcher.
+        # Keeping --ep $TP is deliberate -- dropping it would switch EP-MoE for
+        # TP-MoE and change two variables at once.
+        A2A_ARGS=(--moe-a2a-backend none --moe-runner-backend deep_gemm)
+        A2A_ENV=()
+        ;;
     megamoe)
+        # MEASURED: megamoe CANNOT run across nodes in this build. Its rendezvous
+        # is torch.distributed._symmetric_memory, which passes POSIX fds over a
+        # unix socket, so at nnodes=2 rank 0 dies with
+        #   _symmetric_memory/__init__.py:2004 rendezvous
+        #   RuntimeError: Failed to send fd: No such file or directory
+        # right after the DeepGEMM warmup. Cross-node symmetric memory needs
+        # FABRIC handles, which this path does not use. Keep it for the
+        # SINGLE-NODE attribution baseline only.
         # Runner is megamoe's own; passing --moe-runner-backend would fight it.
         # Token budget from the cookbook's b300/V4 megamoe rows.
         A2A_ARGS=(--moe-a2a-backend megamoe)
         A2A_ENV=(-e SGLANG_OPT_DEEPGEMM_MEGA_MOE_NUM_MAX_TOKENS_PER_RANK=8320)
+        [[ "$NNODES" -gt 1 ]] && echo "WARNING: megamoe is intra-node only; this will die in symmetric-memory rendezvous." >&2
         ;;
-    *) echo "A2A must be deepep_v2 or megamoe" >&2; exit 1 ;;
+    *) echo "A2A must be deepep_v2, none or megamoe" >&2; exit 1 ;;
 esac
 
 # Phase configs, from the PR's own repro commands.
@@ -176,12 +205,14 @@ docker run -d --name "$NAME" \
       ${KV_DTYPE:+--kv-cache-dtype "$KV_DTYPE"} \
       --swa-full-tokens-ratio "$SWA_RATIO" \
       --chunked-prefill-size "$CHUNKED" \
+      --max-running-requests "$MAX_RUNNING" \
       "${PHASE_ARGS[@]}" \
       ${MULTINODE_ARGS[@]+"${MULTINODE_ARGS[@]}"} \
       ${EXTRA_ARGS:-}
 set +x
 
 echo "launched '$NAME' (a2a=$A2A phase=$PHASE mode=$MODE tp=$TP nnodes=$NNODES rank=$NODE_RANK"
-echo "          num_sms=$NUM_SMS capacity=$CAPACITY chunked=$CHUNKED kv=$KV_DTYPE swa=$SWA_RATIO gin=$GIN_TYPE)"
+echo "          num_sms=$NUM_SMS capacity=$CAPACITY chunked=$CHUNKED kv=$KV_DTYPE swa=$SWA_RATIO gin=$GIN_TYPE"
+echo "          max_running=$MAX_RUNNING (= $RUNNING_PER_RANK per rank))"
 echo "follow:  docker logs -f $NAME"
 echo "health:  curl -s localhost:${PORT}/health_generate"

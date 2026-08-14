@@ -50,6 +50,11 @@ echo "log  : ${LOG}"
 # --tokenizer must point at the local weights: the server reports its model_path
 # as /models/..., which bench_serving would otherwise try to resolve as an HF
 # repo id ("Repo id must be in the form 'repo_name' or 'namespace/repo_name'").
+# --rm does not fire if the client is killed mid-run (e.g. a sweep interrupted with
+# pkill), leaving the name taken and every subsequent row failing on the conflict
+# rather than on anything real.
+docker rm -f "$NAME" >/dev/null 2>&1 || true
+
 docker run --rm --name "$NAME" --net=host \
     -v "$HOST_MODEL_DIR/$MODEL_NAME:$MODEL_PATH:ro" \
     -v "$RESULTS_DIR:/results" \
