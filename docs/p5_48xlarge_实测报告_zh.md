@@ -337,5 +337,6 @@ decode 想用上 DeepEP v2 必须先有 GDAKI（即 b300 一类的 EFA gen-2+ �
 - `SGLANG_DEEPEP_V2_NUM_SMS` 必须显式给：`get_theoretical_num_sms()` 只看单个
   EFA device（`rdmap113s0` = 100 Gb/s）会推出 12.5 GB/s，而 p5 实际是
   32×100 Gb/s = **50.0 GB/s per GPU**。
-- `README.md` 里 "`SGLANG_DSV4_FP4_DEQUANT=1` is not an escape hatch here" 和
-  "`SGLANG_DSV4_FP4_EXPERTS`: `0` only on h200" 两处已被本次结果推翻，待改。
+- ~~`README.md` 里 "`SGLANG_DSV4_FP4_DEQUANT=1` is not an escape hatch here" 和
+  "`SGLANG_DSV4_FP4_EXPERTS`: `0` only on h200" 两处已被本次结果推翻，待改。~~
+  已改（本次提交），并在 README 新增 Results 索引，指向本报告与两份 b300 结果。
