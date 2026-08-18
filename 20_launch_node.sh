@@ -82,6 +82,16 @@ CHUNKED="${CHUNKED:-$((CAPACITY * TP))}"
 # no matter how many nodes you add, and "2 nodes serve more concurrency" would be
 # untestable for a purely configural reason. Pinning PER-RANK slots instead makes
 # node count the only variable: 32*TP -> 256 on one node, 512 on two.
+#
+# BUT KNOW WHAT THIS PINS AWAY: with slots fixed, "how much concurrency can this
+# shape hold" is no longer being measured -- it is being asserted. MEASURED on p5
+# (docs/p5_48xlarge_实测报告_zh.md §6d): at RUNNING_PER_RANK=32 the runs used only
+# 1.7-12.2% of the KV pool, and the pool itself is 2.26-2.95x LARGER per rank on
+# two nodes than on one -- superlinear, because ep16 halves the local expert count
+# and the 15.1 GB/GPU it frees all becomes KV. So the 1.5-1.7x throughput scaling
+# and a ~2.9x capacity scaling coexist; they measure different things. To measure
+# the capacity axis instead, raise this until TPOT p99 breaks or the scheduler
+# starts retracting, and move client concurrency with it (= RUNNING_PER_RANK*TP).
 RUNNING_PER_RANK="${RUNNING_PER_RANK:-32}"
 MAX_RUNNING="${MAX_RUNNING:-$((RUNNING_PER_RANK * TP))}"
 

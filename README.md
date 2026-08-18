@@ -34,6 +34,7 @@ bash 91_bench.sh
 | [`results/RESULTS_prefill.md`](results/RESULTS_prefill.md) | 2× p6-b300, GDAKI GIN | does 2 nodes beat 2× one node on input throughput? | no — **1.62×** (274.4k vs 169.1k tok/s at c1024, p99 TTFT 14.3 s vs 23.2 s). Per-rank chunk, not SM, is the strongest knob |
 | [`results/RESULTS_decode.md`](results/RESULTS_decode.md) | 2× p6-b300, GDAKI GIN | what does the second node cost decode? | server step **16.65 → 25.95 ms** at 128 req/rank (1.56×), aggregate only 1.28×. `CAPACITY` 2048→256 recovers half of it |
 | [`docs/p5_48xlarge_实测报告_zh.md`](docs/p5_48xlarge_实测报告_zh.md) (中文) | 2× p5.48xlarge, **proxy GIN** | does any of this run on Hopper/EFA gen-1, and is DeepEP v2 worth it there? | yes, once FP4 is dequantised at load time. prefill **137.5k tok/s** at c512 (TTFT mean 7 915 ms) = **3.43× `a2a=none`**; decode step **33.78 ms** = **21–29% SLOWER** than `a2a=none` |
+| ↳ same doc, §6d | 1 vs 2 × p5.48xlarge | how much *concurrency* does the second node buy, as opposed to throughput? | **the only superlinear axis: 2.26–2.95× per rank / 4.53–5.89× global** KV capacity, because EP16 drops per-GPU expert weights 42.28 → 27.18 GB and all 15.1 GB of it becomes KV. Capacity ≠ the 1.52–1.73× throughput number — quote both or neither |
 
 The two shapes are **not** directly comparable: p5 caps `CAPACITY` at 4096 (80 GB
 memory ceiling, see that report's §4) against b300's 8192, and p5 has no GDAKI, so

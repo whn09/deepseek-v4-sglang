@@ -22,6 +22,12 @@
 5. **单机基线已补测（§6b）**：2 节点相对单机只有 **1.52–1.73×**（prefill）/
    **1.27–1.47×**（decode），从来没到 2×；同等每卡负载下 EFA 使 decode step time
    +36~57%、prefill TTFT +30~45%，且这个相对代价随 batch 增大而下降。
+5b. **但"最大并发容量"是唯一超线性的量（§6d）**：双机 KV 池是单机的
+   **2.26–2.95× per-rank / 4.53–5.89× 全局**，因为 EP16 把每卡专家权重从
+   42.28 压到 27.18 GB，省下的 15.1 GB/卡全变成 KV。**第 5 条与这一条不矛盾，
+   量的是两件事**（算力 vs 容量），对客户必须两个口径一起给。
+   注意：本报告的所有 sweep 都锁在 `RUNNING_PER_RANK=32`，只用掉 KV 池的
+   1.7–12.2%，所以**两边的真实并发上限都没测到**。
 6. **DeepEP v2 在 p5 上是 prefill 的工具、不是 decode 的工具（§6c）**：对 `A2A=none`
    的 all-gather 基线，prefill 快 **1.74~3.43×**（且倍数随负载上升，因为 all-gather
    在约 40 k tok/s 饱和），但 decode **慢 21~29%**——小消息 + proxy GIN + 20 个 SM
@@ -212,6 +218,11 @@ per-rank slots = `RUNNING_PER_RANK=32`、`NUM_SMS=20`、ISL/OSL 相同）。
 **2 节点从来没到 2×，只有 1.52–1.73×（scaling efficiency 76–86%）**，
 而同等每卡负载下 TTFT 涨 30–45%。这个差额就是 EFA a2a 的代价。
 
+> **口径警告**：这句话只对**吞吐/延迟**成立。同一批运行里双机的 **KV 容量**是
+> 单机的 2.26–2.95×（per-rank）/ 4.53–5.89×（全局），即**超线性**——见 §6d。
+> 本节所有行都跑在 `RUNNING_PER_RANK=32`，即两边的最大并发都是人为锁死的、
+> 只用掉 KV 池的 1.7–12.2%，所以本节**没有**回答"双机能装多少并发"。
+
 ### Decode（server 端 step ms，`94_server_decode_rate.sh`，CAPACITY=1024）
 
 | req/rank | 1 节点 step ms | 2 节点 step ms | **EFA 代价** | 1 节点聚合 tok/s | 2 节点聚合 tok/s | 倍数 |
@@ -288,6 +299,81 @@ decode 想用上 DeepEP v2 必须先有 GDAKI（即 b300 一类的 EFA gen-2+ �
 
 ---
 
+## 6d. 最大并发容量：唯一一个双机**超线性**的量（2026-08-18 补算）
+
+前面 §6b/§6c 的每一行都跑在 `RUNNING_PER_RANK=32`，这是**故意**把 per-rank
+并发锁死，好让"加一个节点值多少"只剩节点数一个变量。代价是把"双机能装多少并发"
+这个问题一起消掉了——而它恰好是唯一一个双机**超过** 2× 的量，方向与 §6b 相反。
+
+数字不是新跑的，是从已有 server log 和 `bench_serving` 的 `server_info`
+里读出来的（`max_total_num_tokens` 是 **per-rank** 值，DP attention 下每个 rank
+有独立 KV 池）。**六个配置的显存账全部对平**（KV GB ÷ token 数 = 7.67~7.98
+KB/token/rank），所以这些数可以当硬数据用：
+
+| 配置 | 权重 GB/GPU | KV GB/GPU | KB/tok | KV tok/rank | KV tok 全局 |
+|---|---|---|---|---|---|
+| 1 节点 v2 decode (memfrac 0.70) | 42.28 | 12.24 | 7.80 | 1 645 824 | 13.17M |
+| 2 节点 v2 decode | 27.18 | (n/a¹) | — | **3 724 032** | **59.58M** |
+| 2 节点 none decode | 26.46 | 27.99 | 7.67 | 3 825 152 | 61.20M |
+| 1 节点 v2 prefill (memfrac 0.65) | 42.28 | 8.23 | 7.98 | 1 080 832 | 8.65M |
+| 2 节点 v2 prefill | 27.18 | 23.28 | 7.67 | **3 183 360** | **50.93M** |
+| 2 节点 none prefill | 26.46 | 24.10 | 7.69 | 3 284 736 | 52.56M |
+
+¹ 双机 v2 decode 的 server log 没留（08-17 只存了 prefill 那份），`Memory pool
+end` 缺失，所以 KV GB 算不出；token 数从 bench json 的 `server_info` 拿到，是实测值。
+
+### 机制：EP16 省下的专家权重**全部**变成 KV
+
+单机 ep8 每卡有 32 个 local expert（权重 42.28 GB），双机 ep16 只有 16 个
+（27.18 GB）。省下的 **15.1 GB/卡**不在别处，直接进 KV 池：每卡 KV 显存
+**8.23 → 23.28 GB = 2.83×**（prefill 口径），再乘 2× 的卡数：
+
+| 口径 | 1 节点 | 2 节点 | **倍数** |
+|---|---|---|---|
+| KV tok/rank，prefill | 1 080 832 | 3 183 360 | **2.945×** |
+| KV tok 全局，prefill | 8.65M | 50.93M | **5.891×** |
+| KV tok/rank，decode | 1 645 824 | 3 724 032 | **2.263×** |
+| KV tok 全局，decode | 13.17M | 59.58M | **4.525×** |
+
+换算成请求数（**每请求按峰值 ISL+OSL 全驻留**：decode 2048 tok、prefill 4104 tok。
+V4 的 SWA（`sliding_window=128`、`swa_full_tokens_ratio=0.1`）让长请求实际占用
+**小于**这个数，`page_size=256` 对这两个长度恰好整除不产生取整损失，所以下表是
+**保守下界**，真实容量更高）：
+
+| 配置 | KV 池允许 req/rank | 实际跑的 req/rank | 用掉多少 |
+|---|---|---|---|
+| 1 节点 prefill | 263 | 32 | 12.2% |
+| 2 节点 prefill | 775 | 32 | 4.1% |
+| 1 节点 decode | 803 | 32 | 4.0% |
+| 2 节点 decode | 1 818 | 32 | **1.8%** |
+
+### 三条要留下的结论
+
+1. **"2 节点没到 2×"只对算力口径成立。** 容量口径上双机是 **2.26–2.95×
+   per-rank / 4.53–5.89× 全局**，即超线性——因为加节点同时做了两件事：加卡
+   （线性）和把 EP 从 8 扩到 16（让每卡权重变小，非线性）。§6b 的 1.52–1.73×
+   和这里的 2.95× 不矛盾，它们量的是两件不同的事，引用时必须带口径。
+2. **本报告没有测出任何一边的并发上限。** 两边都被 `RUNNING_PER_RANK=32` 挡住，
+   只用掉 KV 池的 1.7–12.2%；§3.2 里 conc=1024 那一档 TTFT p99 冲到 50.9 s
+   也是撞这道人为墙，不是撞硬件。要测真实上限必须放开 `RUNNING_PER_RANK`
+   往上爬到 TPOT 崩或 KV 开始 evict，见 §8。
+3. **v2 与 none 差的 2.6–3.1% 是权重差，不是 ElasticBuffer 的容量成本。**
+   27.18 vs 26.46 GB = 0.72 GB/卡，除以 7.7 KB/tok 正好 ≈ 101 k tok/rank，而
+   decode/prefill 两个 capacity（1024 / 4096）下这个差值几乎恒等（101 120 /
+   101 376 tok），也证明它与 capacity 无关。ElasticBuffer 是在 KV 池**之外**
+   `cudaMalloc` 的（§4），**不**体现在 `max_total_num_tokens` 里，所以它的容量
+   成本本报告测不出来。
+
+### 对客户的意义
+
+单机 prefill 是六个配置里 KV 余量最小的（12.2%）：如果放开 `RUNNING_PER_RANK`
+去找真实上限，**单机会先撞 KV 墙（263 req/rank），双机是 775**。也就是说在
+"能同时服务多少请求"这个客户真正关心的口径上，第二个节点买到的是 **2.95×**，
+而不是 §6b 那个 1.52–1.73×。反过来说，如果 SLO 只看 TTFT/TPOT 且并发不高，
+第二个节点就很不划算——两个口径要一起给，只给一个都会误导。
+
+---
+
 ## 7. 原始数据位置
 
 本地 `deepseek-v4-sglang/results/p5-2026-08-17/`（机器回收前已全部拉回）：
@@ -334,6 +420,17 @@ decode 想用上 DeepEP v2 必须先有 GDAKI（即 b300 一类的 EFA gen-2+ �
   3. `EXTRA_ENV="EP_NUM_SUB_PARTS=1"`——sm_90 专属，微基准里 decode dispatch
      **−43.8%**（437.7 → 246.1 µs），因为 sm_90 上 `kArchMinSubTokens = 1`
   4. `RUNNING_PER_RANK=64`，让 conc=1024 那一档有意义
+- **实测最大并发上限（§6d 只给了容量口径，实测口径完全没测）**。这是本报告最大的
+  一个洞：`RUNNING_PER_RANK=32` 把两边都锁死了。要补测需要重开两台机器，
+  单机和双机各跑一条阶梯，每档重启 server：
+  1. `RUNNING_PER_RANK` 从 32 往上爬（64 / 128 / 256），client conc 同步 = 
+     `RUNNING_PER_RANK × TP`，直到 TPOT 超 SLO 或 server 日志出现 KV evict /
+     retraction（`retraction_policy='length'` 会在池满时回撤请求，日志可见）。
+  2. 判据要两个一起看：**TPOT p99（延迟墙）**和 **`#retracted` / evict（容量墙）**。
+     §6d 预测单机 prefill 会先撞容量墙（263 req/rank），双机（775）会先撞延迟墙——
+     如果实测反过来，说明容量估算里 SWA 的折扣比预期大。
+  3. 单机 ep8 的 `MEM_FRACTION` 不能照抄双机：单机权重 42.28 GB/卡，prefill 0.65
+     时 KV 只剩 8.23 GB/卡，是六个配置里余量最小的。
 - `SGLANG_DEEPEP_V2_NUM_SMS` 必须显式给：`get_theoretical_num_sms()` 只看单个
   EFA device（`rdmap113s0` = 100 Gb/s）会推出 12.5 GB/s，而 p5 实际是
   32×100 Gb/s = **50.0 GB/s per GPU**。
