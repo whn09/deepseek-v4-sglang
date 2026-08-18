@@ -354,6 +354,48 @@ print('sglang', sglang.__file__); print('deepep_v2 module OK')"; \
 vs=[m.value for m in B]; assert 'deepep_v2' in vs, vs; print('MoeA2ABackend:', vs)"
 
 # -----------------------------------------------------------------------------
+# 6b. sm_90 ONLY: let SGLANG_DSV4_FP4_DEQUANT=1 coexist with the deepep_v2 runner.
+#
+# DSV4's routed experts are MXFP4 (config.json `expert_dtype: fp4`; the
+# `quantization_config` block is the FP8 128x128 layout of the DENSE/attention
+# weights). Hopper has no FP4, so the only way to serve this checkpoint on
+# p5.48xlarge is SGLANG_DSV4_FP4_DEQUANT=1, which walks the experts through
+# cast_e2m1fn_to_e4m3fn() and lands on plain 128x128 block-scaled FP8
+# (fp8.py, `scale_param.format_ue8m0 = False; self.is_fp4_expert = False`) --
+# exactly the DeepSeek FP8 blockwise layout Hopper deep_gemm already serves.
+#
+# The single obstacle is an assert that the MoE runner is still `auto`. It cannot
+# hold under deepep_v2: server_args.py's deepep_v2 handler resolves auto ->
+# deep_gemm (or triton with --deepep-v2-dispatcher-output-dtype bf16) BEFORE any
+# quant method is built. The assert's intent is to exclude the specialised mxfp4
+# runners (marlin / humming / flashinfer_mxfp4), which are the three branches
+# immediately below it -- not the post-dequant FP8 path, which by then has
+# is_fp4_expert=False and no FP4 left to run. So we widen it to deep_gemm/triton.
+#
+# Default 0: a b300 build is byte-identical to before this ARG existed.
+# The `$` anchor is load-bearing -- fp8.py has two other `.is_auto():` lines
+# (both `moe_runner_backend.is_auto():`, with a colon) that must not be touched;
+# the count check below is what proves the sed hit exactly the intended one.
+# -----------------------------------------------------------------------------
+ARG SGLANG_FP4_DEQUANT_ANY_RUNNER=0
+ENV SGLANG_FP4_DEQUANT_ANY_RUNNER=${SGLANG_FP4_DEQUANT_ANY_RUNNER}
+RUN set -eux; \
+    if [ "${SGLANG_FP4_DEQUANT_ANY_RUNNER}" != "1" ]; then \
+      echo "fp4-dequant assert left stock (b300/sm_10x build)"; \
+    else \
+      f=${SGLANG_SRC}/python/sglang/srt/layers/quantization/fp8.py; \
+      n=$(grep -c 'get_moe_runner_backend()\.is_auto()$' "$f"); \
+      test "$n" = 1 || { echo "ERROR: expected 1 anchor line, found $n" >&2; exit 1; }; \
+      sed -i 's/get_moe_runner_backend()\.is_auto()$/get_moe_runner_backend().is_auto()\n                    or get_moe_runner_backend().is_deep_gemm()\n                    or get_moe_runner_backend().is_triton()/' "$f"; \
+      grep -n -A4 'is not compatible with SGLANG_DSV4_FP4_DEQUANT' "$f" | head -8; \
+      test "$(grep -c 'get_moe_runner_backend()\.is_deep_gemm()$' "$f")" = 1; \
+      python3 -c "import py_compile,sys; py_compile.compile(sys.argv[1], doraise=True)" "$f"; \
+      python3 -c "from sglang.srt.layers.moe.utils import MoeRunnerBackend as R; \
+[getattr(R, m) for m in ('is_auto','is_deep_gemm','is_triton')]; print('runner predicates OK')"; \
+      echo "fp4-dequant assert widened to deep_gemm/triton (sm_90 build)"; \
+    fi
+
+# -----------------------------------------------------------------------------
 # 7. Runtime env: AWS EFA + NCCL GIN + what PR #29525 requires.
 # -----------------------------------------------------------------------------
 ENV FI_PROVIDER=efa

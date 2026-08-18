@@ -1,7 +1,9 @@
 # deepseek-v4-sglang
 
 DeepSeek-V4-Flash on SGLang with **DeepEP v2 (ElasticBuffer) MoE all-to-all over AWS EFA**,
-on 2× `p6-b300` (B300, sm_103, 8 GPU/node, 16× EFA @400 Gb/s).
+on 2× `p6-b300` (B300, sm_103, 8 GPU/node, 16× EFA @400 Gb/s), and — via
+`source env_p5.sh` + `ARCH=sm90` — on 2× `p5.48xlarge` (H100, sm_90, 32× EFA
+@100 Gb/s, no GDAKI). See **Results** below for both.
 
 The thing under test is [sglang PR #29525](https://github.com/sgl-project/sglang/pull/29525)
 — `[Feature] Add DeepEPv2 (ElasticBuffer) MoE A2A backend` — pinned at
@@ -24,6 +26,19 @@ ssh P6-B300-2 'cd deepseek-v4-sglang && bash 20_launch_node.sh 1'
 bash 90_smoke_test.sh              # on the leader
 bash 91_bench.sh
 ```
+
+## Results
+
+| doc | shape | question it answers | headline |
+|---|---|---|---|
+| [`results/RESULTS_prefill.md`](results/RESULTS_prefill.md) | 2× p6-b300, GDAKI GIN | does 2 nodes beat 2× one node on input throughput? | no — **1.62×** (274.4k vs 169.1k tok/s at c1024, p99 TTFT 14.3 s vs 23.2 s). Per-rank chunk, not SM, is the strongest knob |
+| [`results/RESULTS_decode.md`](results/RESULTS_decode.md) | 2× p6-b300, GDAKI GIN | what does the second node cost decode? | server step **16.65 → 25.95 ms** at 128 req/rank (1.56×), aggregate only 1.28×. `CAPACITY` 2048→256 recovers half of it |
+| [`docs/p5_48xlarge_实测报告_zh.md`](docs/p5_48xlarge_实测报告_zh.md) (中文) | 2× p5.48xlarge, **proxy GIN** | does any of this run on Hopper/EFA gen-1, and is DeepEP v2 worth it there? | yes, once FP4 is dequantised at load time. prefill **137.5k tok/s** at c512 (TTFT mean 7 915 ms) = **3.43× `a2a=none`**; decode step **33.78 ms** = **21–29% SLOWER** than `a2a=none` |
+
+The two shapes are **not** directly comparable: p5 caps `CAPACITY` at 4096 (80 GB
+memory ceiling, see that report's §4) against b300's 8192, and p5 has no GDAKI, so
+arch + a2a capacity + GIN type all differ. The reusable finding is the *sign* of
+each effect, not the ratio between shapes.
 
 ## Why DeepSeek-V4-Flash and not Kimi-K3
 
@@ -71,9 +86,18 @@ Two things follow, and both matter for reading a result:
   table ran `DeepSeek-V4-Flash-FP8` (FP8 experts); that repo 401s for us. So if
   output quality is bad, suspect `deep_gemm` + fp4 experts before blaming EFA, and
   cross-check with `A2A=megamoe` on the same weights.
-- **`SGLANG_DSV4_FP4_DEQUANT=1` is not an escape hatch here.** It asserts
-  `get_moe_runner_backend().is_auto()`, and the deepep_v2 handler resolves `auto`
-  to a concrete runner before quant methods are built, so the assert always fires.
+- **`SGLANG_DSV4_FP4_DEQUANT=1` is blocked by one assert, not by design** — and on
+  pre-Blackwell GPUs it is the *only* route, so the assert has to be widened.
+  Stock, it asserts `get_moe_runner_backend().is_auto()`, and the deepep_v2 handler
+  resolves `auto` → `deep_gemm` before quant methods are built, so it always fires.
+  The three branches it guards are the *specialised mxfp4* runners (marlin /
+  humming / flashinfer_mxfp4), and after dequant `is_fp4_expert=False` takes none
+  of them — i.e. the assert's text is wider than its intent. `ARCH=sm90` widens it
+  at build time (`SGLANG_FP4_DEQUANT_ANY_RUNNER=1`, Dockerfile section 6b) and
+  `20_launch_node.sh` turns the env var on automatically below compute_cap 10.
+  **MEASURED end to end on 2× p5.48xlarge** — see
+  [`docs/p5_48xlarge_实测报告_zh.md`](docs/p5_48xlarge_实测报告_zh.md).
+  b300 images are byte-identical without `ARCH=sm90`.
 
 `wo_a` is already `F8_E4M3`, so the PR's `SGLANG_OPT_FP8_WO_A_GEMM=0` caveat
 ("Blackwell with a BF16 `wo_a` checkpoint") does **not** apply.
@@ -202,7 +226,7 @@ model-level knobs. What it says vs. what this kit does:
 | `--tp` | `4` (Flash fits in 4 GPUs) | `16` (2×8) | tp4 is single-node, i.e. NVLink-only. EP=16 needs 16 ranks, which is the point. |
 | runner | `flashinfer_mxfp4` / `megamoe` / `humming` | `deep_gemm` | deepep_v2 accepts only `deep_gemm`/`triton`; deep_gemm has the fp4-expert recipe |
 | spec decode | `DSPARK` / EAGLE | off | keeps the a2a measurement clean; MTP+deepep_v2 is untested |
-| `SGLANG_DSV4_FP4_EXPERTS` | `0` only on h200 (sm90 has no FP4) | unset → auto-detect | b300 is sm103; the fp4 path is the fast one |
+| `SGLANG_DSV4_FP4_EXPERTS` | `0` only on h200 (sm90 has no FP4) | unset → auto-detect | b300 is sm103; the fp4 path is the fast one. On sm90 the cookbook's `=0` is not enough by itself — that only *stops* the fp4 path, and the weights are still MXFP4; the working route is `SGLANG_DSV4_FP4_DEQUANT=1` (auto-set by `20_launch_node.sh`) on an `ARCH=sm90` image |
 
 Also in the cookbook and deliberately skipped: `--reasoning-parser deepseek-v4`,
 `--tool-call-parser deepseekv4` (serving ergonomics, irrelevant to a2a numbers),

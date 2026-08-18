@@ -5,7 +5,12 @@ __pycache__/
 
 # Measurement output is the point of the repo, so it is committed even though it
 # is *.log -- only stray build/run logs at the top level are ignored.
+# BOTH lines are needed: `results/*` matches one path segment only, so it does NOT
+# cover the per-campaign subdirectories (results/p5-2026-08-17/...). Verified with
+# `git check-ignore -v` -- without the second line 38 p5 bench logs were silently
+# excluded from the commit while `git status` showed the directory as untracked.
 !results/*.log
+!results/**/*.log
 
 # Build artifacts that must NOT be committed:
 #   the 627 MB EFA dev-channel installer tarball, and the private DeepEP v2 fork.

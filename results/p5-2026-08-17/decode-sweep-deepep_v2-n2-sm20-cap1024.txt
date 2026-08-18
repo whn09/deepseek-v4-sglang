@@ -1,0 +1,10 @@
+### decode sweep  a2a=deepep_v2 nnodes=2 tp=16 sm=20 isl=1024 osl=1024
+### started=2026-08-17T09:37:23Z
+conc   req/rank  prompts  out_tok/s    tpot_ms_mean tpot_ms_p99 ttft_ms_p99 req/s    
+### warmup (JIT compile; discarded)
+64     4         128      2090.8       29.36       30.06       1997.5      2.04     
+128    8         256      3881.0       31.19       32.44       3326.8      3.79     
+256    16        512      7073.2       33.36       35.25       4549.5      6.91     
+512    32        1024     12178.5      37.33       40.86       8138.9      11.89    
+1024   64        2048     12230.3      37.45       40.89       50918.7     11.94    
+### finished=2026-08-17T09:47:57Z

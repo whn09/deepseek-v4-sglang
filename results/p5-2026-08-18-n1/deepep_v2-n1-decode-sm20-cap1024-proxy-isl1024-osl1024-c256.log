@@ -1,0 +1,73 @@
+### tag=deepep_v2-n1-decode-sm20-cap1024-proxy-isl1024-osl1024-c256
+### endpoint=localhost:30000 nnodes=1 tp=8 phase=decode
+### num_sms=20 capacity=1024 gin=proxy image=sglang-epv2-efa:pr29525-sm90
+### isl=1024 osl=1024 num_prompts=512 concurrency=256
+### started=2026-08-18T06:07:20Z
+W0818 06:07:25.541000 1 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0818 06:07:25.565000 1 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+/sgl-workspace/sglang/python/sglang/srt/layers/quantization/awq/awq.py:52: UserWarning: Only CUDA, HIP and XPU support AWQ currently.
+  warnings.warn(f"Only CUDA, HIP and XPU support AWQ currently.")
+/sgl-workspace/sglang/python/sglang/srt/layers/quantization/gguf.py:69: UserWarning: Only CUDA, MUSA and NPU support GGUF quantization currently.
+  warnings.warn(f"Only CUDA, MUSA and NPU support GGUF quantization currently.")
+/sgl-workspace/sglang/python/sglang/bench_serving.py:13: FutureWarning: `sglang.bench_serving` is deprecated and will be removed in a future release; use `sglang.benchmark.serving` instead (e.g. `python -m sglang.benchmark.serving`).
+  warnings.warn(
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+  0%|          | 0/512 [00:00<?, ?it/s]benchmark_args=Namespace(backend='sglang-oai', base_url=None, host='localhost', port=30000, ready_check_timeout_sec=60, dataset_name='random', dataset_path='', dataset_offset=0, agentic_max_turns=None, speed_bench_category=None, speed_bench_output_len=512, model='deepseek-ai/DeepSeek-V4-Flash', served_model_name=None, tokenizer='/models/DeepSeek-V4-Flash', num_prompts=512, sharegpt_output_len=None, sharegpt_context_len=None, random_input_len=1024, random_output_len=1024, random_range_ratio=1.0, image_count=1, image_resolution='1080p', random_image_count=False, image_format='jpeg', image_content='random', request_rate=inf, use_trace_timestamps=False, max_concurrency=256, output_file='/results/deepep_v2-n1-decode-sm20-cap1024-proxy-isl1024-osl1024-c256.json', output_details=False, print_requests=False, disable_tqdm=False, disable_stream=False, return_logprob=False, top_logprobs_num=0, token_ids_logprob=None, logprob_start_len=-1, return_routed_experts=False, cache_report=False, seed=42, disable_ignore_eos=False, temperature=0.0, top_p=1.0, extra_request_body=None, apply_chat_template=False, profile=False, plot_throughput=False, profile_activities=['CPU', 'GPU'], profile_start_step=None, profile_steps=None, profile_num_steps=None, profile_by_stage=False, profile_stages=None, profile_output_dir=None, profile_prefix=None, lora_name=None, lora_request_distribution='uniform', lora_zipf_alpha=1.5, prompt_suffix='', pd_separated=False, profile_prefill_url=None, profile_decode_url=None, flush_cache=True, flush_cache_timeout=60.0, warmup_requests=1, tokenize_prompt=False, gsp_num_groups=64, gsp_prompts_per_group=16, gsp_system_prompt_len=2048, gsp_question_len=128, gsp_output_len=256, gsp_range_ratio=1.0, gsp_fast_prepare=False, gsp_send_routing_key=False, gsp_num_turns=1, gsp_ordered=False, gsp_group_distribution='uniform', gsp_zipf_alpha=None, mooncake_slowdown_factor=1.0, mooncake_num_rounds=1, mooncake_workload='conversation', fake_prefill=False, tag=None, header=None)
+Waiting up to 60s for http://localhost:30000/v1/models to become ready...
+Server ready in 0.0s.
+
+WARNING It is recommended to use the `Chat` or `Instruct` model for benchmarking.
+Because when the tokenizer counts the output tokens, if there is gibberish, it might count incorrectly.
+
+Namespace(backend='sglang-oai', base_url=None, host='localhost', port=30000, ready_check_timeout_sec=60, dataset_name='random', dataset_path='', dataset_offset=0, agentic_max_turns=None, speed_bench_category=None, speed_bench_output_len=512, model='deepseek-ai/DeepSeek-V4-Flash', served_model_name=None, tokenizer='/models/DeepSeek-V4-Flash', num_prompts=512, sharegpt_output_len=None, sharegpt_context_len=None, random_input_len=1024, random_output_len=1024, random_range_ratio=1.0, image_count=1, image_resolution='1080p', random_image_count=False, image_format='jpeg', image_content='random', request_rate=inf, use_trace_timestamps=False, max_concurrency=256, output_file='/results/deepep_v2-n1-decode-sm20-cap1024-proxy-isl1024-osl1024-c256.json', output_details=False, print_requests=False, disable_tqdm=False, disable_stream=False, return_logprob=False, top_logprobs_num=0, token_ids_logprob=None, logprob_start_len=-1, return_routed_experts=False, cache_report=False, seed=42, disable_ignore_eos=False, temperature=0.0, top_p=1.0, extra_request_body=None, apply_chat_template=False, profile=False, plot_throughput=False, profile_activities=['CPU', 'GPU'], profile_start_step=None, profile_steps=None, profile_num_steps=None, profile_by_stage=False, profile_stages=None, profile_output_dir=None, profile_prefix=None, lora_name=None, lora_request_distribution='uniform', lora_zipf_alpha=1.5, prompt_suffix='', pd_separated=False, profile_prefill_url=None, profile_decode_url=None, flush_cache=True, flush_cache_timeout=60.0, warmup_requests=1, tokenize_prompt=False, gsp_num_groups=64, gsp_prompts_per_group=16, gsp_system_prompt_len=2048, gsp_question_len=128, gsp_output_len=256, gsp_range_ratio=1.0, gsp_fast_prepare=False, gsp_send_routing_key=False, gsp_num_turns=1, gsp_ordered=False, gsp_group_distribution='uniform', gsp_zipf_alpha=None, mooncake_slowdown_factor=1.0, mooncake_num_rounds=1, mooncake_workload='conversation', fake_prefill=False, tag=None, header=None)
+
+#Input tokens: 524288
+#Output tokens: 524288
+Starting warmup with 1 sequences...
+Warmup completed with 1 sequences. Starting main benchmark run...
+  0%|          | 1/512 [00:32<4:39:57, 32.87s/it] 10%|▉         | 49/512 [00:32<03:39,  2.11it/s]  35%|███▍      | 177/512 [00:33<00:33,  9.95it/s] 50%|█████     | 256/512 [00:48<00:25,  9.95it/s] 50%|█████     | 257/512 [01:05<00:57,  4.44it/s]100%|██████████| 512/512 [01:05<00:00,  7.83it/s]
+
+============ Serving Benchmark Result ============
+Backend:                                 sglang-oai
+Traffic request rate:                    inf       
+Max request concurrency:                 256       
+Successful requests:                     512       
+Benchmark duration (s):                  65.39     
+Total input tokens:                      524288    
+Total input text tokens:                 524288    
+Total generated tokens:                  524288    
+Total generated tokens (retokenized):    524242    
+Request throughput (req/s):              7.83      
+Input token throughput (tok/s):          8017.98   
+Output token throughput (tok/s):         8017.98   
+Peak output token throughput (tok/s):    10458.00  
+Peak concurrent requests:                447       
+Total token throughput (tok/s):          16035.95  
+Concurrency:                             254.74    
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   32533.48  
+Median E2E Latency (ms):                 32461.35  
+P90 E2E Latency (ms):                    33025.22  
+P95 E2E Latency (ms):                    33073.38  
+P99 E2E Latency (ms):                    33109.79  
+---------------Time to First Token----------------
+Mean TTFT (ms):                          3976.51   
+Median TTFT (ms):                        3796.47   
+P90 TTFT (ms):                           6439.65   
+P95 TTFT (ms):                           6806.78   
+P99 TTFT (ms):                           7165.07   
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          27.91     
+Median TPOT (ms):                        28.00     
+P90 TPOT (ms):                           30.14     
+P95 TPOT (ms):                           30.62     
+P99 TPOT (ms):                           31.12     
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           27.93     
+Median ITL (ms):                         24.74     
+P90 ITL (ms):                            30.07     
+P95 ITL (ms):                            31.93     
+P99 ITL (ms):                            35.51     
+Max ITL (ms):                            6560.83   
+==================================================
+### finished=2026-08-18T06:08:51Z rc=0

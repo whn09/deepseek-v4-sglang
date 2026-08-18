@@ -1,0 +1,9 @@
+### prefill sweep  nnodes=2 tp=16 isl=4096 osl=8
+### started=2026-08-17T10:31:17Z
+conc   prompts  in_tok/s     out_tok/s    ttft_ms_mean ttft_ms_p99  req/s     
+### warmup (JIT compile; discarded)
+32     64       47697.6      93.2         1190.4       1629.6       11.64     
+64     128      77266.1      150.9        1513.1       2225.2       18.86     
+128    256      100794.4     196.9        2509.6       3940.9       24.61     
+256    256      120166.1     234.7        4342.2       6963.2       29.34     
+### finished=2026-08-17T10:34:04Z

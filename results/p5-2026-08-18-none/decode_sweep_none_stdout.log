@@ -1,0 +1,10 @@
+### decode sweep  a2a=none nnodes=2 tp=16 sm=20 isl=1024 osl=1024
+### started=2026-08-18T07:05:36Z
+conc   req/rank  prompts  out_tok/s    tpot_ms_mean tpot_ms_p99 ttft_ms_p99 req/s    
+### warmup (JIT compile; discarded)
+64     4         128      2622.7       23.36       23.92       1718.3      2.56     
+128    8         256      4969.7       24.27       25.10       2577.3      4.85     
+256    16        512      8799.4       26.72       28.33       3830.0      8.59     
+512    32        1024     12872.3      35.69       38.63       7087.5      12.57    
+### finished=2026-08-18T07:11:54Z
+summary: /home/ubuntu/deepseek-v4-sglang/results/decode-sweep-none-n2-sm20-cap1024.txt

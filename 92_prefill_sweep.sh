@@ -52,18 +52,21 @@ fi
 # is the strongest knob measured here, so it belongs in the filename. Without it
 # the `rm -f "$JSON"` below lets a run at one chunk size delete another's result.
 CAPACITY="${CAPACITY:-1024}"
-SUMMARY="${SUMMARY:-$SCRIPT_DIR_HOST/results/prefill-sweep-n${NNODES}-cap${CAPACITY}.txt}"
+GIN=$([[ "$GDAKI" == "1" ]] && echo gda || echo proxy)
+# $A2A belongs in the filename for the same reason $CAPACITY does, and MEASURED the
+# hard way: an A2A=none control run silently overwrote the deepep_v2 summary on the
+# host (the per-row .json/.log names from 91_bench.sh DO carry $A2A, so only the
+# summary was lost). 93_decode_sweep.sh already stamps it; this one did not.
+A2A="${A2A:-deepep_v2}"
+SUMMARY="${SUMMARY:-$SCRIPT_DIR_HOST/results/prefill-sweep-${A2A}-n${NNODES}-cap${CAPACITY}.txt}"
 mkdir -p "$(dirname "$SUMMARY")"
 
 {
-  echo "### prefill sweep  nnodes=$NNODES tp=$TP isl=$ISL osl=$OSL"
+  echo "### prefill sweep  a2a=$A2A nnodes=$NNODES tp=$TP isl=$ISL osl=$OSL"
   echo "### started=$(date -u +%FT%TZ)"
   printf '%-6s %-8s %-12s %-12s %-12s %-12s %-10s\n' \
       conc prompts in_tok/s out_tok/s ttft_ms_mean ttft_ms_p99 req/s
 } | tee "$SUMMARY"
-
-GIN=$([[ "$GDAKI" == "1" ]] && echo gda || echo proxy)
-A2A="${A2A:-deepep_v2}"
 
 # deep_gemm JIT-compiles per GEMM shape on first use, and the fp4-expert path is
 # not in the server's own warmup set. Measured cost of skipping this: the first

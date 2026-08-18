@@ -22,8 +22,18 @@
 # publicly readable, so this combination is code-supported but PR-unvalidated:
 # if generation comes out garbage, suspect deep_gemm+fp4 before blaming EFA, and
 # confirm with A2A=megamoe on the same weights.
-# Do NOT reach for SGLANG_DSV4_FP4_DEQUANT=1 -- it asserts the runner is `auto`,
-# and the deepep_v2 handler always resolves `auto` to a concrete runner first.
+#
+# ON HOPPER (p5/p5en, sm_90) THERE IS NO FP4 AT ALL, so the above path cannot
+# run and SGLANG_DSV4_FP4_DEQUANT=1 stops being an escape hatch and becomes the
+# only route: it walks each expert through cast_e2m1fn_to_e4m3fn() at load time
+# and leaves plain 128x128 block-scaled FP8, which Hopper deep_gemm serves. Its
+# one obstacle -- an `assert runner.is_auto()` that the deepep_v2 handler has
+# already made false -- is widened at BUILD time by
+# SGLANG_FP4_DEQUANT_ANY_RUNNER=1 (Dockerfile section 6b, ARCH=sm90). This
+# script turns the env var on automatically below when the GPUs are pre-Blackwell
+# and refuses to launch if the image was not built for it, because the failure
+# mode otherwise is a load-time assert 40 GB into weight loading.
+# Set FP4_DEQUANT=0 to force the stock behaviour.
 #
 # Env knobs (defaults in env_common.sh):
 #   PHASE=decode|prefill  which of the PR's two published configs to launch.
@@ -34,6 +44,7 @@
 #   KV_DTYPE=auto         --kv-cache-dtype; auto is what the cookbook uses for V4.
 #   SWA_RATIO=0.1         --swa-full-tokens-ratio (server default 0.8).
 #   RUNNING_PER_RANK=32   per-rank concurrency slots; MAX_RUNNING=this*TP.
+#   MEM_FRACTION          --mem-fraction-static; see the 80 GB note below.
 #   GDAKI=1  TP  NNODES  PORT  NCCL_DEBUG  EXTRA_ARGS  EXTRA_ENV
 set -euo pipefail
 
@@ -76,6 +87,27 @@ MAX_RUNNING="${MAX_RUNNING:-$((RUNNING_PER_RANK * TP))}"
 
 require_idle_gpus
 require_epv2_image "$IMAGE"
+
+# --- MXFP4 experts vs. pre-Blackwell GPUs -----------------------------------
+# compute_cap is "9.0" on H100/H200, "10.3" on b300. Anything below 10 has no
+# FP4 arithmetic, so the routed experts must be dequantised to FP8 at load time.
+SM_CAP="$(nvidia-smi --query-gpu=compute_cap --format=csv,noheader 2>/dev/null | head -1)"
+SM_MAJOR="${SM_CAP%%.*}"
+FP4_DEQUANT="${FP4_DEQUANT:-$([[ -n "$SM_MAJOR" && "$SM_MAJOR" -lt 10 ]] && echo 1 || echo 0)}"
+if [[ "$FP4_DEQUANT" == "1" ]]; then
+    echo "=== compute_cap=$SM_CAP (pre-Blackwell): SGLANG_DSV4_FP4_DEQUANT=1 ==="
+    # Fail HERE, not 40 GB into weight loading. An image built without
+    # SGLANG_FP4_DEQUANT_ANY_RUNNER=1 still has the `assert runner.is_auto()`,
+    # which deepep_v2 has already made false.
+    built="$(docker run --rm --entrypoint printenv "$IMAGE" \
+                SGLANG_FP4_DEQUANT_ANY_RUNNER 2>/dev/null || true)"
+    [[ "$built" == "1" ]] || {
+        echo "ERROR: $IMAGE was built with SGLANG_FP4_DEQUANT_ANY_RUNNER=${built:-<unset>}." >&2
+        echo "       Rebuild it with: ARCH=sm90 bash 10_build_image.sh" >&2
+        exit 1
+    }
+    EXTRA_ENV="${EXTRA_ENV:-} SGLANG_DSV4_FP4_DEQUANT=1"
+fi
 build_cache_args
 build_gdr_args
 detect_ep_nic
@@ -140,20 +172,30 @@ case "$A2A" in
     *) echo "A2A must be deepep_v2, none or megamoe" >&2; exit 1 ;;
 esac
 
-# Phase configs, from the PR's own repro commands.
+# --mem-fraction-static bounds the WEIGHTS+KV pool only; the DeepEP v2
+# ElasticBuffer is cudaMalloc'd outside it, so on an 80 GB card the two collide.
+# MEASURED on p5.48xlarge (79.18 GB usable, weights 27.18 GB/GPU after the FP4->FP8
+# dequant): at 0.80 the KV pool takes 35 GB (max_total_num_tokens=4.8M), leaves
+# 15.30 GB, and CAPACITY=8192 dies asking for 16.00 GiB. The buffer scales with
+# CAPACITY (~2 MiB/token/rank), so prefill needs the lower fraction, not the lower
+# capacity -- 4.8M KV tokens is already ~2x what ISL 4096 x conc 512 can use.
+# b300 (288 GB) never hits this, which is why the default is per-arch.
+MEM_TOTAL_GB="$(nvidia-smi --query-gpu=memory.total --format=csv,noheader,nounits 2>/dev/null | head -1)"
 case "$PHASE" in
     decode)
         # --cuda-graph-max-bs is accepted but deprecated in this build ("use
         # --cuda-graph-max-bs-decode instead"), and it only ever set the decode
         # phase anyway.
-        PHASE_ARGS=(--mem-fraction-static 0.70 --cuda-graph-max-bs-decode 128) ;;
+        MEM_FRACTION="${MEM_FRACTION:-0.70}"
+        PHASE_ARGS=(--mem-fraction-static "$MEM_FRACTION" --cuda-graph-max-bs-decode 128) ;;
     prefill)
         # The deepep_v2 handler already forces the prefill graph off (the
         # contiguous extend path needs a host readback), verified by
         # 12_preflight_args.sh -> `graph.prefill = disabled`. So only the decode
         # graph needs dropping here; --disable-piecewise-cuda-graph would be
         # redundant AND deprecated ("use --cuda-graph-backend-prefill=disabled").
-        PHASE_ARGS=(--mem-fraction-static 0.80 --disable-cuda-graph) ;;
+        MEM_FRACTION="${MEM_FRACTION:-$([[ -n "$MEM_TOTAL_GB" && "$MEM_TOTAL_GB" -lt 120000 ]] && echo 0.65 || echo 0.80)}"
+        PHASE_ARGS=(--mem-fraction-static "$MEM_FRACTION" --disable-cuda-graph) ;;
     *) echo "PHASE must be decode or prefill" >&2; exit 1 ;;
 esac
 
@@ -212,7 +254,7 @@ docker run -d --name "$NAME" \
 set +x
 
 echo "launched '$NAME' (a2a=$A2A phase=$PHASE mode=$MODE tp=$TP nnodes=$NNODES rank=$NODE_RANK"
-echo "          num_sms=$NUM_SMS capacity=$CAPACITY chunked=$CHUNKED kv=$KV_DTYPE swa=$SWA_RATIO gin=$GIN_TYPE"
+echo "          num_sms=$NUM_SMS capacity=$CAPACITY chunked=$CHUNKED kv=$KV_DTYPE swa=$SWA_RATIO gin=$GIN_TYPE mem_frac=$MEM_FRACTION"
 echo "          max_running=$MAX_RUNNING (= $RUNNING_PER_RANK per rank))"
 echo "follow:  docker logs -f $NAME"
 echo "health:  curl -s localhost:${PORT}/health_generate"
