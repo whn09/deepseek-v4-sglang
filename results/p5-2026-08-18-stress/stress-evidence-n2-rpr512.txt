@@ -1,0 +1,14 @@
+lines parsed        decode=147  prefill=2575   (rank filter: DP0)
+max #running-req    512      <- per-rank batch actually reached
+max #full token     832,768   <- absolute tokens in the full-attn pool
+max #swa token      306,944   <- and in the sliding-window pool
+max FULL tok usage  0.270   <- CAPACITY wall if this approaches 1.0
+max SWA  tok usage  1.000   <- sliding-window pool, fills separately
+max #queue-req      422   <- SLOTS wall (max_running_requests)
+max #pending-token  433,577
+retraction events   337 (peak #retracted_reqs 113)   <- non-zero = pool overran
+decode lines w/ cuda graph FALSE: 52 of 147   <- eager decode; batch exceeded --cuda-graph-max-bs-decode
+at the largest decode batch: 512 req/rank, gen 120.8 tok/s/rank => step 4238.76 ms, full usage 0.21, swa usage 0.94
+slots/rank           512   (max_running_requests=8192 / dp_size=16)
+
+VERDICT: capacity wall -- the scheduler retracted running requests.

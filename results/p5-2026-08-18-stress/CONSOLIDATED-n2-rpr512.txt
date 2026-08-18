@@ -1,0 +1,17 @@
+2 nodes (TP=16, DeepEP v2 hybrid, proxy GIN, kv fp8, slots/rank=512), ISL 1024 / OSL 1024, one wave (num_prompts = concurrency)
+
+conc   req/rank  done     out_tok/s   tpot_mean   tpot_p99    ttft_p99    req/s   
+512    32        512      11801.8     38.14       41.36       8366.0      11.53   
+1024   64        1024     12350.0     73.75       78.84       15913.1     12.06   
+2048   128       2048     11790.3     156.36      166.44      30305.3     11.51   
+4096   256       4096     7528.9      510.19      528.93      59327.8     7.35    
+5120   320       5120     7566.7      633.16      658.81      74780.1     7.39    
+6144   384       6144     6658.4      871.60      902.24      88642.2     6.50    
+8192   512       8192     6913.6      1052.62     1091.04     122068.3    6.75    
+
+peak out_tok/s is conc=1024 at 12350.0; every rung above it is SLOWER in throughput AND in latency:
+  conc 2048  128  req/rank: throughput -4.5%, mean TPOT 156.36 ms = 2.1x the conc-1024 value
+  conc 4096  256  req/rank: throughput -39.0%, mean TPOT 510.19 ms = 6.9x the conc-1024 value
+  conc 5120  320  req/rank: throughput -38.7%, mean TPOT 633.16 ms = 8.6x the conc-1024 value
+  conc 6144  384  req/rank: throughput -46.1%, mean TPOT 871.60 ms = 11.8x the conc-1024 value
+  conc 8192  512  req/rank: throughput -44.0%, mean TPOT 1052.62 ms = 14.3x the conc-1024 value

@@ -52,12 +52,30 @@ MAX_PROMPTS="${MAX_PROMPTS:-2048}"
 # NNODES is only an env default -- it does NOT know what server is listening, and
 # mislabelling a whole ladder as the other topology is the one error this
 # comparison cannot survive. Ask the server what it actually is.
-ACTUAL_TP="$(curl -s "localhost:${PORT}/get_server_info" \
+SRV_INFO="$(curl -s "localhost:${PORT}/get_server_info" 2>/dev/null || true)"
+ACTUAL_TP="$(printf '%s' "$SRV_INFO" \
     | python3 -c 'import json,sys; print(json.load(sys.stdin).get("tp_size","?"))' 2>/dev/null || echo "?")"
 if [[ "$ACTUAL_TP" != "$TP" ]]; then
     echo "REFUSING: server reports tp_size=$ACTUAL_TP but NNODES=$NNODES implies TP=$TP." >&2
     echo "  Set NNODES to match the running server (NNODES=1 for a single-node server)." >&2
     exit 1
+fi
+
+# Per-rank concurrency SLOTS, asked of the server rather than taken from the
+# environment -- 20_launch_node.sh, not this script, is what set it, and a stale
+# RUNNING_PER_RANK export here would mislabel the ladder. It belongs in every
+# filename because it is the ceiling the sweep is probing: a run at 512 slots/rank
+# and a run at 32 are different experiments, and without it the `rm -f "$JSON"`
+# below lets the stress ladder delete the published 32-slot baseline. (Same class
+# of bug as the missing $A2A in 92_prefill_sweep.sh -- found the same way, by
+# nearly overwriting a result that had already been committed.)
+ACTUAL_MAXRUN="$(printf '%s' "$SRV_INFO" \
+    | python3 -c 'import json,sys; print(json.load(sys.stdin).get("max_running_requests","?"))' 2>/dev/null || echo "?")"
+if [[ "$ACTUAL_MAXRUN" =~ ^[0-9]+$ ]]; then
+    RPR=$((ACTUAL_MAXRUN / ACTUAL_TP))
+else
+    echo "WARNING: could not read max_running_requests from the server; labelling rpr=unknown." >&2
+    RPR="unknown"
 fi
 
 A2A="${A2A:-deepep_v2}"
@@ -68,11 +86,14 @@ GIN=$([[ "$GDAKI" == "1" ]] && echo gda || echo proxy)
 # two capacities are two different experiments, and `rm -f "$JSON"` below would
 # otherwise have one delete the other.
 CAPACITY="${CAPACITY:-1024}"
-SUMMARY="${SUMMARY:-$SCRIPT_DIR_HOST/results/decode-sweep-${A2A}-n${NNODES}-sm${NUM_SMS:-20}-cap${CAPACITY}.txt}"
+# $ISL is in the name for the same reason: a capacity-wall ladder at ISL 32768 and
+# a latency-wall ladder at ISL 1024 are two experiments on one server, and the JSON
+# rows already carry isl while the summary did not.
+SUMMARY="${SUMMARY:-$SCRIPT_DIR_HOST/results/decode-sweep-${A2A}-n${NNODES}-sm${NUM_SMS:-20}-cap${CAPACITY}-rpr${RPR}-isl${ISL}.txt}"
 mkdir -p "$(dirname "$SUMMARY")"
 
 {
-  echo "### decode sweep  a2a=$A2A nnodes=$NNODES tp=$TP sm=${NUM_SMS:-20} isl=$ISL osl=$OSL"
+  echo "### decode sweep  a2a=$A2A nnodes=$NNODES tp=$TP sm=${NUM_SMS:-20} isl=$ISL osl=$OSL slots/rank=$RPR"
   echo "### started=$(date -u +%FT%TZ)"
   printf '%-6s %-9s %-8s %-12s %-11s %-11s %-11s %-9s\n' \
       conc req/rank prompts out_tok/s tpot_ms_mean tpot_ms_p99 ttft_ms_p99 req/s
@@ -94,12 +115,30 @@ for C in $CONCS; do
     [[ "$N" -lt "$C" ]] && N="$C"
     PER_RANK=$((C / TP))
 
-    JSON="$SCRIPT_DIR_HOST/results/${A2A}-n${NNODES}-decode-sm${NUM_SMS:-20}-cap${CAPACITY}-${GIN}-isl${ISL}-osl${OSL}-c${C}.json"
+    # PASSED to 91_bench.sh, not reconstructed from the same parts. Both scripts
+    # used to build this name independently, and the moment `rpr` was added here
+    # the two diverged: 91 kept writing the un-stamped name while this loop looked
+    # for the stamped one, so every rung reported FileNotFoundError even though the
+    # bench had run. Worse, the un-stamped name is the PUBLISHED baseline's name,
+    # so the failing sweep was writing rc=125 stubs over exactly the file the rpr
+    # stamp was added to protect. One owner for the name; 91 honours $TAG.
+    TAG="${A2A}-n${NNODES}-decode-sm${NUM_SMS:-20}-cap${CAPACITY}-rpr${RPR}-${GIN}-isl${ISL}-osl${OSL}-c${C}"
+    JSON="$SCRIPT_DIR_HOST/results/${TAG}.json"
     # Or a failed run silently reports the previous sweep's numbers.
     rm -f "$JSON"
 
     ISL="$ISL" OSL="$OSL" NUM_PROMPTS="$N" CONCURRENCY="$C" PHASE=decode \
-        CAPACITY="$CAPACITY" bash ./91_bench.sh >/dev/null 2>&1
+        CAPACITY="$CAPACITY" TAG="$TAG" bash ./91_bench.sh >/dev/null 2>&1
+    rc=$?
+    # A ladder is a sequence of increasingly expensive rows, so a failure on the
+    # FIRST one is never worth spending the rest of the session on -- and if the
+    # cause is environmental (missing image, dead server) every later row fails
+    # identically while looking like data. Later rungs are allowed to fail: an OOM
+    # or a timeout at the top of the ladder IS the result being measured.
+    if [[ "$rc" -ne 0 && "$C" == "${CONCS%% *}" ]]; then
+        echo "ABORTING: the first rung (c=$C) failed with rc=$rc -- see results/${TAG}.log" | tee -a "$SUMMARY" >&2
+        exit "$rc"
+    fi
 
     python3 - "$JSON" "$C" "$PER_RANK" "$N" <<'PY' | tee -a "$SUMMARY"
 import json, sys

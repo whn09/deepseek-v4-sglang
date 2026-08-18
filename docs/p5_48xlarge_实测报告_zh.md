@@ -26,8 +26,12 @@
    **2.26–2.95× per-rank / 4.53–5.89× 全局**，因为 EP16 把每卡专家权重从
    42.28 压到 27.18 GB，省下的 15.1 GB/卡全变成 KV。**第 5 条与这一条不矛盾，
    量的是两件事**（算力 vs 容量），对客户必须两个口径一起给。
-   注意：本报告的所有 sweep 都锁在 `RUNNING_PER_RANK=32`，只用掉 KV 池的
-   1.7–12.2%，所以**两边的真实并发上限都没测到**。
+   注意：§6b/§6c 的 sweep 都锁在 `RUNNING_PER_RANK=32`，只用掉 KV 池的 1.7–12.2%。
+5c. **双机并发上限已实测（§6e）：能撑 8192 并发，但吞吐峰值在 1024。** 从 conc 512
+   到 8192，TPOT mean 涨 **27.6×**（38.14 → 1 052.62 ms）而吞吐**掉 41%**。硬墙是
+   **SWA 池**（撞墙时 `swa usage 1.000` / `full usage 0.270`、337 次 retraction），
+   **不是** `max_total_num_tokens` 描述的 full 池——所以 §6d 的容量数字是**上界**、
+   高估约 3.7×，`--swa-full-tokens-ratio` 才是该动的旋钮。单机那条阶梯仍未跑。
 6. **DeepEP v2 在 p5 上是 prefill 的工具、不是 decode 的工具（§6c）**：对 `A2A=none`
    的 all-gather 基线，prefill 快 **1.74~3.43×**（且倍数随负载上升，因为 all-gather
    在约 40 k tok/s 饱和），但 decode **慢 21~29%**——小消息 + proxy GIN + 20 个 SM
@@ -335,10 +339,14 @@ end` 缺失，所以 KV GB 算不出；token 数从 bench json 的 `server_info`
 | KV tok/rank，decode | 1 645 824 | 3 724 032 | **2.263×** |
 | KV tok 全局，decode | 13.17M | 59.58M | **4.525×** |
 
-换算成请求数（**每请求按峰值 ISL+OSL 全驻留**：decode 2048 tok、prefill 4104 tok。
-V4 的 SWA（`sliding_window=128`、`swa_full_tokens_ratio=0.1`）让长请求实际占用
-**小于**这个数，`page_size=256` 对这两个长度恰好整除不产生取整损失，所以下表是
-**保守下界**，真实容量更高）：
+换算成请求数（**每请求按峰值 ISL+OSL 全驻留**：decode 2048 tok、prefill 4104 tok，
+`page_size=256` 对这两个长度恰好整除、不产生取整损失）：
+
+> ⚠️ **下表原先写的是"保守下界，真实容量更高"，这句已被 §6e 实测推翻，方向是反的。**
+> `max_total_num_tokens` 只描述 **full-attention 池**，而 V4 是 hybrid SWA 模型、
+> 两个池独立分配，实测**先满的是 SWA 池**：撞墙时 `swa token usage = 1.000` 而
+> `full` 只有 **0.270**。所以下表是**上界而非下界**，实际可用容量大约要按
+> 0.27 : 1.00 打折（≈ 3.7×）。SWA 不是"折扣"，它是**瓶颈**。
 
 | 配置 | KV 池允许 req/rank | 实际跑的 req/rank | 用掉多少 |
 |---|---|---|---|
@@ -353,10 +361,11 @@ V4 的 SWA（`sliding_window=128`、`swa_full_tokens_ratio=0.1`）让长请求�
    per-rank / 4.53–5.89× 全局**，即超线性——因为加节点同时做了两件事：加卡
    （线性）和把 EP 从 8 扩到 16（让每卡权重变小，非线性）。§6b 的 1.52–1.73×
    和这里的 2.95× 不矛盾，它们量的是两件不同的事，引用时必须带口径。
-2. **本报告没有测出任何一边的并发上限。** 两边都被 `RUNNING_PER_RANK=32` 挡住，
-   只用掉 KV 池的 1.7–12.2%；§3.2 里 conc=1024 那一档 TTFT p99 冲到 50.9 s
-   也是撞这道人为墙，不是撞硬件。要测真实上限必须放开 `RUNNING_PER_RANK`
-   往上爬到 TPOT 崩或 KV 开始 evict，见 §8。
+2. **本节没有测出任何一边的并发上限，双机的已在 §6e 补测。** 本节所有行都被
+   `RUNNING_PER_RANK=32` 挡住，只用掉 KV 池的 1.7–12.2%；§3.2 里 conc=1024 那一档
+   TTFT p99 冲到 50.9 s 也是撞这道人为墙，不是撞硬件。**§6e 把双机放到
+   `RUNNING_PER_RANK=512` 实测了，结论与本节表格不同**（撞的是 SWA 池，不是这里
+   算的 full 池）；单机那条阶梯仍未跑。
 3. **v2 与 none 差的 2.6–3.1% 是权重差，不是 ElasticBuffer 的容量成本。**
    27.18 vs 26.46 GB = 0.72 GB/卡，除以 7.7 KB/tok 正好 ≈ 101 k tok/rank，而
    decode/prefill 两个 capacity（1024 / 4096）下这个差值几乎恒等（101 120 /
@@ -371,6 +380,108 @@ V4 的 SWA（`sliding_window=128`、`swa_full_tokens_ratio=0.1`）让长请求�
 "能同时服务多少请求"这个客户真正关心的口径上，第二个节点买到的是 **2.95×**，
 而不是 §6b 那个 1.52–1.73×。反过来说，如果 SLO 只看 TTFT/TPOT 且并发不高，
 第二个节点就很不划算——两个口径要一起给，只给一个都会误导。
+
+**但这里的 775 req/rank 是 full 池的数，实测撞墙在 ~416 req/rank（SWA 池），
+见 §6e。**"两个口径要一起给"这条结论不变；具体数字用 §6e 的。
+
+---
+
+## 6e. 双机最大并发实测（2026-08-18，`RUNNING_PER_RANK=512`）
+
+补上 §6d 承认的那个洞。配置与 §3 完全一致（EP16、DeepEP v2 hybrid、proxy GIN
+`NCCL_GIN_TYPE=2`、`SGLANG_DEEPEP_V2_NUM_SMS=20`、`CAPACITY=1024`、
+`kv_cache_dtype=fp8_e4m3`、ISL 1024 / OSL 1024），**只把 `RUNNING_PER_RANK` 从 32
+提到 512**（`max_running_requests=8192`，server 自报确认），client 并发同步爬到
+8192，每档 `num_prompts = concurrency`（一波，不是两波）。
+
+| conc | req/rank | 完成 | out_tok/s | TPOT mean ms | TPOT p99 ms | TTFT p99 ms | req/s |
+|---|---|---|---|---|---|---|---|
+| 512 | 32 | 512 | 11 801.8 | **38.14** | 41.36 | 8 366 | 11.53 |
+| 1024 | 64 | 1024 | **12 350.0** | 73.75 | 78.84 | 15 913 | 12.06 |
+| 2048 | 128 | 2048 | 11 790.3 | 156.36 | 166.44 | 30 305 | 11.51 |
+| 4096 | 256 | 4096 | 7 528.9 | 510.19 | 528.93 | 59 328 | 7.35 |
+| 5120 | 320 | 5120 | 7 566.7 | 633.16 | 658.81 | 74 780 | 7.39 |
+| 6144 | 384 | 6144 | 6 658.4 | 871.60 | 902.24 | 88 642 | 6.50 |
+| 8192 | **512** | 8192 | 6 913.6 | **1 052.62** | 1 091.04 | 122 068 | 6.75 |
+
+（`out_tok/s` 是 client 侧混合口径，含 prefill 交织——§中 §93 脚本注释解释过
+为什么它不是纯 decode 数；这里它仍然可比，因为七行是同一个 server、同一个 ISL/OSL。
+两点口径说明：conc 512/1024 两行跑在 `GRAPH_MAX_BS=128` 的 server 上、其余五行跑在
+`GRAPH_MAX_BS=320` 上，但两者 `max_total_num_tokens` 都是 3 070 720，**KV 池完全相同**，
+所以可比；另外 `RUNNING_PER_RANK` 32→512 本身把池从 3 724 032 压到 3 070 720，
+这是 §6d 表里 decode 那一行与本节不同的唯一原因，**与 CUDA graph 深度无关**。）
+
+### 结论 1：吞吐峰值在 conc=1024，远低于并发上限
+
+峰值 12 350 out_tok/s 出现在 **conc 1024 / 64 req/rank**，之后**吞吐和延迟同时变坏**：
+
+| conc | req/rank | 吞吐 vs 峰值 | TPOT mean | 是峰值的几倍 |
+|---|---|---|---|---|
+| 2048 | 128 | −4.5% | 156.36 ms | 2.1× |
+| 4096 | 256 | −39.0% | 510.19 ms | 6.9× |
+| 6144 | 384 | −46.1% | 871.60 ms | 11.8× |
+| 8192 | 512 | −44.0% | 1 052.62 ms | **14.3×** |
+
+从 conc 512 到 8192（16×并发），TPOT mean 涨 **27.6×**（38.14 → 1 052.62 ms）而吞吐
+**掉 41%**。所以"能撑住 8192 并发"和"应该跑 8192 并发"是两件事：**能力上限 8192，
+运行点应当在 1024–2048**。
+
+### 结论 2：硬墙是 **SWA 池**，不是 full 池、也不是 slots 设置
+
+`95_stress_evidence.sh` 直接读 server 自己的 batch 行（不探活进程），撞墙时：
+
+| 指标 | 值 | 读法 |
+|---|---|---|
+| max `#running-req` | **512** | per-rank batch 真的到了 slots 上限 |
+| max `#full token` | 832 768 | full-attn 池绝对占用 |
+| max `#swa token` | 306 944 | sliding-window 池 |
+| max **full** token usage | **0.270** | full 池只用到 27% |
+| max **swa** token usage | **1.000** | **SWA 池满了** |
+| max `#queue-req` | 422 | 有排队 |
+| max `#pending-token` | 433 577 | |
+| **retraction 事件** | **337 次**（峰值 `#retracted_reqs` 113） | 池溢出的硬证据 |
+| decode 行 `cuda graph: False` | 52 / 147 | batch 超过 `GRAPH_MAX_BS` 走 eager |
+
+VERDICT：**capacity wall**（scheduler 回撤了正在跑的请求）。中间过程可见：
+320 req/rank 时 `full 0.21 / swa 0.81`，到 **416 req/rank 时 swa 就已经 1.000**
+而 full 仍只有 0.27。
+
+这直接修正 §6d：`max_total_num_tokens` 描述的是 **full 池**，而 V4
+（`sliding_window=128`、`--swa-full-tokens-ratio 0.1`）的两个池独立、**先满的是 SWA**。
+§6d 把 SWA 当成"让容量更宽的折扣"，方向错了——它是瓶颈，所以 §6d 的容量数字
+**高估**了可用容量，量级约 0.27 : 1.00。要往上抬容量，该动的是
+`--swa-full-tokens-ratio`（现在 0.1），不是 `--mem-fraction-static`、也不是
+`RUNNING_PER_RANK`。
+
+峰值 batch 那一步的 server 读数：512 req/rank、gen 120.8 tok/s/rank ⇒
+step **4 238.76 ms**。这个数**不是纯 decode step time**——此时 prefill 在连续交织
+（147 条 decode 行对 2 575 条 prefill 行），所以它是"退化状态下的实际步长"，
+不能与 §3.1 的 33.78 ms 直接比。
+
+### 结论 3：撞墙后 server 不死，但会 retraction thrash
+
+七档全部跑完、无一失败，说明容量墙是**降级**而非崩溃。但 10:34:09 那次 retraction
+之后 batch 从 416 骤降到 40 req/rank、decode 行停了约 9 分钟才恢复——client 没断，
+最终完成，所以这是 retraction 抖动，不是 hang。**如果 SLO 有 TTFT 上限，
+撞容量墙之前就应该在 LB 层限流**：这里 TTFT p99 已经到 122 s。
+
+### 一个未解释的 a2a 挂死（不是这两道墙）
+
+第一次跑这条阶梯时（`GRAPH_MAX_BS=128`），conc=2048 那一档在两节点都处于
+125–126 req/rank 时把 server 打死了：DeepEP v2 ElasticBuffer 的 dispatch 在
+CPU 侧等满 `num_cpu_timeout_secs=300`（`elastic.py:146` 的默认值，sglang 从不覆盖），
+received count 全 0，抛
+`Dispatch CPU wait exception (elastic/buffer.hpp:1113)`，node 2 的 8 个 scheduler
+全退（exit 3）、node 1 被 SIGQUIT。当时 KV 池只有 4% full / 16% swa，**既不是容量墙
+也不是 slots 墙**。
+
+我当时的假设是"第一个超过 `GRAPH_MAX_BS` 的 batch 掉到 eager 路径后挂住"，
+**这个假设已被实测推翻**：`GRAPH_MAX_BS=320` 下 320 和 384 req/rank 都整档跑在
+eager（`cuda graph: False`，上表 52/147 行），没有挂。所以调 `--cuda-graph-max-bs-decode`
+**不是**已知修法，那次重启是混淆项。目前把它当作 DeepEP v2 / proxy GIN 的
+**间歇性** dispatch 失败——后续 5 档（到 512 req/rank）没有复现。特征是抛异常前
+**整整 300 秒没有日志**，用 `95_stress_evidence.sh` 可以直接判出来（它把 a2a 墙
+排在容量墙之前）。
 
 ---
 
@@ -390,6 +501,14 @@ V4 的 SWA（`sliding_window=128`、`swa_full_tokens_ratio=0.1`）让长请求�
 把 08-17 的 deepep_v2 版覆盖了——`92_prefill_sweep.sh` 的 summary 文件名当时没带
 `$A2A`，已修；本地 08-17 那份完好，拉回来时重命名成 `-none-` 了），
 每档 `.json`/`.log`，`logs/none_decode.log.gz` + `logs/none_prefill.log.gz`。
+
+§6e 的最大并发阶梯在 `results/p5-2026-08-18-stress/`：
+七档 `deepep_v2-n2-decode-sm20-cap1024-**rpr512**-proxy-isl1024-osl1024-c*.{json,log}`、
+`CONSOLIDATED-n2-rpr512.txt`（七行汇总，从 json 重建）和
+`stress-evidence-n2-rpr512.txt`（`95_stress_evidence.sh` 的 server 侧判墙输出）。
+主机上的 `decode-sweep-*-rpr512-isl1024.txt` 只留了最后一次调用的那一档
+——`93_decode_sweep.sh` 的 summary 名不含 `$CONCS`，同名多次调用会互相覆盖，
+所以七行汇总以 `CONSOLIDATED-*` 为准（每档 json 都完好）。
 
 单机基线在 `results/p5-2026-08-18-n1/`：
 `decode-sweep-deepep_v2-n1-sm20-cap1024.txt`、`prefill-sweep-n1-cap4096.txt`、
@@ -420,17 +539,17 @@ V4 的 SWA（`sliding_window=128`、`swa_full_tokens_ratio=0.1`）让长请求�
   3. `EXTRA_ENV="EP_NUM_SUB_PARTS=1"`——sm_90 专属，微基准里 decode dispatch
      **−43.8%**（437.7 → 246.1 µs），因为 sm_90 上 `kArchMinSubTokens = 1`
   4. `RUNNING_PER_RANK=64`，让 conc=1024 那一档有意义
-- **实测最大并发上限（§6d 只给了容量口径，实测口径完全没测）**。这是本报告最大的
-  一个洞：`RUNNING_PER_RANK=32` 把两边都锁死了。要补测需要重开两台机器，
-  单机和双机各跑一条阶梯，每档重启 server：
-  1. `RUNNING_PER_RANK` 从 32 往上爬（64 / 128 / 256），client conc 同步 = 
-     `RUNNING_PER_RANK × TP`，直到 TPOT 超 SLO 或 server 日志出现 KV evict /
-     retraction（`retraction_policy='length'` 会在池满时回撤请求，日志可见）。
-  2. 判据要两个一起看：**TPOT p99（延迟墙）**和 **`#retracted` / evict（容量墙）**。
-     §6d 预测单机 prefill 会先撞容量墙（263 req/rank），双机（775）会先撞延迟墙——
-     如果实测反过来，说明容量估算里 SWA 的折扣比预期大。
-  3. 单机 ep8 的 `MEM_FRACTION` 不能照抄双机：单机权重 42.28 GB/卡，prefill 0.65
+- ~~**实测最大并发上限**~~ **双机已测，见 §6e**（`RUNNING_PER_RANK=512`，
+  conc 爬到 8192，撞 SWA 池 + 337 次 retraction）。§6d 那条"如果实测反过来，说明
+  容量估算里 SWA 的折扣比预期大"的预判**中了，而且比这更强**：SWA 不是折扣而是瓶颈。
+  **剩下的**：
+  1. **单机（`NNODES=1`）同一条阶梯**——这是唯一还缺的一半，缺了它就无法给出
+     "第二个节点让并发上限涨了几倍"的实测倍数（§6d 的 2.95× 是 full 池算的、已知高估）。
+     单机 ep8 的 `MEM_FRACTION` 不能照抄双机：单机权重 42.28 GB/卡，prefill 0.65
      时 KV 只剩 8.23 GB/卡，是六个配置里余量最小的。
+  2. `--swa-full-tokens-ratio` 从 0.1 往上扫，看 SWA 池墙能推到多少 req/rank
+     ——§6e 证明这才是容量旋钮。
+  3. 那次 `Dispatch CPU wait` 挂死（§6e 末）没有根因，也没有复现路径。
 - `SGLANG_DEEPEP_V2_NUM_SMS` 必须显式给：`get_theoretical_num_sms()` 只看单个
   EFA device（`rdmap113s0` = 100 Gb/s）会推出 12.5 GB/s，而 p5 实际是
   32×100 Gb/s = **50.0 GB/s per GPU**。

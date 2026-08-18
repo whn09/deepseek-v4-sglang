@@ -39,6 +39,20 @@ JSON="$RESULTS_DIR/${TAG}.json"
 echo "bench: ${ENDPOINT}  isl=${ISL} osl=${OSL} n=${NUM_PROMPTS} conc=${CONCURRENCY}"
 echo "log  : ${LOG}"
 
+# BEFORE touching $LOG. A missing image is not a benchmark result, but docker
+# turns it into one: `docker run` tries the registry, fails with "pull access
+# denied ... may require 'docker login'" (which reads as a credentials problem,
+# not a wrong-tag one), and by then this script has already truncated $LOG to an
+# rc=125 stub. A sweep therefore "finishes" all five rungs in one second having
+# overwritten its own previous output. Checked here rather than in the sweeps so
+# every caller gets it. `docker image inspect` is local-only -- no pull.
+if ! docker image inspect "$IMAGE" >/dev/null 2>&1; then
+    echo "ERROR: image '$IMAGE' is not present on this host (no pull attempted)." >&2
+    echo "       Tags here: $(docker images --format '{{.Repository}}:{{.Tag}}' | paste -sd' ' -)" >&2
+    echo "       sm_90 hosts need the -sm90 tag; export IMAGE=... or check ARCH." >&2
+    exit 125
+fi
+
 {
   echo "### tag=${TAG}"
   echo "### endpoint=${ENDPOINT} nnodes=${NNODES} tp=${TP} phase=${PHASE}"

@@ -19,9 +19,39 @@ HF_REPO="${HF_REPO:-deepseek-ai/DeepSeek-V4-Flash}"
 MODEL_PATH="${MODEL_PATH:-/models/$MODEL_NAME}"
 SERVED_MODEL_NAME="${SERVED_MODEL_NAME:-$HF_REPO}"
 
+# The GPU generation, asked once here because THREE separate defaults key off it
+# (image tag, GDAKI, MEM_FRACTION) and each one had drifted independently.
+# "9.0" on H100/H200, "10.3" on b300; empty where there is no nvidia-smi (e.g.
+# reading logs on a laptop), in which case every default below stays Blackwell.
+# The trailing `|| true` is REQUIRED, not defensive. This file is sourced by
+# scripts running under `set -euo pipefail` (sync.sh among them), and on a machine
+# with no nvidia-smi the pipeline fails, pipefail propagates it, and set -e aborts
+# the caller *during sourcing* -- so `bash sync.sh | tail` printed nothing, exited
+# 0 (tail's status), and silently stopped syncing. Failure here must degrade to an
+# empty SM_CAP, never abort the caller.
+SM_CAP="${SM_CAP:-$(nvidia-smi --query-gpu=compute_cap --format=csv,noheader 2>/dev/null | head -1 || true)}"
+SM_MAJOR="${SM_CAP%%.*}"
+IS_PRE_BLACKWELL=$([[ -n "$SM_MAJOR" && "$SM_MAJOR" -lt 10 ]] && echo 1 || echo 0)
+
 # Locally built: lmsysorg/sglang nightly + EFA 1.50.0 + GDRCopy + amazon NCCL
 # (GIN) + aws-ofi-nccl + the DeepEP v2 EFA fork + sglang PR #29525.
-IMAGE="${IMAGE:-sglang-epv2-efa:pr29525}"
+#
+# ARCH-SUFFIXED, because 10_build_image.sh tags `ARCH=sm90` builds
+# `:pr29525-sm90` and the sm90 image is NOT interchangeable (it carries
+# SGLANG_FP4_DEQUANT_ANY_RUNNER=1 and a sm_90 deep_gemm). Without the suffix
+# every script on p5 dies with `pull access denied for sglang-epv2-efa` --
+# which reads like a credentials problem, not a wrong-tag problem, and inside a
+# sweep it costs a whole ladder: 91_bench.sh still creates its .log, so all five
+# rungs "complete" in one second having written rc=125 stubs over their own
+# output names.
+#
+# Spelled as an if/fi rather than `$([[ ... ]] && echo -sm90)`: an && list whose
+# test is false returns 1, and inside a command substitution under `set -e` that
+# aborts the sourcing script -- the same silent-sync failure as above, but firing
+# on b300 (where the test is false) instead of on the laptop.
+IMAGE_TAG_SUFFIX=""
+if [[ "$IS_PRE_BLACKWELL" == "1" ]]; then IMAGE_TAG_SUFFIX="-sm90"; fi
+IMAGE="${IMAGE:-sglang-epv2-efa:pr29525${IMAGE_TAG_SUFFIX}}"
 
 # ---- image distribution ----
 # Build ONCE, then ECR-sync to the other nodes -- do not build per node. Two
@@ -70,7 +100,22 @@ build_cache_args() {
 # before a multi-node run, or NCCL bootstrap silently times out.
 B300_1_IP="${B300_1_IP:-172.31.57.229}"  # P6-B300-1 (as of 2026-08-14)
 B300_2_IP="${B300_2_IP:-172.31.61.182}"  # P6-B300-2 (as of 2026-08-14)
-MASTER_IP="${MASTER_IP:-$B300_1_IP}"
+P5_1_IP="${P5_1_IP:-172.31.44.207}"      # P5-1 (as of 2026-08-18)
+P5_2_IP="${P5_2_IP:-172.31.34.46}"       # P5-2 (as of 2026-08-18)
+
+# Keyed off the arch for the same reason IMAGE and GDAKI are: this used to default
+# unconditionally to the b300 leader, so every p5 launch needed MASTER_IP exported
+# by hand and forgetting it did not fail cleanly -- rank 0 tried to bind an address
+# it does not own and died with
+#   zmq.error.ZMQError: Cannot assign requested address (addr='tcp://<b300 ip>:29601')
+# which names ZMQ, not the config. Worse, `bash sync.sh` overwrites this file on
+# the hosts, so a correct IP set on the host is silently reverted to the local
+# copy's. 20_launch_node.sh now checks rank 0 actually owns this address.
+if [[ "$IS_PRE_BLACKWELL" == "1" ]]; then
+    MASTER_IP="${MASTER_IP:-$P5_1_IP}"
+else
+    MASTER_IP="${MASTER_IP:-$B300_1_IP}"
+fi
 
 PORT="${PORT:-30000}"
 DIST_PORT="${DIST_PORT:-29600}"
@@ -85,7 +130,14 @@ TP="${TP:-$((NNODES * GPUS_PER_NODE))}"
 # ---- EFA / GIN ----
 # 1 -> NCCL_GIN_TYPE=5 (EFA GDA / GDAKI, zero-CPU device puts)
 # 0 -> NCCL_GIN_TYPE=2 (proxy GIN)
-GDAKI="${GDAKI:-1}"
+#
+# DEFAULTS OFF ON PRE-BLACKWELL, because EFA GDA needs the GPU to write a WQE and
+# ring an MMIO doorbell itself, which p5/p5en (sm_90) cannot do -- there GIN is
+# always proxy. The default mattered beyond the launch: 92/93_*_sweep.sh put
+# `gda` vs `proxy` in every output filename from THIS variable rather than from
+# the server, so a stale GDAKI=1 silently labelled a whole proxy-GIN p5 campaign
+# as `gda`. Kept overridable so an sm_90 host can still be asked to try.
+GDAKI="${GDAKI:-$([[ "$IS_PRE_BLACKWELL" == "1" ]] && echo 0 || echo 1)}"
 
 # Fills GDR_ARGS with the /dev/gdrdrv device flag when the host has the module
 # loaded. Without it aws-ofi-nccl logs "NET/OFI Failed to initialize GDRCopy:

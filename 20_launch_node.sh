@@ -197,7 +197,33 @@ case "$PHASE" in
         # --cuda-graph-max-bs-decode instead"), and it only ever set the decode
         # phase anyway.
         MEM_FRACTION="${MEM_FRACTION:-0.70}"
-        PHASE_ARGS=(--mem-fraction-static "$MEM_FRACTION" --cuda-graph-max-bs-decode 128) ;;
+        # Was hardcoded at 128. Exposed while chasing a server-killing hang, and
+        # the honest state of that investigation is: NOT this knob.
+        #
+        # What happened (2026-08-18): at GRAPH_MAX_BS=128, the c=2048 rung of a
+        # decode ladder died when both nodes were at 125-126 req/rank. DeepEP v2's
+        # ElasticBuffer dispatch, called from eager_runner._execute_decode, sat in
+        # its CPU-side wait for the full num_cpu_timeout_secs=300 (elastic.py's
+        # default; sglang never overrides it) with all-zero received counts, threw
+        #   Dispatch CPU wait exception (elastic/buffer.hpp:1113):
+        #   CPU side received count (scaleup: 7): 0 0 0 ...
+        # killed all 8 schedulers on node 2 (exit 3) and SIGQUIT'd node 1. The KV
+        # pool was at 4% full / 16% swa, so it was neither the capacity nor the
+        # slots wall.
+        #
+        # The obvious hypothesis -- "the first batch to exceed GRAPH_MAX_BS falls
+        # to the eager path and hangs there" -- was TESTED AND FALSIFIED: at
+        # GRAPH_MAX_BS=320, per-rank batches of 320 AND 384 both ran the eager path
+        # (`cuda graph: False`) for entire rungs with no hang. Raising this knob is
+        # therefore NOT a known fix; the relaunch was confounded with it. Treat the
+        # hang as an intermittent DeepEP-v2/proxy-GIN dispatch failure that has not
+        # reproduced in 4 subsequent rungs up to 384 req/rank. 300 s of silence
+        # before the throw is the signature; grep it with 95_stress_evidence.sh.
+        #
+        # Capturing more graphs is cheap here, though: max_total_num_tokens was
+        # 3,070,720 at both 128 and 320, so decode-graph depth cost no KV pool.
+        GRAPH_MAX_BS="${GRAPH_MAX_BS:-128}"
+        PHASE_ARGS=(--mem-fraction-static "$MEM_FRACTION" --cuda-graph-max-bs-decode "$GRAPH_MAX_BS") ;;
     prefill)
         # The deepep_v2 handler already forces the prefill graph off (the
         # contiguous extend path needs a host readback), verified by
@@ -208,6 +234,29 @@ case "$PHASE" in
         PHASE_ARGS=(--mem-fraction-static "$MEM_FRACTION" --disable-cuda-graph) ;;
     *) echo "PHASE must be decode or prefill" >&2; exit 1 ;;
 esac
+
+# Private IPs are reassigned on every instance stop/start, and a stale MASTER_IP
+# is the single most common multi-node failure here. Catch it in a second instead
+# of minutes: rank 0 must OWN the address it is about to bind, and any other rank
+# must be able to reach it. Both hosts get their env_common.sh overwritten by
+# sync.sh, so "I fixed it on the host" does not survive.
+if [[ "$NNODES" -gt 1 ]]; then
+    if [[ "$NODE_RANK" == "0" ]]; then
+        if ! hostname -I 2>/dev/null | tr ' ' '\n' | grep -qx "$MASTER_IP"; then
+            echo "ERROR: MASTER_IP=$MASTER_IP is not an address of this host." >&2
+            echo "       This host has: $(hostname -I)" >&2
+            echo "       Re-run with MASTER_IP=<this host's private ip>, and update" >&2
+            echo "       P5_1_IP / B300_1_IP in env_common.sh so it survives a sync." >&2
+            exit 1
+        fi
+    elif ! (exec 3<>"/dev/tcp/$MASTER_IP/$DIST_PORT") 2>/dev/null; then
+        # Not fatal: the leader may simply not be listening yet, which is normal
+        # when both nodes are started together. Warn, because the other cause of
+        # this is a stale IP and that will hang the NCCL bootstrap instead.
+        echo "WARNING: cannot reach ${MASTER_IP}:${DIST_PORT} yet. Fine if rank 0 is" >&2
+        echo "         still booting; a hang here means MASTER_IP is stale." >&2
+    fi
+fi
 
 MULTINODE_ARGS=()
 if [[ "$NNODES" -gt 1 ]]; then
