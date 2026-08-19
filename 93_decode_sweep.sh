@@ -79,7 +79,17 @@ else
 fi
 
 A2A="${A2A:-deepep_v2}"
-GIN=$([[ "$GDAKI" == "1" ]] && echo gda || echo proxy)
+# `gda` vs `proxy` is NCCL_GIN_TYPE=5 vs =2, and ONLY deepep_v2 consumes GIN. The
+# other two backends bring their own transport: UCCL-EP uses its native EFA/RDMA
+# path (`[RDMA] Auto-detected GID index 0 for rdmap*` in the server log) and DeepEP
+# v1 uses NVSHMEM. Stamping `gda` on those rows claims a mechanism that was not in
+# the datapath -- exactly the mislabelling the ${GIN} stamp was added to prevent,
+# just in the opposite direction. `nogin` says the axis does not apply.
+if [[ "$A2A" == "deepep_v2" ]]; then
+    GIN=$([[ "$GDAKI" == "1" ]] && echo gda || echo proxy)
+else
+    GIN="nogin"
+fi
 # Must match what 20_launch_node.sh was given. It is in the filename because the
 # PR states "smaller capacity is better for decode" and because a fixed-capacity
 # buffer is a candidate explanation for the batch-independent 2-node floor -- so
@@ -95,7 +105,12 @@ CAPACITY="${CAPACITY:-1024}"
 # per-rung .json/.log survived (TAG below already carries ${GIN}), so the table was
 # rebuildable -- but only because the JSONs were checked before the next run. Every
 # variable that distinguishes two experiments must be in the summary name too.
-SUMMARY="${SUMMARY:-$SCRIPT_DIR_HOST/results/decode-sweep-${A2A}-n${NNODES}-sm${NUM_SMS:-20}-cap${CAPACITY}-rpr${RPR}-${GIN}-isl${ISL}.txt}"
+# ...and ${EPLIB} for the FOURTH time: the UCCL-EP comparison runs both arms at
+# A2A=deepep (v1 is the only API UCCL-EP implements), so $A2A stops discriminating
+# and the second arm would delete the first. Read from the running container, not
+# from $IMAGE -- see detect_eplib() in env_common.sh.
+EPLIB="$(detect_eplib)"
+SUMMARY="${SUMMARY:-$SCRIPT_DIR_HOST/results/decode-sweep-${A2A}-${EPLIB}-n${NNODES}-sm${NUM_SMS:-20}-cap${CAPACITY}-rpr${RPR}-${GIN}-isl${ISL}.txt}"
 mkdir -p "$(dirname "$SUMMARY")"
 
 {
@@ -128,7 +143,7 @@ for C in $CONCS; do
     # bench had run. Worse, the un-stamped name is the PUBLISHED baseline's name,
     # so the failing sweep was writing rc=125 stubs over exactly the file the rpr
     # stamp was added to protect. One owner for the name; 91 honours $TAG.
-    TAG="${A2A}-n${NNODES}-decode-sm${NUM_SMS:-20}-cap${CAPACITY}-rpr${RPR}-${GIN}-isl${ISL}-osl${OSL}-c${C}"
+    TAG="${A2A}-${EPLIB}-n${NNODES}-decode-sm${NUM_SMS:-20}-cap${CAPACITY}-rpr${RPR}-${GIN}-isl${ISL}-osl${OSL}-c${C}"
     JSON="$SCRIPT_DIR_HOST/results/${TAG}.json"
     # Or a failed run silently reports the previous sweep's numbers.
     rm -f "$JSON"

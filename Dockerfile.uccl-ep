@@ -1,0 +1,152 @@
+# UCCL-EP arm: swap the EP library and CHANGE NOTHING ELSE.
+#
+#   bash 13_build_uccl_image.sh
+#
+# WHY IT IS AN OVERLAY ON OUR OWN IMAGE, NOT A REBUILD FROM lmsysorg/sglang:
+# the question being asked is "what does the EP transport library cost", and that
+# is only answerable if sglang, the PR, the FP4-dequant switch, EFA 1.50.0,
+# libfabric 2.6.0amzn1.0, the amazon NCCL fork with GIN, aws-ofi-nccl and
+# deep_gemm are all BYTE-IDENTICAL between the two arms. FROM our own tag
+# guarantees that by construction. A parallel from-scratch build would not: the
+# amazon NCCL fork is pinned to a BRANCH and aws-ofi-nccl to master, so two
+# builds hours apart are not the same image (this is the same reason
+# 10_build_image.sh says build once and ECR-sync).
+ARG BASE_IMAGE=sglang-epv2-efa:pr29525-sm90
+FROM ${BASE_IMAGE}
+
+# 9.0 for p5/p5en (sm_90). UCCL-EP's setup.py otherwise probes the BUILD host's
+# GPU, which is right here but silently wrong if this image is ever built on a
+# b300 and shipped to a p5en.
+ARG TORCH_CUDA_ARCH_LIST="9.0"
+ENV TORCH_CUDA_ARCH_LIST=${TORCH_CUDA_ARCH_LIST}
+
+# ---- 1. remove DeepEP -------------------------------------------------------
+# Both arms drive sglang's *v1* dispatcher (`--moe-a2a-backend deepep`), because
+# UCCL-EP's deep_ep_wrapper implements the v1 `Buffer` API (dispatch / combine /
+# low_latency_*) and NOT v2's `ElasticBuffer`. So this image CANNOT run
+# --moe-a2a-backend deepep_v2, and that is not a defect -- it is why the
+# comparison is run at v1 on both sides. Comparing UCCL-EP against our deepep_v2
+# numbers would change the transport AND the algorithm generation at once.
+#
+# `pip uninstall` alone is not enough: the AWS EFA fork is installed into
+# dist-packages/deep_ep, and a leftover /sgl-workspace/DeepEP on sys.path would
+# shadow the wrapper. Remove both, then ASSERT deep_ep is gone -- if the
+# uninstall silently no-ops, the "UCCL-EP" arm would quietly measure DeepEP.
+RUN pip uninstall deep_ep deep-ep sgl-deep-ep -y 2>/dev/null; \
+    rm -rf /sgl-workspace/DeepEP; \
+    rm -rf /usr/local/lib/python3.12/dist-packages/deep_ep \
+           /usr/local/lib/python3.12/dist-packages/deep_ep-*; \
+    if python3 -c "import deep_ep" 2>/dev/null; then \
+        echo "FATAL: deep_ep still importable after uninstall -- this image would measure DeepEP, not UCCL-EP" >&2; \
+        python3 -c "import deep_ep; print(deep_ep.__file__)" >&2; exit 1; \
+    fi; \
+    echo "deep_ep removed"
+
+# ---- 2. install UCCL-EP -----------------------------------------------------
+# Their setup.py shells out to `sudo` for a couple of system steps, which does
+# not exist in this image; the base build already runs as root, so pointing sudo
+# at /bin/true is the documented workaround and not a privilege change.
+RUN ln -sf /usr/bin/true /usr/local/bin/sudo || true
+
+# Pinned by commit, recorded in /etc/uccl-build-env. `git clone` of a moving
+# branch is exactly the reproducibility hole 10_build_image.sh warns about, so
+# the SHA that actually got built is written into the image.
+ARG UCCL_REPO=https://github.com/uccl-project/uccl.git
+ARG UCCL_REF=main
+#
+# THE INSTALL ORDER IS THE WHOLE POINT OF THIS LAYER, and getting it wrong is
+# silent. The recipe as usually written --
+#     python setup.py install && cd deep_ep_wrapper && pip install .
+# -- does NOT leave you running the extension it just compiled. deep_ep_wrapper's
+# setup.py declares `install_requires=["uccl"]`, so `pip install .` resolves that
+# from PyPI and drops the prebuilt manylinux wheel (uccl 0.1.1,
+# cp312-abi3-manylinux_2_35) into site-packages/uccl -- the same directory
+# ep/setup.py's CustomInstall copied its freshly-built ep.abi3.so into. The wheel
+# wins, and the wheel is built against **CUDA 12 and a different libtorch**:
+#     $ ldd site-packages/uccl/ep.abi3.so
+#         libcudart.so.12 => not found      <- this image is CUDA 13.0
+#         libtorch.so     => not found         torch 2.13.0+cu130
+# MEASURED: that is exactly what the first build of this image produced, and the
+# only reason it was caught is the import assert in section 3. Symlinking
+# libcudart.so.13 over .so.12 would "fix" the loader error and leave a binary
+# linked against a foreign libtorch ABI inside our process -- i.e. it would turn a
+# clean build failure into an unexplainable benchmark.
+#
+# So: wheel FIRST (for uccl/__init__.py and uccl/lib/*), source build SECOND (to
+# overwrite ep.abi3.so with one compiled against THIS image's torch + CUDA 13 +
+# EFA), wrapper LAST with --no-deps (so pip cannot re-resolve `uccl` and undo it).
+#
+# Keeping the wheel's __init__.py is safe here and deliberate: on an EFA host its
+# `has_efa()` returns True and it then SKIPS importing uccl.p2p / uccl.collective,
+# which are the other cu12 binaries. It also ships its own NCCL net plugins
+# (libnccl-net-uccl.so, libnccl-net-efa.so) -- those stay inert, because nothing
+# sets NCCL_NET_PLUGIN and LD_LIBRARY_PATH still points at /opt/aws-ofi-nccl. That
+# matters for the comparison: only the MoE a2a changes library, while NCCL (TP
+# all-reduce, bootstrap) remains the amazon fork + aws-ofi-nccl on both arms.
+#
+# EFA_HOME=/opt/amazon/efa exists in this image, so ep/setup.py compiles with
+# -DEFA and links libefa -- UCCL-EP's native EFA transport, which is the thing
+# being measured. Confirm "EFA detected, building with EFA support" in the log.
+RUN cd /tmp && \
+    git clone "${UCCL_REPO}" && \
+    cd uccl && git checkout "${UCCL_REF}" && \
+    UCCL_SHA="$(git rev-parse HEAD)" && \
+    cd ep && \
+    pip install pybind11 --upgrade && pip install black nanobind && \
+    pip install uccl && \
+    python setup.py install && \
+    cd deep_ep_wrapper && \
+    pip install . --no-deps && \
+    { echo "UCCL_REPO=${UCCL_REPO}"; \
+      echo "UCCL_REF=${UCCL_REF}"; \
+      echo "UCCL_SHA=${UCCL_SHA}"; \
+      echo "TORCH_CUDA_ARCH_LIST=${TORCH_CUDA_ARCH_LIST}"; \
+      echo "UCCL_EP_BUILT_FROM_SOURCE=1"; \
+    } > /etc/uccl-build-env && \
+    rm -rf /tmp/uccl && \
+    cat /etc/uccl-build-env
+
+# The assert that would have caught the wheel-clobber directly. Section 3's import
+# check catches it too, but only as a confusing "libcudart.so.12 not found"; this
+# one names the cause.
+RUN ldd /usr/local/lib/python3.12/dist-packages/uccl/ep.abi3.so | grep -q 'libcudart.so.12' && { \
+        echo "FATAL: uccl/ep.abi3.so wants libcudart.so.12 -- it is the PyPI cu12 wheel," >&2; \
+        echo "       not the source build. Check the install ORDER above." >&2; exit 1; }; \
+    echo "ep.abi3.so is the local build"
+
+# ---- 3. assert the swap actually took ---------------------------------------
+# Fail at BUILD time, not 12 minutes into a weight load. Two things are checked:
+# `deep_ep` must import (the wrapper claims the name) and it must NOT resolve to
+# a DeepEP install. Import path is the only reliable discriminator -- the module
+# name and the Buffer class name are identical by design.
+#
+# `import torch` FIRST is load-bearing, not tidiness. UCCL's `uccl.ep` extension
+# does not carry an RPATH to torch's lib dir, so a bare `import deep_ep` (the
+# wrapper's __init__ does `from uccl.ep import Config, EventHandle`) dies with
+#   ImportError: libc10.so: cannot open shared object file
+# which reads like a broken install. Importing torch dlopens libc10 into the
+# process first and the extension then resolves against it. Harmless at runtime --
+# sglang imports torch long before any dispatcher -- but it means this library
+# cannot be probed standalone, and DeepEP's extension CAN be, so the two are not
+# interchangeable in a diagnostic one-liner.
+# Written with `assert`, not `raise X if cond else print(...)`: the latter parses
+# as `raise (X if cond else print(...))`, so the SUCCESS path raises
+# `TypeError: exceptions must derive from BaseException` on print's None. It failed
+# this build once, and it failed it while everything it was checking was fine --
+# a guard that breaks only when the thing it guards is healthy is worse than none.
+# Every statement here is a SIMPLE statement so it survives semicolon-joining;
+# Dockerfile line continuations collapse newlines, so an `if:` block cannot be
+# used in a `python3 -c` one-liner.
+RUN python3 -c "\
+import torch, deep_ep; \
+p = deep_ep.__file__; print('deep_ep ->', p); \
+assert 'DeepEP' not in p, 'FATAL: deep_ep resolves to a DeepEP tree, not the UCCL wrapper: ' + p; \
+from deep_ep import Buffer; \
+need = {'dispatch', 'combine', 'low_latency_dispatch', 'low_latency_combine'}; \
+miss = sorted(need - set(dir(Buffer))); \
+assert not miss, 'FATAL: wrapper is missing the v1 API: %s' % miss; \
+print('v1 Buffer API present'); \
+print('has ElasticBuffer (v2):', hasattr(deep_ep, 'ElasticBuffer'))"
+
+WORKDIR /sgl-workspace/sglang
+CMD ["/bin/bash"]

@@ -342,3 +342,19 @@ done
 - **`A2A=none` 控制组**：p5 上 DeepEP v2 是 prefill 工具、decode 反而慢 21–29%。
   p5en 有了 GDA 之后这个符号可能翻转，值得复测，本轮没做。
 - 把 `ce_caps_probe` 折进 `check_gdaki_prereqs.sh`（现在还要手工在容器里编）。
+
+---
+
+## 10. 后续：同一批机器上的 UCCL-EP 对比
+
+2026-08-19 在这两台机器上又跑了 UCCL-EP（`deep_ep_wrapper`，DeepEP v1 API）对照，
+包含单机三方对照（DeepEP v2 / DeepEP v1 / UCCL-EP）。见
+[`uccl_ep_vs_deepep_p5en_zh.md`](uccl_ep_vs_deepep_p5en_zh.md)。
+
+两条与本文直接相关的结论：
+
+- 本文 §3 的双机 decode 数字（GDA）在小 per-rank batch 上**不是这批机器上的上限**：
+  UCCL-EP 在 4~8 req/rank 上 server step time 低 12~13%。原因是跨机代价——
+  DeepEP v2+GDA 从 1 机到 2 机涨 +27.8%（8 req/rank），UCCL-EP 只涨 +7.0%。
+- 本文 §4 的双机 prefill 优势（1.14~1.59× scaling）是 DeepEP v2 独有的：
+  UCCL-EP 在同口径下 scaling 全部 < 1（0.77~0.93×），第二台机器是负收益。

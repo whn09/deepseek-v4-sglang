@@ -1,0 +1,9 @@
+### decode sweep  a2a=deepep_v2 nnodes=2 tp=16 sm=20 isl=1024 osl=1024 slots/rank=32 gin=gda(NCCL_GIN_TYPE=5)
+### REBUILT from the per-rung JSONs on 2026-08-19: the proxy ladder overwrote the
+### original summary (93_decode_sweep.sh omitted ${GIN} from the name; now fixed).
+conc   req/rank  prompts  out_tok/s    tpot_ms_mean tpot_ms_p99 ttft_ms_p99 req/s    
+64     4         128      2878.8       21.17       21.76       1591.0      2.81     
+128    8         256      5361.1       22.26       23.13       2699.2      5.24     
+256    16        512      9698.9       23.94       25.64       4036.6      9.47     
+512    32        1024     16592.6      26.75       29.99       7251.7      16.20    
+1024   64        2048     16657.8      27.34       30.23       38012.6     16.27    

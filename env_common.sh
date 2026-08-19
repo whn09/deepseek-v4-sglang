@@ -193,6 +193,36 @@ detect_ep_nic() {
     fi
 }
 
+# Which EP library is actually serving, as a filename label. NEEDED because the
+# UCCL-EP comparison runs BOTH arms at `A2A=deepep` (UCCL-EP's deep_ep_wrapper is
+# a DeepEP *v1* drop-in, so v1 is the only common API) -- which means $A2A, the
+# stamp added after an A2A=none run deleted a deepep_v2 summary, no longer
+# distinguishes the two experiments. Fourth instance of that bug class; see
+# 92/93_*_sweep.sh for the first three.
+#
+# Read from the RUNNING CONTAINER's image rather than from $IMAGE, for the same
+# reason 92/93 ask the server for tp_size instead of trusting $NNODES: $IMAGE is
+# an env default and a stale export would mislabel a whole ladder as the other
+# arm. `docker inspect` is metadata only -- it does not exec into the container,
+# so it cannot perturb a live benchmark. Falls back to $IMAGE when no container is
+# up (e.g. re-deriving a label while reading logs), and to `unknown` with a loud
+# warning when neither is available, because a silently-wrong label is the
+# expensive failure and a `unknown` in a filename is a cheap one.
+detect_eplib() {
+    local img=""
+    if command -v docker >/dev/null 2>&1; then
+        img="$(docker inspect --format '{{.Config.Image}}' "${NAME:-dsv4-epv2}" 2>/dev/null || true)"
+    fi
+    [[ -z "$img" ]] && img="${IMAGE:-}"
+    case "$img" in
+        *uccl*) EPLIB="uccl" ;;
+        "")     EPLIB="unknown"
+                echo "WARNING: cannot tell which EP library is serving; labelling eplib=unknown." >&2 ;;
+        *)      EPLIB="deepep" ;;
+    esac
+    printf '%s' "$EPLIB"
+}
+
 # Refuse to start on a node that is already busy. Two distinct hazards: an
 # unrelated workload gets OOMed, and our own number comes out of a contended node
 # (a concurrent transfer_engine_bench saturates the same EFA rails the a2a needs).

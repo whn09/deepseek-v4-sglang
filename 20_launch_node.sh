@@ -40,7 +40,9 @@
 #   NUM_SMS=20            SGLANG_DEEPEP_V2_NUM_SMS; 0 lets DeepEP derive it.
 #   CAPACITY=1024         SGLANG_DEEPEP_V2_NUM_MAX_DISPATCH_TOKENS_PER_RANK.
 #   MODE=hybrid|direct    override the topology chosen from NNODES.
-#   A2A=deepep_v2|megamoe the backend under test, or the in-image baseline.
+#   A2A=deepep_v2|deepep|none|megamoe   the backend under test, or a baseline.
+#   DEEPEP_MODE=normal|low_latency|auto v1's kernel family (A2A=deepep only);
+#                         defaults from PHASE.
 #   KV_DTYPE=auto         --kv-cache-dtype; auto is what the cookbook uses for V4.
 #   SWA_RATIO=0.1         --swa-full-tokens-ratio (server default 0.8).
 #   RUNNING_PER_RANK=32   per-rank concurrency slots; MAX_RUNNING=this*TP.
@@ -143,16 +145,80 @@ else
     echo "=== Route A: NCCL_GIN_TYPE=2 (proxy GIN) ==="
 fi
 
-# A2A backend. deepep_v2 is the thing under test; megamoe is the attribution
-# baseline that works in THIS image -- DeepEP v1 does not, because the v2 fork
-# installs over the same `deep_ep` module name and 10_build_image.sh uninstalls
-# sgl-deep-ep. So a v1 comparison needs the other kit's image, not this one.
+# A2A backend. deepep_v2 is the thing under test; none/megamoe are attribution
+# baselines; deepep is the UCCL-EP comparison arm.
+#
+# CORRECTION (2026-08-19): this comment used to claim DeepEP *v1* cannot run in
+# this image, because the v2 fork installs over the same `deep_ep` module name and
+# 10_build_image.sh uninstalls sgl-deep-ep. That is WRONG and it was tested: the
+# EFA fork's `deep_ep` exports BOTH `Buffer` (v1: dispatch/combine/
+# low_latency_dispatch/low_latency_combine/internode_*/get_dispatch_layout/...) and
+# `ElasticBuffer` (v2), and `import sglang.srt.layers.moe.token_dispatcher.deepep`
+# succeeds. So `A2A=deepep` runs out of this image with no rebuild -- which is what
+# makes the UCCL-EP comparison a clean control (see the deepep) arm below).
 case "$A2A" in
     deepep_v2)
         A2A_ARGS=(--moe-a2a-backend deepep_v2 --deepep-v2-mode "$MODE"
                   --moe-runner-backend deep_gemm)
         A2A_ENV=(-e SGLANG_DEEPEP_V2_NUM_SMS="$NUM_SMS"
                  -e SGLANG_DEEPEP_V2_NUM_MAX_DISPATCH_TOKENS_PER_RANK="$CAPACITY")
+        ;;
+    deepep)
+        # DeepEP **v1** (`Buffer`), and the ONLY backend UCCL-EP can drive: its
+        # deep_ep_wrapper reimplements the v1 API, not v2's `ElasticBuffer`. So the
+        # UCCL-EP comparison runs `A2A=deepep` on BOTH sides -- DeepEP v1 out of
+        # $IMAGE, UCCL-EP out of the 13_build_uccl_image.sh overlay of the same
+        # image -- and the EP library is then the only variable. Pointing UCCL-EP
+        # at our deepep_v2 numbers instead would change the transport AND the
+        # algorithm generation at once, and the v2 ElasticBuffer is a large part of
+        # why those numbers look the way they do.
+        #
+        # MODE here is v1's own --deepep-mode, which is a different axis from
+        # --deepep-v2-mode (that one is a topology: direct vs hybrid). v1's is
+        # which KERNEL FAMILY runs: `normal` = the internode contiguous-layout
+        # dispatch (prefill), `low_latency` = the masked-layout one (decode).
+        # `auto` allocates both buffers and switches per batch, which doubles the
+        # buffer and makes the two phases share one sizing -- so it is NOT the
+        # default here; each phase gets its matching kernel, mirroring how the
+        # deepep_v2 arms were run as separate servers.
+        DEEPEP_MODE="${DEEPEP_MODE:-$([[ "$PHASE" == "prefill" ]] && echo normal || echo low_latency)}"
+        # v1 hard-asserts num_max_dispatch_tokens_per_rank <= 1024
+        # (deepep.py: internode_ll dispatch uses FINISHED_SUM_TAG=1024), so the
+        # prefill arm's CAPACITY=4096 CANNOT be passed through -- it dies on an
+        # assert, not a warning. Clamp instead of failing: for `normal` mode this
+        # env var only sizes the low-latency buffer, which normal mode does not
+        # use, while the thing that actually sets the prefill message geometry is
+        # --chunked-prefill-size (still CAPACITY*TP above, so the per-rank chunk
+        # stays 4096 and matches the deepep_v2 prefill arm token-for-token).
+        V1_CAPACITY="$CAPACITY"
+        if [[ "$V1_CAPACITY" -gt 1024 ]]; then
+            V1_CAPACITY=1024
+            echo "=== A2A=deepep: clamping v1 dispatch capacity ${CAPACITY} -> 1024 (v1 asserts <=1024) ==="
+        fi
+        # deep_gemm to match the deepep_v2 arms; the masked grouped-GEMM consumes
+        # v1's low-latency output layout directly. On Hopper this makes
+        # runner.is_auto() false, i.e. it needs the same
+        # SGLANG_FP4_DEQUANT_ANY_RUNNER=1 image the deepep_v2 arms need -- already
+        # asserted above.
+        # SECOND v1-only sizing assert, and it fires at the FIRST DECODE STEP, not at
+        # startup -- the server loads all 46 shards, finishes the DeepGEMM warmup,
+        # reports healthy, and then dies on the first low-latency dispatch with a
+        # bare `AssertionError` and no message:
+        #   deep_ep/buffers/legacy.py:609
+        #     assert self.nvshmem_qp_depth >= (num_max_dispatch_tokens_per_rank + 1) * 2
+        # At V1_CAPACITY=1024 that demands 2050 and NVSHMEM's default QP depth is
+        # 1024. It applies even on ONE node, because v1's low-latency path goes
+        # through NVSHMEM regardless of whether any peer is remote. Rounded up to a
+        # power of two because NVSHMEM sizes its rings that way.
+        # No-op on the UCCL-EP arm: that image has no deep_ep and its wrapper never
+        # loads NVSHMEM, so the variable is simply unread -- which is why it is safe
+        # to set unconditionally here and keeps the two arms' env identical.
+        V1_QP_DEPTH=1024
+        while (( V1_QP_DEPTH < (V1_CAPACITY + 1) * 2 )); do V1_QP_DEPTH=$((V1_QP_DEPTH * 2)); done
+        A2A_ARGS=(--moe-a2a-backend deepep --deepep-mode "$DEEPEP_MODE"
+                  --moe-runner-backend deep_gemm)
+        A2A_ENV=(-e SGLANG_DEEPEP_NUM_MAX_DISPATCH_TOKENS_PER_RANK="$V1_CAPACITY"
+                 -e NVSHMEM_QP_DEPTH="$V1_QP_DEPTH")
         ;;
     none)
         # The only NON-DeepEP a2a that actually crosses nodes in this image, and
@@ -179,7 +245,7 @@ case "$A2A" in
         A2A_ENV=(-e SGLANG_OPT_DEEPGEMM_MEGA_MOE_NUM_MAX_TOKENS_PER_RANK=8320)
         [[ "$NNODES" -gt 1 ]] && echo "WARNING: megamoe is intra-node only; this will die in symmetric-memory rendezvous." >&2
         ;;
-    *) echo "A2A must be deepep_v2, none or megamoe" >&2; exit 1 ;;
+    *) echo "A2A must be deepep_v2, deepep, none or megamoe" >&2; exit 1 ;;
 esac
 
 # --mem-fraction-static bounds the WEIGHTS+KV pool only; the DeepEP v2

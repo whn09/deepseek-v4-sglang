@@ -52,16 +52,30 @@ fi
 # is the strongest knob measured here, so it belongs in the filename. Without it
 # the `rm -f "$JSON"` below lets a run at one chunk size delete another's result.
 CAPACITY="${CAPACITY:-1024}"
-GIN=$([[ "$GDAKI" == "1" ]] && echo gda || echo proxy)
+A2A="${A2A:-deepep_v2}"
+# `gda` vs `proxy` is NCCL_GIN_TYPE=5 vs =2, and ONLY deepep_v2 consumes GIN.
+# UCCL-EP uses its own native EFA/RDMA transport and DeepEP v1 uses NVSHMEM, so on
+# those arms a `gda` stamp claims a mechanism that was not in the datapath. See the
+# longer note in 93_decode_sweep.sh.
+if [[ "$A2A" == "deepep_v2" ]]; then
+    GIN=$([[ "$GDAKI" == "1" ]] && echo gda || echo proxy)
+else
+    GIN="nogin"
+fi
 # $A2A belongs in the filename for the same reason $CAPACITY does, and MEASURED the
 # hard way: an A2A=none control run silently overwrote the deepep_v2 summary on the
 # host (the per-row .json/.log names from 91_bench.sh DO carry $A2A, so only the
 # summary was lost). 93_decode_sweep.sh already stamps it; this one did not.
-A2A="${A2A:-deepep_v2}"
+# (assigned above line 55, because the GIN label now keys off it.)
 # ...and ${GIN} for the third time, found on p5en: a GDAKI=0 control ladder wrote the
 # GDAKI=1 ladder's summary name and deleted it. On p5/b300 the GIN type was fixed by
 # the hardware so this could not bite; p5en is the first box where both arms are real.
-SUMMARY="${SUMMARY:-$SCRIPT_DIR_HOST/results/prefill-sweep-${A2A}-n${NNODES}-cap${CAPACITY}-${GIN}.txt}"
+# ...and ${EPLIB} for the FOURTH time: the UCCL-EP comparison runs both arms at
+# A2A=deepep (v1 is the only API UCCL-EP implements), so $A2A stops discriminating
+# and the second arm would delete the first. Read from the running container, not
+# from $IMAGE -- see detect_eplib() in env_common.sh.
+EPLIB="$(detect_eplib)"
+SUMMARY="${SUMMARY:-$SCRIPT_DIR_HOST/results/prefill-sweep-${A2A}-${EPLIB}-n${NNODES}-cap${CAPACITY}-${GIN}.txt}"
 mkdir -p "$(dirname "$SUMMARY")"
 
 {
@@ -86,12 +100,19 @@ for C in $CONCS; do
     [[ "$N" -gt "$MAX_PROMPTS" ]] && N="$MAX_PROMPTS"
     [[ "$N" -lt "$C" ]] && N="$C"
 
-    JSON="$SCRIPT_DIR_HOST/results/${A2A}-n${NNODES}-prefill-sm${NUM_SMS:-20}-cap${CAPACITY}-${GIN}-isl${ISL}-osl${OSL}-c${C}.json"
+    # PASSED to 91_bench.sh rather than reconstructed from the same parts, which is
+    # what 93_decode_sweep.sh already does and for a reason it learned the hard
+    # way: when the two scripts each build this name independently, adding a stamp
+    # to one silently desyncs them -- every rung then reports FileNotFoundError
+    # while writing rc=125 stubs over the un-stamped PUBLISHED baseline's name.
+    # ${EPLIB} is the stamp that would have triggered it here.
+    TAG="${A2A}-${EPLIB}-n${NNODES}-prefill-sm${NUM_SMS:-20}-cap${CAPACITY}-${GIN}-isl${ISL}-osl${OSL}-c${C}"
+    JSON="$SCRIPT_DIR_HOST/results/${TAG}.json"
     # Or a failed run silently reports the previous sweep's numbers.
     rm -f "$JSON"
 
     ISL="$ISL" OSL="$OSL" NUM_PROMPTS="$N" CONCURRENCY="$C" PHASE=prefill \
-        CAPACITY="$CAPACITY" bash ./91_bench.sh >/dev/null 2>&1
+        CAPACITY="$CAPACITY" TAG="$TAG" bash ./91_bench.sh >/dev/null 2>&1
 
     python3 - "$JSON" "$C" "$N" <<'PY' | tee -a "$SUMMARY"
 import json, sys

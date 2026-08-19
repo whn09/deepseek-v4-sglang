@@ -1,0 +1,731 @@
+W0819 05:24:45.091000 1 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0819 05:24:45.112000 1 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+/sgl-workspace/sglang/python/sglang/launch_server.py:56: UserWarning: 'python -m sglang.launch_server' is still supported, but 'sglang serve' is the recommended entrypoint.
+  Example: sglang serve --model-path <model> [options]
+  warnings.warn(
+[2026-08-19 05:24:47] Auto-detected DSV4 routed-expert layout: is_fp4_experts=True
+[2026-08-19 05:24:47] Hybrid SWA model detected. architectures=['DeepseekV4ForCausalLM']
+[2026-08-19 05:24:47] Breakable CUDA graph is incompatible with DeepSeek-V4 (heavy capture-pool memory pressure); disabling prefill CUDA graph.
+[2026-08-19 05:24:47] Use dsv4 attention backend for DeepseekV4ForCausalLM, setting page_size to 256.
+[2026-08-19 05:24:47] DP attention is enabled. chunked prefill size is adjusted from 16384 to 1024.
+[2026-08-19 05:24:49] Compiled-kernel caches now live under SGLANG_CACHE_DIR (/root/.cache/sglang). These older directories are no longer used by sglang, but may still be used by other frameworks on this machine, so they were left alone: /root/.triton, /root/.cache/flashinfer, /root/.cache/deep_gemm. Remove them yourself if nothing else needs them.
+[2026-08-19 05:24:49] server_args=ServerArgs(model_path='/models/DeepSeek-V4-Flash', tokenizer_path='/models/DeepSeek-V4-Flash', tokenizer_mode='auto', tokenizer_backend='huggingface', tokenizer_worker_num=1, detokenizer_worker_num=1, skip_tokenizer_init=False, load_format='auto', model_loader_extra_config='{}', trust_remote_code=True, context_length=None, is_embedding=False, enable_multimodal=None, revision=None, model_impl='auto', model_config_parser='auto', json_model_override_args='{}', dtype='auto', quantization=None, quantization_param_path=None, kv_cache_dtype='fp8_e4m3', enable_fp32_lm_head=False, modelopt_quant=None, modelopt_checkpoint_restore_path=None, modelopt_checkpoint_save_path=None, modelopt_export_path=None, quantize_and_serve=False, rl_quant_profile=None, enable_tf32_matmul=False, mem_fraction_static=0.7, max_running_requests=512, max_queued_requests=None, max_total_tokens=None, chunked_prefill_size=1024, enable_dynamic_chunking=False, max_prefill_tokens=16384, prefill_max_requests=None, schedule_policy='fcfs', enable_priority_scheduling=False, disable_priority_preemption=False, default_priority_value=None, abort_on_priority_when_disabled=False, schedule_low_priority_values_first=False, priority_scheduling_preemption_threshold=10, retraction_policy='length', schedule_conservativeness=0.3, page_size=256, swa_full_tokens_ratio=0.1, disable_hybrid_swa_memory=False, radix_eviction_policy='lru', prefill_only_disable_kv_cache=False, disable_radix_cache=False, enable_page_major_kv_layout=False, enable_unified_memory=False, disable_chunked_prefix_cache=False, disable_overlap_schedule=False, num_continuous_decode_steps=1, scheduler_recv_interval=1, enable_mixed_chunk=False, nccl_port=None, dist_timeout=None, dist_init_addr='172.31.9.118:29600', nnodes=2, node_rank=0, tp_size=16, dcp_size=1, pp_size=1, pp_max_micro_batch_size=None, pp_async_batch_depth=0, dp_size=16, load_balance_method='round_robin', attn_cp_size=1, moe_dp_size=1, dwdp_size=1, dcp_comm_backend='ag_rs', dcp_replicate_q_proj=None, enable_prefill_cp=False, cp_strategy=None, enable_dsa_cache_layer_split=False, enable_dsa_prefill_context_parallel=False, dsa_prefill_cp_mode='round-robin-split', enable_prefill_context_parallel=False, prefill_cp_mode='in-seq-split', enable_cp_decode_attn_tp=False, enable_dp_attention=True, enable_dp_attention_local_control_broadcast=False, enable_dp_lm_head=True, enable_attn_tp_input_scattered=False, disable_attn_tp_gather=False, enable_p2p_check=False, device='cuda', base_gpu_id=0, gpu_id_step=1, random_seed=964665379, mlx_enable_sampling=False, watchdog_timeout=300, soft_watchdog_timeout=None, sleep_on_idle=False, use_ray=False, custom_sigquit_handler=None, numa_node=None, gc_threshold=None, host='0.0.0.0', port=30000, fastapi_root_path='', smg_grpc_mode=False, grpc_mode=False, grpc_port=None, sidecar=None, sidecar_args=None, skip_server_warmup=False, warmups=None, enable_http2=False, ssl_keyfile=None, ssl_certfile=None, ssl_ca_certs=None, ssl_keyfile_password=None, enable_ssl_refresh=False, api_key=None, admin_api_key=None, served_model_name='deepseek-ai/DeepSeek-V4-Flash', weight_version='default', chat_template=None, hf_chat_template_name=None, completion_template=None, file_storage_path='sglang_storage', enable_cache_report=False, reasoning_parser=None, default_chat_template_kwargs=None, strip_thinking_cache=False, enable_strict_thinking=False, tool_call_parser=None, tool_server=None, sampling_defaults='model', asr_max_buffer_seconds=60, asr_max_concurrent_sessions=32, preferred_sampling_params=None, allow_auto_truncate=False, stream_interval=1, batch_notify_size=16, stream_response_default_include_usage=False, incremental_streaming_output=False, enable_streaming_session=False, enable_session_radix_cache=False, log_level='info', log_level_http=None, log_requests=False, log_requests_level=2, log_requests_format='text', log_requests_target=None, uvicorn_access_log_exclude_prefixes=[], crash_dump_folder=None, show_time_cost=False, enable_metrics=False, smg_http_sidecar_port=None, enable_mfu_metrics=False, enable_metrics_for_all_schedulers=False, load_snapshot_publish_interval=15, tokenizer_metrics_custom_labels_header='x-custom-labels', tokenizer_metrics_allowed_custom_labels=None, extra_metric_labels=None, bucket_time_to_first_token=None, bucket_inter_token_latency=None, bucket_e2e_request_latency=None, prompt_tokens_buckets=None, generation_tokens_buckets=None, gc_warning_threshold_secs=0.0, decode_log_interval=40, enable_request_time_stats_logging=False, kv_events_config=None, enable_forward_pass_metrics=False, forward_pass_metrics_worker_id='', forward_pass_metrics_ipc_name=None, enable_trace=False, trace_modules='request', otlp_traces_endpoint='localhost:4317', export_metrics_to_file=False, export_metrics_to_file_dir=None, stat_loggers=None, constrained_json_whitespace_pattern=None, constrained_json_disable_any_whitespace=False, attention_backend='dsv4', decode_attention_backend=None, prefill_attention_backend=None, sampling_backend='flashinfer', grammar_backend='xgrammar', radix_cache_backend=None, mm_attention_backend=None, fp8_gemm_runner_backend='auto', fp4_gemm_runner_backend='auto', bf16_gemm_backend='auto', dsa_prefill_backend=None, dsa_decode_backend=None, dsa_paged_mqa_logits_backend='auto', dsa_topk_backend='sgl-kernel', disable_flashinfer_autotune=False, flashinfer_autotune_skip_ops=None, mamba_backend='triton', cuda_graph_config=CudaGraphConfig(decode=PhaseConfig(backend='full', max_bs=128, bs=[1, 2, 4, 8, 12, 16, 24, 32, 40, 48, 56, 64, 72, 80, 88, 96, 104, 112, 120, 128], tc_compiler='eager', full_prefill_max_req=None, full_prefill_prefix_chunk_tokens=None), prefill=PhaseConfig(backend='disabled', max_bs=16384, bs=[4, 8, 12, 16, 20, 24, 28, 32, 48, 64, 80, 96, 112, 128, 144, 160, 176, 192, 208, 224, 240, 256, 288, 320, 352, 384, 416, 448, 480, 512, 576, 640, 704, 768, 832, 896, 960, 1024, 1280, 1536, 1792, 2048, 2304, 2560, 2816, 3072, 3328, 3584, 3840, 4096, 4608, 5120, 5632, 6144, 6656, 7168, 7680, 8192, 8704, 9216, 9728, 10240, 10752, 11264, 11776, 12288, 12800, 13312, 13824, 14336, 14848, 15360, 15872, 16384], tc_compiler='eager', full_prefill_max_req=None, full_prefill_prefix_chunk_tokens=None)), cuda_graph_backend_decode=None, cuda_graph_backend_prefill=None, cuda_graph_max_bs_decode=128, cuda_graph_max_bs_prefill=None, cuda_graph_bs_decode=None, cuda_graph_bs_prefill=None, cuda_graph_tc_compiler=None, disable_prefill_cuda_graph=False, disable_decode_cuda_graph=False, disable_cuda_graph=False, disable_cuda_graph_padding=False, enable_profile_cuda_graph=False, enable_cudagraph_gc=False, debug_cuda_graph=False, enable_layerwise_nvtx_marker=False, enable_nccl_nvls=False, enable_symm_mem=False, triton_attention_reduce_in_fp32=False, triton_attention_num_kv_splits=8, triton_attention_split_tile_size=None, flashinfer_mla_disable_ragged=False, enable_fused_qk_norm_rope=False, enable_precise_embedding_interpolation=False, enable_fused_moe_sum_all_reduce=False, enable_deepseek_v4_fp4_indexer=False, disable_custom_all_reduce=False, enable_mscclpp=False, enable_torch_symm_mem=False, enable_scattered_sconv=False, pre_warm_nccl=False, enable_quant_communications=False, enable_flashinfer_allreduce_fusion=False, enforce_disable_flashinfer_allreduce_fusion=False, flashinfer_allreduce_fusion_backend=None, enable_aiter_allreduce_fusion=False, enable_torch_compile=False, enable_torch_compile_debug_mode=False, torch_compile_max_bs=32, torchao_config='', speculative_algorithm=None, speculative_draft_model_path=None, speculative_draft_model_revision=None, speculative_draft_load_format=None, speculative_num_steps=None, speculative_eagle_topk=None, speculative_num_draft_tokens=None, speculative_dflash_block_size=None, speculative_dspark_block_size=None, speculative_dspark_sps_table_path=None, speculative_dspark_confidence_sts_path=None, speculative_dspark_align_verify_tokens_to_graph_tier=False, speculative_accept_threshold_single=1.0, speculative_accept_threshold_acc=1.0, speculative_use_rejection_sampling=False, speculative_token_map=None, speculative_attention_mode='prefill', speculative_draft_attention_backend=None, speculative_draft_window_size=None, speculative_moe_runner_backend='deep_gemm', speculative_moe_a2a_backend=None, speculative_draft_model_quantization=None, _speculative_draft_quantization_explicitly_set=False, speculative_skip_dp_mlp_sync=False, enable_multi_layer_eagle=False, speculative_adaptive=False, speculative_adaptive_config=None, decoupled_spec_bind_endpoint=None, decoupled_spec_connect_endpoints=None, decoupled_spec_rank=None, decoupled_spec_role='null', spec_trace_dir=None, speculative_ngram_min_bfs_breadth=1, speculative_ngram_max_bfs_breadth=10, speculative_ngram_match_type='BFS', speculative_ngram_max_trie_depth=18, speculative_ngram_capacity=10000000, speculative_ngram_external_corpus_path=None, speculative_ngram_external_sam_budget=0, speculative_ngram_external_corpus_max_tokens=10000000, ep_size=16, moe_a2a_backend='deepep', deepep_v2_mode='direct', deepep_v2_dispatcher_output_dtype='auto', moe_runner_backend='deep_gemm', flashinfer_mxfp4_moe_precision='default', deepep_mode='low_latency', fuseep_mode=2, deepep_dispatcher_output_dtype='auto', ep_num_redundant_experts=0, ep_dispatch_algorithm=None, init_expert_location='trivial', enable_eplb=False, eplb_algorithm='auto', eplb_rebalance_num_iterations=1000, eplb_rebalance_layers_per_chunk=None, eplb_min_rebalancing_utilization_threshold=1.0, expert_distribution_recorder_mode=None, expert_distribution_recorder_buffer_size=1000, enable_expert_distribution_metrics=False, deepep_config=None, moe_dense_tp_size=None, elastic_ep_backend=None, enable_elastic_expert_backup=False, mooncake_ib_device=None, enable_waterfill=False, ep_join_mode=None, ep_join_rank_offset=0, elastic_ep_initial_size=None, max_ep_size=None, elastic_ep_scale_timeout=600, elastic_ep_rejoin=False, disable_flashinfer_cutlass_moe_fp4_allgather=False, disable_shared_experts_fusion=False, enforce_shared_experts_fusion=False, max_mamba_cache_size=None, mamba_ssm_dtype=None, mamba_max_states_per_path=-1, enable_mamba_cache_stochastic_rounding=False, mamba_cache_philox_rounds=0, mamba_full_memory_ratio=0.9, mamba_radix_cache_strategy='auto', uses_mamba_radix_cache=False, mamba_track_interval=256, enable_int8_mamba_checkpoint=False, int8_mamba_ckpt_size=None, linear_attn_backend='triton', linear_attn_decode_backend=None, linear_attn_prefill_backend=None, linear_attn_verify_backend=None, enable_linear_replayssm=False, linear_replayssm_cache_len=16, enable_linear_replayssm_spec=False, enable_hierarchical_cache=False, hicache_ratio=2.0, hicache_size=0, hicache_write_policy='write_through', hicache_io_backend='kernel', hicache_mem_layout='page_first', hicache_storage_backend=None, hicache_storage_prefetch_policy='timeout', hicache_storage_backend_extra_config=None, enable_hisparse=False, hisparse_config=None, enable_broadcast_mm_inputs_process=False, enable_prefix_mm_cache=False, mm_enable_dp_encoder=False, mm_process_config={}, mm_processor_worker_num=0, mm_io_worker_num=0, limit_mm_data_per_request=None, enable_mm_global_cache=False, disable_fast_image_processor=False, mm_feature_transport='cpu', keep_mm_feature_on_device=False, enable_lora=None, enable_lora_overlap_loading=None, max_lora_rank=None, lora_target_modules=None, lora_paths=None, max_loaded_loras=None, max_loras_per_batch=8, lora_eviction_policy='lru', lora_backend='csgmv', max_lora_chunk_size=16, experts_shared_outer_loras=None, lora_use_virtual_experts=False, lora_strict_loading=False, lora_drain_wait_threshold=0.0, enable_two_batch_overlap=False, enable_single_batch_overlap=False, tbo_token_distribution_threshold=0.48, cpu_offload_gb=0, offload_group_size=-1, offload_num_in_group=1, offload_prefetch_step=1, offload_mode='cpu', enable_lmcache=False, lmcache_config_file=None, enable_flexkv=False, flexkv_config_file=None, kt_weight_path=None, kt_method='AMXINT4', kt_cpuinfer=None, kt_threadpool_count=2, kt_num_gpu_experts=None, kt_max_deferred_experts_per_token=None, dllm_algorithm=None, dllm_algorithm_config=None, dllm_fdfo=True, disaggregation_mode='null', disaggregation_transfer_backend='mooncake', disaggregation_bootstrap_port=8998, disaggregation_ib_device=None, disaggregation_decode_enable_radix_cache=False, disaggregation_decode_enable_offload_kvcache=False, num_reserved_decode_tokens=512, disaggregation_decode_extra_slots=None, disaggregation_decode_polling_interval=1, optimistic_prefill_attempts=0, encoder_only=False, language_only=False, encoder_transfer_backend='zmq_to_scheduler', encoder_urls=[], encoder_bootstrap_port=8997, encoder_register_urls=[], enable_adaptive_dispatch_to_encoder=False, enable_pdmux=False, pdmux_config_path=None, sm_group_num=8, custom_weight_loader=[], weight_loader_disable_mmap=False, weight_loader_prefetch_checkpoints=False, weight_loader_prefetch_num_threads=4, weight_loader_drop_cache_after_load=False, remote_instance_weight_loader_seed_instance_ip=None, remote_instance_weight_loader_seed_instance_service_port=None, remote_instance_weight_loader_send_weights_group_ports=None, remote_instance_weight_loader_backend='nccl', remote_instance_weight_loader_start_seed_via_transfer_engine=False, engine_info_bootstrap_port=6789, modelexpress_config=None, download_dir=None, model_checksum=None, delete_ckpt_after_loading=False, decrypted_config_file=None, decrypted_draft_config_file=None, checkpoint_engine_wait_weights_before_ready=False, enable_prefill_delayer=False, prefill_delayer_max_delay_passes=30, prefill_delayer_token_usage_low_watermark=None, prefill_delayer_forward_passes_buckets=None, prefill_delayer_wait_seconds_buckets=None, prefill_delayer_queue_min_ratio=None, prefill_delayer_max_delay_ms=None, min_free_slots_delay=None, enable_deterministic_inference=False, rl_on_policy_target=None, kv_canary='none', kv_canary_real_data='none', kv_canary_sweep_interval=0, enable_dynamic_batch_tokenizer=False, dynamic_batch_tokenizer_batch_size=32, dynamic_batch_tokenizer_batch_timeout=0.002, enable_tokenizer_batch_encode=False, disable_tokenizer_batch_decode=False, debug_tensor_dump_output_folder=None, debug_tensor_dump_layers=None, debug_tensor_dump_input_file=None, enable_memory_saver=False, enable_weights_cpu_backup=False, enable_draft_weights_cpu_backup=False, enable_custom_logit_processor=False, enable_return_hidden_states=False, return_hidden_states_mode=None, enable_return_routed_experts=False, enable_return_indexer_topk=False, disable_outlines_disk_cache=False, enable_mis=False, weight_cache_mode='off', weight_cache_socket=None, weight_cache_timeout=1800, forward_hooks=None, msprobe_dump_config=None)
+[2026-08-19 05:24:49] Auto-detected DSV4 routed-expert layout: is_fp4_experts=True
+[2026-08-19 05:24:52] Tokenizer for /models/DeepSeek-V4-Flash is still TokenizersBackend after retries with --trust-remote-code. Model-specific tokenizer attributes may be missing.
+[2026-08-19 05:24:52] No HuggingFace chat template found
+[2026-08-19 05:24:52] No chat template found, defaulting to 'string' content format
+W0819 05:24:55.229000 468 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0819 05:24:55.250000 468 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0819 05:24:55.384000 467 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0819 05:24:55.405000 467 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+[2026-08-19 05:24:59] Tokenizer for /models/DeepSeek-V4-Flash is still TokenizersBackend after retries with --trust-remote-code. Model-specific tokenizer attributes may be missing.
+W0819 05:25:08.543000 755 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0819 05:25:08.563000 755 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0819 05:25:09.142000 821 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0819 05:25:09.164000 821 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0819 05:25:09.250000 886 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0819 05:25:09.271000 886 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0819 05:25:09.687000 951 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0819 05:25:09.709000 951 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0819 05:25:10.591000 1017 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0819 05:25:10.597000 1083 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0819 05:25:10.612000 1017 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0819 05:25:10.618000 1083 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0819 05:25:10.830000 1152 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0819 05:25:10.851000 1152 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0819 05:25:11.027000 1217 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0819 05:25:11.048000 1217 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+[2026-08-19 05:25:11 DP0 TP0 EP0] Auto-detected DSV4 routed-expert layout: is_fp4_experts=True
+[2026-08-19 05:25:12 DP1 TP1 EP1] Auto-detected DSV4 routed-expert layout: is_fp4_experts=True
+[2026-08-19 05:25:12 DP2 TP2 EP2] Auto-detected DSV4 routed-expert layout: is_fp4_experts=True
+[2026-08-19 05:25:13 DP3 TP3 EP3] Auto-detected DSV4 routed-expert layout: is_fp4_experts=True
+[2026-08-19 05:25:13 DP0 TP0 EP0] Tokenizer for /models/DeepSeek-V4-Flash is still TokenizersBackend after retries with --trust-remote-code. Model-specific tokenizer attributes may be missing.
+[2026-08-19 05:25:13 DP5 TP5 EP5] Auto-detected DSV4 routed-expert layout: is_fp4_experts=True
+[2026-08-19 05:25:13 DP4 TP4 EP4] Auto-detected DSV4 routed-expert layout: is_fp4_experts=True
+[2026-08-19 05:25:14 DP6 TP6 EP6] Auto-detected DSV4 routed-expert layout: is_fp4_experts=True
+[2026-08-19 05:25:14 DP0 TP0 EP0] Auto-detected DSV4 routed-expert layout: is_fp4_experts=True
+[2026-08-19 05:25:14 DP7 TP7 EP7] Auto-detected DSV4 routed-expert layout: is_fp4_experts=True
+[2026-08-19 05:25:14 DP2 TP2 EP2] Tokenizer for /models/DeepSeek-V4-Flash is still TokenizersBackend after retries with --trust-remote-code. Model-specific tokenizer attributes may be missing.
+[2026-08-19 05:25:14 DP1 TP1 EP1] Tokenizer for /models/DeepSeek-V4-Flash is still TokenizersBackend after retries with --trust-remote-code. Model-specific tokenizer attributes may be missing.
+[2026-08-19 05:25:15 DP0 TP0 EP0] Init torch distributed begin.
+[2026-08-19 05:25:15 DP2 TP2 EP2] Auto-detected DSV4 routed-expert layout: is_fp4_experts=True
+[2026-08-19 05:25:15 DP1 TP1 EP1] Auto-detected DSV4 routed-expert layout: is_fp4_experts=True
+[2026-08-19 05:25:15 DP3 TP3 EP3] Tokenizer for /models/DeepSeek-V4-Flash is still TokenizersBackend after retries with --trust-remote-code. Model-specific tokenizer attributes may be missing.
+[2026-08-19 05:25:15 DP3 TP3 EP3] Auto-detected DSV4 routed-expert layout: is_fp4_experts=True
+[2026-08-19 05:25:16 DP5 TP5 EP5] Tokenizer for /models/DeepSeek-V4-Flash is still TokenizersBackend after retries with --trust-remote-code. Model-specific tokenizer attributes may be missing.
+[2026-08-19 05:25:16 DP4 TP4 EP4] Tokenizer for /models/DeepSeek-V4-Flash is still TokenizersBackend after retries with --trust-remote-code. Model-specific tokenizer attributes may be missing.
+[2026-08-19 05:25:16 DP2 TP2 EP2] Init torch distributed begin.
+[2026-08-19 05:25:16 DP1 TP1 EP1] Init torch distributed begin.
+[2026-08-19 05:25:16 DP3 TP3 EP3] Init torch distributed begin.
+[2026-08-19 05:25:16 DP5 TP5 EP5] Auto-detected DSV4 routed-expert layout: is_fp4_experts=True
+[2026-08-19 05:25:16 DP4 TP4 EP4] Auto-detected DSV4 routed-expert layout: is_fp4_experts=True
+[2026-08-19 05:25:16 DP6 TP6 EP6] Tokenizer for /models/DeepSeek-V4-Flash is still TokenizersBackend after retries with --trust-remote-code. Model-specific tokenizer attributes may be missing.
+[2026-08-19 05:25:16 DP7 TP7 EP7] Tokenizer for /models/DeepSeek-V4-Flash is still TokenizersBackend after retries with --trust-remote-code. Model-specific tokenizer attributes may be missing.
+[2026-08-19 05:25:16 DP6 TP6 EP6] Auto-detected DSV4 routed-expert layout: is_fp4_experts=True
+[2026-08-19 05:25:16 DP7 TP7 EP7] Auto-detected DSV4 routed-expert layout: is_fp4_experts=True
+[2026-08-19 05:25:17 DP4 TP4 EP4] Init torch distributed begin.
+[2026-08-19 05:25:17 DP5 TP5 EP5] Init torch distributed begin.
+[2026-08-19 05:25:17 DP6 TP6 EP6] Init torch distributed begin.
+[2026-08-19 05:25:17 DP7 TP7 EP7] Init torch distributed begin.
+[2026-08-19 05:25:17 DP0 TP0 EP0] sglang is using nccl==2.31.1
+NCCL version 2.31.1+cuda13.0
+[2026-08-19 05:25:22 DP3 TP3 EP3] CustomAllreduce is disabled because this process group spans across nodes.
+[2026-08-19 05:25:22 DP4 TP4 EP4] CustomAllreduce is disabled because this process group spans across nodes.
+[2026-08-19 05:25:22 DP2 TP2 EP2] CustomAllreduce is disabled because this process group spans across nodes.
+[2026-08-19 05:25:22 DP1 TP1 EP1] CustomAllreduce is disabled because this process group spans across nodes.
+[2026-08-19 05:25:22 DP5 TP5 EP5] CustomAllreduce is disabled because this process group spans across nodes.
+[2026-08-19 05:25:22 DP6 TP6 EP6] CustomAllreduce is disabled because this process group spans across nodes.
+[2026-08-19 05:25:22 DP7 TP7 EP7] CustomAllreduce is disabled because this process group spans across nodes.
+[2026-08-19 05:25:22 DP0 TP0 EP0] CustomAllreduce is disabled because this process group spans across nodes.
+[2026-08-19 05:25:22 DP0 TP0 EP0] Init torch distributed ends. elapsed=7.82 s, mem usage=1.07 GB
+[2026-08-19 05:25:22 DP7 TP7 EP7] Init torch distributed ends. elapsed=5.34 s, mem usage=1.07 GB
+[2026-08-19 05:25:22 DP6 TP6 EP6] Init torch distributed ends. elapsed=5.38 s, mem usage=1.07 GB
+[2026-08-19 05:25:22 DP5 TP5 EP5] Init torch distributed ends. elapsed=5.73 s, mem usage=1.07 GB
+[2026-08-19 05:25:22 DP4 TP4 EP4] Init torch distributed ends. elapsed=5.73 s, mem usage=1.07 GB
+[2026-08-19 05:25:22 DP2 TP2 EP2] Init torch distributed ends. elapsed=6.49 s, mem usage=1.07 GB
+[2026-08-19 05:25:22 DP3 TP3 EP3] Init torch distributed ends. elapsed=6.47 s, mem usage=1.07 GB
+[2026-08-19 05:25:22 DP1 TP1 EP1] Init torch distributed ends. elapsed=6.48 s, mem usage=1.07 GB
+[2026-08-19 05:25:25 DP6 TP6 EP6] Ignore import error when loading sglang.srt.models.sarashina2_vision: cannot import name 'MultimodalDataItem' from 'sglang.srt.managers.mm_utils' (/sgl-workspace/sglang/python/sglang/srt/managers/mm_utils.py)
+[2026-08-19 05:25:25 DP1 TP1 EP1] Ignore import error when loading sglang.srt.models.sarashina2_vision: cannot import name 'MultimodalDataItem' from 'sglang.srt.managers.mm_utils' (/sgl-workspace/sglang/python/sglang/srt/managers/mm_utils.py)
+[2026-08-19 05:25:25 DP7 TP7 EP7] Ignore import error when loading sglang.srt.models.sarashina2_vision: cannot import name 'MultimodalDataItem' from 'sglang.srt.managers.mm_utils' (/sgl-workspace/sglang/python/sglang/srt/managers/mm_utils.py)
+[2026-08-19 05:25:25 DP4 TP4 EP4] Ignore import error when loading sglang.srt.models.sarashina2_vision: cannot import name 'MultimodalDataItem' from 'sglang.srt.managers.mm_utils' (/sgl-workspace/sglang/python/sglang/srt/managers/mm_utils.py)
+[2026-08-19 05:25:25 DP5 TP5 EP5] Ignore import error when loading sglang.srt.models.sarashina2_vision: cannot import name 'MultimodalDataItem' from 'sglang.srt.managers.mm_utils' (/sgl-workspace/sglang/python/sglang/srt/managers/mm_utils.py)
+[2026-08-19 05:25:25 DP0 TP0 EP0] Ignore import error when loading sglang.srt.models.sarashina2_vision: cannot import name 'MultimodalDataItem' from 'sglang.srt.managers.mm_utils' (/sgl-workspace/sglang/python/sglang/srt/managers/mm_utils.py)
+[2026-08-19 05:25:25 DP3 TP3 EP3] Ignore import error when loading sglang.srt.models.sarashina2_vision: cannot import name 'MultimodalDataItem' from 'sglang.srt.managers.mm_utils' (/sgl-workspace/sglang/python/sglang/srt/managers/mm_utils.py)
+[2026-08-19 05:25:25 DP2 TP2 EP2] Ignore import error when loading sglang.srt.models.sarashina2_vision: cannot import name 'MultimodalDataItem' from 'sglang.srt.managers.mm_utils' (/sgl-workspace/sglang/python/sglang/srt/managers/mm_utils.py)
+[2026-08-19 05:25:25 DP6 TP6 EP6] Load weight begin. avail mem=138.16 GB
+[2026-08-19 05:25:25 DP7 TP7 EP7] Load weight begin. avail mem=138.16 GB
+[2026-08-19 05:25:25 DP2 TP2 EP2] Load weight begin. avail mem=138.16 GB
+[2026-08-19 05:25:25 DP5 TP5 EP5] Load weight begin. avail mem=138.16 GB
+[2026-08-19 05:25:25 DP0 TP0 EP0] Load weight begin. avail mem=138.16 GB
+[2026-08-19 05:25:25 DP4 TP4 EP4] Load weight begin. avail mem=138.16 GB
+[2026-08-19 05:25:25 DP1 TP1 EP1] Load weight begin. avail mem=138.16 GB
+[2026-08-19 05:25:25 DP0 TP0 EP0] Detected fp8 checkpoint.
+[2026-08-19 05:25:25 DP0 TP0 EP0] Config does not support fused shared expert(s). Shared experts fusion optimization is disabled.
+[2026-08-19 05:25:25 DP3 TP3 EP3] Load weight begin. avail mem=138.16 GB
+[2026-08-19 05:25:25 DP6 TP6 EP6] FlashInfer TRTLLM MoE deferred finalize is disabled (moe_runner_backend=deep_gemm, quant_method=Fp8MoEMethod).
+[2026-08-19 05:25:25 DP7 TP7 EP7] FlashInfer TRTLLM MoE deferred finalize is disabled (moe_runner_backend=deep_gemm, quant_method=Fp8MoEMethod).
+[2026-08-19 05:25:25 DP5 TP5 EP5] FlashInfer TRTLLM MoE deferred finalize is disabled (moe_runner_backend=deep_gemm, quant_method=Fp8MoEMethod).
+[2026-08-19 05:25:25 DP2 TP2 EP2] FlashInfer TRTLLM MoE deferred finalize is disabled (moe_runner_backend=deep_gemm, quant_method=Fp8MoEMethod).
+[2026-08-19 05:25:25 DP4 TP4 EP4] FlashInfer TRTLLM MoE deferred finalize is disabled (moe_runner_backend=deep_gemm, quant_method=Fp8MoEMethod).
+[2026-08-19 05:25:25 DP0 TP0 EP0] FlashInfer TRTLLM MoE deferred finalize is disabled (moe_runner_backend=deep_gemm, quant_method=Fp8MoEMethod).
+[2026-08-19 05:25:25 DP1 TP1 EP1] FlashInfer TRTLLM MoE deferred finalize is disabled (moe_runner_backend=deep_gemm, quant_method=Fp8MoEMethod).
+[2026-08-19 05:25:25 DP3 TP3 EP3] FlashInfer TRTLLM MoE deferred finalize is disabled (moe_runner_backend=deep_gemm, quant_method=Fp8MoEMethod).
+Multi-thread loading shards:   0% Completed | 0/46 [00:00<?, ?it/s]Multi-thread loading shards:   4% Completed | 2/46 [00:00<00:18,  2.36it/s]Multi-thread loading shards:   7% Completed | 3/46 [00:01<00:25,  1.68it/s]Multi-thread loading shards:   9% Completed | 4/46 [00:02<00:22,  1.90it/s]Multi-thread loading shards:  11% Completed | 5/46 [00:02<00:19,  2.10it/s]Multi-thread loading shards:  13% Completed | 6/46 [00:02<00:18,  2.20it/s]Multi-thread loading shards:  15% Completed | 7/46 [00:03<00:16,  2.33it/s]Multi-thread loading shards:  17% Completed | 8/46 [00:03<00:16,  2.36it/s]Multi-thread loading shards:  20% Completed | 9/46 [00:04<00:15,  2.39it/s]Multi-thread loading shards:  22% Completed | 10/46 [00:04<00:14,  2.41it/s]Multi-thread loading shards:  24% Completed | 11/46 [00:04<00:14,  2.42it/s]Multi-thread loading shards:  26% Completed | 12/46 [00:05<00:18,  1.82it/s]Multi-thread loading shards:  28% Completed | 13/46 [00:06<00:16,  2.02it/s]Multi-thread loading shards:  30% Completed | 14/46 [00:06<00:15,  2.13it/s]Multi-thread loading shards:  33% Completed | 15/46 [00:06<00:13,  2.22it/s]Multi-thread loading shards:  35% Completed | 16/46 [00:07<00:13,  2.27it/s]Multi-thread loading shards:  37% Completed | 17/46 [00:07<00:12,  2.32it/s]Multi-thread loading shards:  39% Completed | 18/46 [00:08<00:11,  2.36it/s]Multi-thread loading shards:  41% Completed | 19/46 [00:08<00:11,  2.39it/s]Multi-thread loading shards:  43% Completed | 20/46 [00:08<00:10,  2.40it/s]Multi-thread loading shards:  46% Completed | 21/46 [00:09<00:10,  2.42it/s]Multi-thread loading shards:  48% Completed | 22/46 [00:10<00:13,  1.80it/s]Multi-thread loading shards:  50% Completed | 23/46 [00:10<00:11,  1.96it/s]Multi-thread loading shards:  52% Completed | 24/46 [00:11<00:10,  2.08it/s]Multi-thread loading shards:  54% Completed | 25/46 [00:11<00:09,  2.18it/s]Multi-thread loading shards:  57% Completed | 26/46 [00:11<00:08,  2.25it/s]Multi-thread loading shards:  59% Completed | 27/46 [00:12<00:08,  2.31it/s]Multi-thread loading shards:  61% Completed | 28/46 [00:12<00:07,  2.34it/s]Multi-thread loading shards:  63% Completed | 29/46 [00:13<00:07,  2.37it/s]Multi-thread loading shards:  65% Completed | 30/46 [00:13<00:06,  2.39it/s]Multi-thread loading shards:  67% Completed | 31/46 [00:13<00:06,  2.40it/s]Multi-thread loading shards:  70% Completed | 32/46 [00:14<00:05,  2.40it/s]Multi-thread loading shards:  72% Completed | 33/46 [00:14<00:05,  2.41it/s]Multi-thread loading shards:  74% Completed | 34/46 [00:15<00:04,  2.42it/s]Multi-thread loading shards:  76% Completed | 35/46 [00:15<00:05,  1.97it/s]Multi-thread loading shards:  78% Completed | 36/46 [00:16<00:04,  2.09it/s]Multi-thread loading shards:  80% Completed | 37/46 [00:16<00:04,  2.24it/s]Multi-thread loading shards:  83% Completed | 38/46 [00:17<00:03,  2.29it/s]Multi-thread loading shards:  85% Completed | 39/46 [00:17<00:02,  2.41it/s]Multi-thread loading shards:  87% Completed | 40/46 [00:17<00:02,  2.41it/s]Multi-thread loading shards:  89% Completed | 41/46 [00:18<00:02,  2.43it/s]Multi-thread loading shards:  91% Completed | 42/46 [00:18<00:01,  2.43it/s][2026-08-19 05:25:45 DP7 TP7 EP7] Finished streaming dequant fp8 wo_a
+[2026-08-19 05:25:45 DP6 TP6 EP6] Finished streaming dequant fp8 wo_a
+[2026-08-19 05:25:45 DP7 TP7 EP7] DeepSeek V4 MHC prenorm prewarm: 14 n_splits buckets
+Multi-thread loading shards:  93% Completed | 43/46 [00:19<00:01,  2.44it/s][2026-08-19 05:25:45 DP6 TP6 EP6] DeepSeek V4 MHC prenorm prewarm: 14 n_splits buckets
+[2026-08-19 05:25:45 DP2 TP2 EP2] Finished streaming dequant fp8 wo_a
+Multi-thread loading shards:  96% Completed | 44/46 [00:19<00:00,  2.43it/s][2026-08-19 05:25:45 DP3 TP3 EP3] Finished streaming dequant fp8 wo_a
+[2026-08-19 05:25:45 DP4 TP4 EP4] Finished streaming dequant fp8 wo_a
+[2026-08-19 05:25:46 DP2 TP2 EP2] DeepSeek V4 MHC prenorm prewarm: 14 n_splits buckets
+[2026-08-19 05:25:46 DP5 TP5 EP5] Finished streaming dequant fp8 wo_a
+[2026-08-19 05:25:46 DP3 TP3 EP3] DeepSeek V4 MHC prenorm prewarm: 14 n_splits buckets
+Multi-thread loading shards: 100% Completed | 46/46 [00:19<00:00,  3.38it/s]Multi-thread loading shards: 100% Completed | 46/46 [00:19<00:00,  2.31it/s]
+[2026-08-19 05:25:46 DP0 TP0 EP0] Finished streaming dequant fp8 wo_a
+[2026-08-19 05:25:46 DP4 TP4 EP4] DeepSeek V4 MHC prenorm prewarm: 14 n_splits buckets
+[2026-08-19 05:25:46 DP5 TP5 EP5] DeepSeek V4 MHC prenorm prewarm: 14 n_splits buckets
+[2026-08-19 05:25:46 DP1 TP1 EP1] Finished streaming dequant fp8 wo_a
+[2026-08-19 05:25:46 DP0 TP0 EP0] DeepSeek V4 MHC prenorm prewarm: 14 n_splits buckets
+[2026-08-19 05:25:46 DP1 TP1 EP1] DeepSeek V4 MHC prenorm prewarm: 14 n_splits buckets
+[2026-08-19 05:29:08 DP6 TP6 EP6] DeepSeek V4 MHC prewarm at load: compile 200.3s, rank sync +2.9s
+[2026-08-19 05:29:08 DP7 TP7 EP7] DeepSeek V4 MHC prewarm at load: compile 200.7s, rank sync +2.8s
+[2026-08-19 05:29:08 DP2 TP2 EP2] DeepSeek V4 MHC prewarm at load: compile 199.9s, rank sync +2.8s
+[2026-08-19 05:29:08 DP0 TP0 EP0] DeepSeek V4 MHC prewarm at load: compile 199.6s, rank sync +2.8s
+[2026-08-19 05:29:08 DP3 TP3 EP3] DeepSeek V4 MHC prewarm at load: compile 199.9s, rank sync +2.8s
+[2026-08-19 05:29:08 DP4 TP4 EP4] DeepSeek V4 MHC prewarm at load: compile 199.6s, rank sync +3.0s
+[2026-08-19 05:29:08 DP1 TP1 EP1] DeepSeek V4 MHC prewarm at load: compile 199.4s, rank sync +2.8s
+[2026-08-19 05:29:08 DP5 TP5 EP5] DeepSeek V4 MHC prewarm at load: compile 199.8s, rank sync +2.8s
+[2026-08-19 05:29:08 DP4 TP4 EP4] Dequantized FP4 expert weights to FP8.
+[2026-08-19 05:29:08 DP3 TP3 EP3] Dequantized FP4 expert weights to FP8.
+[2026-08-19 05:29:08 DP2 TP2 EP2] Dequantized FP4 expert weights to FP8.
+[2026-08-19 05:29:08 DP7 TP7 EP7] Dequantized FP4 expert weights to FP8.
+[2026-08-19 05:29:08 DP6 TP6 EP6] Dequantized FP4 expert weights to FP8.
+[2026-08-19 05:29:08 DP5 TP5 EP5] Dequantized FP4 expert weights to FP8.
+[2026-08-19 05:29:08 DP0 TP0 EP0] Dequantized FP4 expert weights to FP8.
+[2026-08-19 05:29:08 DP1 TP1 EP1] Dequantized FP4 expert weights to FP8.
+[2026-08-19 05:29:09 DP4 TP4 EP4] Using FP8 KV cache but no scaling factors provided. Defaulting to scaling factors of 1.0. This may lead to less accurate results!
+[2026-08-19 05:29:09 DP2 TP2 EP2] Using FP8 KV cache but no scaling factors provided. Defaulting to scaling factors of 1.0. This may lead to less accurate results!
+[2026-08-19 05:29:09 DP3 TP3 EP3] Using FP8 KV cache but no scaling factors provided. Defaulting to scaling factors of 1.0. This may lead to less accurate results!
+[2026-08-19 05:29:09 DP7 TP7 EP7] Using FP8 KV cache but no scaling factors provided. Defaulting to scaling factors of 1.0. This may lead to less accurate results!
+[2026-08-19 05:29:09 DP5 TP5 EP5] Using FP8 KV cache but no scaling factors provided. Defaulting to scaling factors of 1.0. This may lead to less accurate results!
+[2026-08-19 05:29:09 DP6 TP6 EP6] Using FP8 KV cache but no scaling factors provided. Defaulting to scaling factors of 1.0. This may lead to less accurate results!
+[2026-08-19 05:29:09 DP1 TP1 EP1] Using FP8 KV cache but no scaling factors provided. Defaulting to scaling factors of 1.0. This may lead to less accurate results!
+[2026-08-19 05:29:09 DP0 TP0 EP0] Using FP8 KV cache but no scaling factors provided. Defaulting to scaling factors of 1.0. This may lead to less accurate results!
+[2026-08-19 05:29:09 DP4 TP4 EP4] Load weight end. elapsed=223.83 s, type=DeepseekV4ForCausalLM, quant=fp8, fmt=e4m3, avail mem=110.97 GB, mem usage=27.18 GB.
+[2026-08-19 05:29:09 DP2 TP2 EP2] Load weight end. elapsed=223.86 s, type=DeepseekV4ForCausalLM, quant=fp8, fmt=e4m3, avail mem=110.97 GB, mem usage=27.18 GB.
+[2026-08-19 05:29:09 DP3 TP3 EP3] Load weight end. elapsed=223.86 s, type=DeepseekV4ForCausalLM, quant=fp8, fmt=e4m3, avail mem=110.97 GB, mem usage=27.18 GB.
+[2026-08-19 05:29:09 DP7 TP7 EP7] Load weight end. elapsed=223.87 s, type=DeepseekV4ForCausalLM, quant=fp8, fmt=e4m3, avail mem=110.97 GB, mem usage=27.18 GB.
+[2026-08-19 05:29:09 DP0 TP0 EP0] Load weight end. elapsed=223.87 s, type=DeepseekV4ForCausalLM, quant=fp8, fmt=e4m3, avail mem=110.97 GB, mem usage=27.18 GB.
+[2026-08-19 05:29:09 DP6 TP6 EP6] Load weight end. elapsed=223.87 s, type=DeepseekV4ForCausalLM, quant=fp8, fmt=e4m3, avail mem=110.97 GB, mem usage=27.18 GB.
+[2026-08-19 05:29:09 DP5 TP5 EP5] Load weight end. elapsed=223.87 s, type=DeepseekV4ForCausalLM, quant=fp8, fmt=e4m3, avail mem=110.97 GB, mem usage=27.18 GB.
+[2026-08-19 05:29:09 DP1 TP1 EP1] Load weight end. elapsed=223.87 s, type=DeepseekV4ForCausalLM, quant=fp8, fmt=e4m3, avail mem=110.97 GB, mem usage=27.18 GB.
+[2026-08-19 05:29:11 DP7 TP7 EP7] Tokenizer for /models/DeepSeek-V4-Flash is still TokenizersBackend after retries with --trust-remote-code. Model-specific tokenizer attributes may be missing.
+[2026-08-19 05:29:11 DP6 TP6 EP6] Tokenizer for /models/DeepSeek-V4-Flash is still TokenizersBackend after retries with --trust-remote-code. Model-specific tokenizer attributes may be missing.
+[2026-08-19 05:29:11 DP4 TP4 EP4] Tokenizer for /models/DeepSeek-V4-Flash is still TokenizersBackend after retries with --trust-remote-code. Model-specific tokenizer attributes may be missing.
+[2026-08-19 05:29:11 DP5 TP5 EP5] Tokenizer for /models/DeepSeek-V4-Flash is still TokenizersBackend after retries with --trust-remote-code. Model-specific tokenizer attributes may be missing.
+[2026-08-19 05:29:11 DP3 TP3 EP3] Tokenizer for /models/DeepSeek-V4-Flash is still TokenizersBackend after retries with --trust-remote-code. Model-specific tokenizer attributes may be missing.
+[2026-08-19 05:29:11 DP0 TP0 EP0] Tokenizer for /models/DeepSeek-V4-Flash is still TokenizersBackend after retries with --trust-remote-code. Model-specific tokenizer attributes may be missing.
+[2026-08-19 05:29:11 DP2 TP2 EP2] Tokenizer for /models/DeepSeek-V4-Flash is still TokenizersBackend after retries with --trust-remote-code. Model-specific tokenizer attributes may be missing.
+[2026-08-19 05:29:11 DP1 TP1 EP1] Tokenizer for /models/DeepSeek-V4-Flash is still TokenizersBackend after retries with --trust-remote-code. Model-specific tokenizer attributes may be missing.
+[2026-08-19 05:29:11 DP0 TP0 EP0] DSV4 memory calculation: bytes_per_full_token=7705.45, available_bytes=69.51 GB, c128_state_fixed=0.34 GB, full_token=9637888
+[2026-08-19 05:29:11 DP0 TP0 EP0] DSV4 pool sizes: full=9637888, swa=963584, c4=2409472, c128=75296, c4_state=60224, c128_state=0
+[2026-08-19 05:29:11 DP7 TP7 EP7] DSV4 memory calculation: bytes_per_full_token=7705.45, available_bytes=69.51 GB, c128_state_fixed=0.34 GB, full_token=9637888
+[2026-08-19 05:29:11 DP6 TP6 EP6] DSV4 memory calculation: bytes_per_full_token=7705.45, available_bytes=69.51 GB, c128_state_fixed=0.34 GB, full_token=9637888
+[2026-08-19 05:29:11 DP7 TP7 EP7] DSV4 pool sizes: full=9637888, swa=963584, c4=2409472, c128=75296, c4_state=60224, c128_state=0
+[2026-08-19 05:29:11 DP5 TP5 EP5] DSV4 memory calculation: bytes_per_full_token=7705.45, available_bytes=69.51 GB, c128_state_fixed=0.34 GB, full_token=9637888
+[2026-08-19 05:29:11 DP6 TP6 EP6] DSV4 pool sizes: full=9637888, swa=963584, c4=2409472, c128=75296, c4_state=60224, c128_state=0
+[2026-08-19 05:29:11 DP4 TP4 EP4] DSV4 memory calculation: bytes_per_full_token=7705.45, available_bytes=69.51 GB, c128_state_fixed=0.34 GB, full_token=9637888
+[2026-08-19 05:29:11 DP5 TP5 EP5] DSV4 pool sizes: full=9637888, swa=963584, c4=2409472, c128=75296, c4_state=60224, c128_state=0
+[2026-08-19 05:29:11 DP3 TP3 EP3] DSV4 memory calculation: bytes_per_full_token=7705.45, available_bytes=69.51 GB, c128_state_fixed=0.34 GB, full_token=9637888
+[2026-08-19 05:29:11 DP4 TP4 EP4] DSV4 pool sizes: full=9637888, swa=963584, c4=2409472, c128=75296, c4_state=60224, c128_state=0
+[2026-08-19 05:29:11 DP2 TP2 EP2] DSV4 memory calculation: bytes_per_full_token=7705.45, available_bytes=69.51 GB, c128_state_fixed=0.34 GB, full_token=9637888
+[2026-08-19 05:29:11 DP3 TP3 EP3] DSV4 pool sizes: full=9637888, swa=963584, c4=2409472, c128=75296, c4_state=60224, c128_state=0
+[2026-08-19 05:29:11 DP1 TP1 EP1] DSV4 memory calculation: bytes_per_full_token=7705.45, available_bytes=69.51 GB, c128_state_fixed=0.34 GB, full_token=9637888
+[2026-08-19 05:29:11 DP2 TP2 EP2] DSV4 pool sizes: full=9637888, swa=963584, c4=2409472, c128=75296, c4_state=60224, c128_state=0
+[2026-08-19 05:29:11 DP1 TP1 EP1] DSV4 pool sizes: full=9637888, swa=963584, c4=2409472, c128=75296, c4_state=60224, c128_state=0
+[2026-08-19 05:29:11 DP0 TP0 EP0] Initialize DeepSeekV4TokenToKVPool with max_num_reqs=32 swa_size=963584 c4_size=2409472 c4_logical_size=2409472 c128_size=75296 c4_state_pool_size=60224 c128_state_pool_size=4224
+[2026-08-19 05:29:11 DP7 TP7 EP7] Initialize DeepSeekV4TokenToKVPool with max_num_reqs=32 swa_size=963584 c4_size=2409472 c4_logical_size=2409472 c128_size=75296 c4_state_pool_size=60224 c128_state_pool_size=4224
+[2026-08-19 05:29:11 DP6 TP6 EP6] Initialize DeepSeekV4TokenToKVPool with max_num_reqs=32 swa_size=963584 c4_size=2409472 c4_logical_size=2409472 c128_size=75296 c4_state_pool_size=60224 c128_state_pool_size=4224
+[2026-08-19 05:29:11 DP4 TP4 EP4] Initialize DeepSeekV4TokenToKVPool with max_num_reqs=32 swa_size=963584 c4_size=2409472 c4_logical_size=2409472 c128_size=75296 c4_state_pool_size=60224 c128_state_pool_size=4224
+[2026-08-19 05:29:11 DP3 TP3 EP3] Initialize DeepSeekV4TokenToKVPool with max_num_reqs=32 swa_size=963584 c4_size=2409472 c4_logical_size=2409472 c128_size=75296 c4_state_pool_size=60224 c128_state_pool_size=4224
+[2026-08-19 05:29:11 DP1 TP1 EP1] Initialize DeepSeekV4TokenToKVPool with max_num_reqs=32 swa_size=963584 c4_size=2409472 c4_logical_size=2409472 c128_size=75296 c4_state_pool_size=60224 c128_state_pool_size=4224
+[2026-08-19 05:29:11 DP2 TP2 EP2] Initialize DeepSeekV4TokenToKVPool with max_num_reqs=32 swa_size=963584 c4_size=2409472 c4_logical_size=2409472 c128_size=75296 c4_state_pool_size=60224 c128_state_pool_size=4224
+[2026-08-19 05:29:11 DP5 TP5 EP5] Initialize DeepSeekV4TokenToKVPool with max_num_reqs=32 swa_size=963584 c4_size=2409472 c4_logical_size=2409472 c128_size=75296 c4_state_pool_size=60224 c128_state_pool_size=4224
+[2026-08-19 05:29:12 DP6 TP6 EP6] Memory pool end. avail mem=40.99 GB
+[2026-08-19 05:29:12 DP2 TP2 EP2] Memory pool end. avail mem=40.99 GB
+[2026-08-19 05:29:12 DP4 TP4 EP4] Memory pool end. avail mem=40.99 GB
+[2026-08-19 05:29:12 DP7 TP7 EP7] Memory pool end. avail mem=40.99 GB
+[2026-08-19 05:29:12 DP1 TP1 EP1] Memory pool end. avail mem=40.99 GB
+[2026-08-19 05:29:12 DP5 TP5 EP5] Memory pool end. avail mem=40.99 GB
+[2026-08-19 05:29:12 DP3 TP3 EP3] Memory pool end. avail mem=40.99 GB
+[2026-08-19 05:29:12 DP0 TP0 EP0] Memory pool end. avail mem=40.99 GB
+[2026-08-19 05:29:12 DP6 TP6 EP6] Using DeepseekV4AttnBackend for dsv4 attention backend (CUDA).
+[2026-08-19 05:29:12 DP5 TP5 EP5] Using DeepseekV4AttnBackend for dsv4 attention backend (CUDA).
+[2026-08-19 05:29:12 DP3 TP3 EP3] Using DeepseekV4AttnBackend for dsv4 attention backend (CUDA).
+[2026-08-19 05:29:12 DP4 TP4 EP4] Using DeepseekV4AttnBackend for dsv4 attention backend (CUDA).
+[2026-08-19 05:29:12 DP2 TP2 EP2] Using DeepseekV4AttnBackend for dsv4 attention backend (CUDA).
+[2026-08-19 05:29:12 DP7 TP7 EP7] Using DeepseekV4AttnBackend for dsv4 attention backend (CUDA).
+[2026-08-19 05:29:12 DP0 TP0 EP0] Using DeepseekV4AttnBackend for dsv4 attention backend (CUDA).
+[2026-08-19 05:29:12 DP1 TP1 EP1] Using DeepseekV4AttnBackend for dsv4 attention backend (CUDA).
+[2026-08-19 05:29:12 DP0 TP0 EP0] DeepGEMM masked layout budget: 10.12 GiB from 40.47 GiB free.
+[2026-08-19 05:29:12 DP0 TP0 EP0] Disable prefill CUDA graph because cuda_graph_config resolved prefill.backend='disabled' (e.g. via --cuda-graph-backend-prefill=disabled or auto-disable rules).
+[2026-08-19 05:29:12 DP7 TP7 EP7] DeepGEMM masked layout budget: 10.12 GiB from 40.47 GiB free.
+[2026-08-19 05:29:12 DP6 TP6 EP6] DeepGEMM masked layout budget: 10.12 GiB from 40.47 GiB free.
+[2026-08-19 05:29:12 DP5 TP5 EP5] DeepGEMM masked layout budget: 10.12 GiB from 40.47 GiB free.
+[2026-08-19 05:29:12 DP7 TP7 EP7] Disable prefill CUDA graph because cuda_graph_config resolved prefill.backend='disabled' (e.g. via --cuda-graph-backend-prefill=disabled or auto-disable rules).
+[2026-08-19 05:29:12 DP4 TP4 EP4] DeepGEMM masked layout budget: 10.12 GiB from 40.47 GiB free.
+[2026-08-19 05:29:12 DP6 TP6 EP6] Disable prefill CUDA graph because cuda_graph_config resolved prefill.backend='disabled' (e.g. via --cuda-graph-backend-prefill=disabled or auto-disable rules).
+[2026-08-19 05:29:12 DP5 TP5 EP5] Disable prefill CUDA graph because cuda_graph_config resolved prefill.backend='disabled' (e.g. via --cuda-graph-backend-prefill=disabled or auto-disable rules).
+[2026-08-19 05:29:12 DP3 TP3 EP3] DeepGEMM masked layout budget: 10.12 GiB from 40.47 GiB free.
+[2026-08-19 05:29:12 DP4 TP4 EP4] Disable prefill CUDA graph because cuda_graph_config resolved prefill.backend='disabled' (e.g. via --cuda-graph-backend-prefill=disabled or auto-disable rules).
+[2026-08-19 05:29:12 DP2 TP2 EP2] DeepGEMM masked layout budget: 10.12 GiB from 40.47 GiB free.
+[2026-08-19 05:29:12 DP1 TP1 EP1] DeepGEMM masked layout budget: 10.12 GiB from 40.47 GiB free.
+[2026-08-19 05:29:12 DP3 TP3 EP3] Disable prefill CUDA graph because cuda_graph_config resolved prefill.backend='disabled' (e.g. via --cuda-graph-backend-prefill=disabled or auto-disable rules).
+[2026-08-19 05:29:12 DP2 TP2 EP2] Disable prefill CUDA graph because cuda_graph_config resolved prefill.backend='disabled' (e.g. via --cuda-graph-backend-prefill=disabled or auto-disable rules).
+[2026-08-19 05:29:12 DP1 TP1 EP1] Disable prefill CUDA graph because cuda_graph_config resolved prefill.backend='disabled' (e.g. via --cuda-graph-backend-prefill=disabled or auto-disable rules).
+[2026-08-19 05:29:12 DP6 TP6 EP6] Capture target decode CUDA graph begin. backend=full, num_tokens_per_req=1, bs=[1, 2, 4, 8, 12, 16, 24, 32], avail mem=40.47 GB
+[2026-08-19 05:29:12 DP5 TP5 EP5] Capture target decode CUDA graph begin. backend=full, num_tokens_per_req=1, bs=[1, 2, 4, 8, 12, 16, 24, 32], avail mem=40.47 GB
+[2026-08-19 05:29:12 DP7 TP7 EP7] Capture target decode CUDA graph begin. backend=full, num_tokens_per_req=1, bs=[1, 2, 4, 8, 12, 16, 24, 32], avail mem=40.47 GB
+[2026-08-19 05:29:12 DP0 TP0 EP0] Capture target decode CUDA graph begin. backend=full, num_tokens_per_req=1, bs=[1, 2, 4, 8, 12, 16, 24, 32], avail mem=40.47 GB
+[2026-08-19 05:29:12 DP3 TP3 EP3] Capture target decode CUDA graph begin. backend=full, num_tokens_per_req=1, bs=[1, 2, 4, 8, 12, 16, 24, 32], avail mem=40.47 GB
+[2026-08-19 05:29:12 DP1 TP1 EP1] Capture target decode CUDA graph begin. backend=full, num_tokens_per_req=1, bs=[1, 2, 4, 8, 12, 16, 24, 32], avail mem=40.47 GB
+[2026-08-19 05:29:12 DP2 TP2 EP2] Capture target decode CUDA graph begin. backend=full, num_tokens_per_req=1, bs=[1, 2, 4, 8, 12, 16, 24, 32], avail mem=40.47 GB
+[2026-08-19 05:29:12 DP4 TP4 EP4] Capture target decode CUDA graph begin. backend=full, num_tokens_per_req=1, bs=[1, 2, 4, 8, 12, 16, 24, 32], avail mem=40.47 GB
+  0%|          | 0/8 [00:00<?, ?it/s]Capturing batches (bs=32 avail_mem=40.47 GB):   0%|          | 0/8 [00:00<?, ?it/s][2026-08-19 05:29:13 DP0 TP0 EP0] Disable CP decode attention TP
+[2026-08-19 05:29:13 DP7 TP7 EP7] Disable CP decode attention TP
+[2026-08-19 05:29:13 DP3 TP3 EP3] Disable CP decode attention TP
+[2026-08-19 05:29:13 DP4 TP4 EP4] Disable CP decode attention TP
+[2026-08-19 05:29:13 DP5 TP5 EP5] Disable CP decode attention TP
+[2026-08-19 05:29:13 DP6 TP6 EP6] Disable CP decode attention TP
+[2026-08-19 05:29:13 DP2 TP2 EP2] Disable CP decode attention TP
+[2026-08-19 05:29:13 DP1 TP1 EP1] Disable CP decode attention TP
+[2026-08-19 05:29:13 DP0 TP0 EP0] Entering DeepGEMM JIT Pre-Compile session. It may take a long time (typically 10-20 mins) if you have not run `sglang.compile_deep_gemm`. It is recommended to run `sglang.compile_deep_gemm` with same args as `sglang.launch_server` for pre-compilation to reduce the overhead if you have not run it before. For example: `python3 -m sglang.compile_deep_gemm --model deepseek-ai/DeepSeek-V3 --tp 8 --trust-remote-code`
+[2026-08-19 05:29:13 DP0 TP0 EP0] Try DeepGEMM JIT Compiling for <GEMM_NT_F8F8BF16> N=1536, K=4096, num_groups=1 with all Ms. It only takes a little time (typically 1 sec) if you have run `python3 -m sglang.compile_deep_gemm`. 
+[2026-08-19 05:29:13 DP0 TP0 EP0] Required memory for warmup: 0.115234375GB, Available memory: 40.44158935546875GB
+
+DeepGEMM warmup:   0%|          | 0/16384 [00:00<?, ?it/s][A
+DeepGEMM warmup:  14%|█▍        | 2288/16384 [00:00<00:00, 22878.39it/s][A
+DeepGEMM warmup:  28%|██▊       | 4609/16384 [00:00<00:00, 22543.06it/s][A
+DeepGEMM warmup:  43%|████▎     | 6975/16384 [00:00<00:00, 23039.95it/s][A
+DeepGEMM warmup:  57%|█████▋    | 9280/16384 [00:00<00:00, 17599.82it/s][A
+DeepGEMM warmup:  68%|██████▊   | 11184/16384 [00:00<00:00, 14519.39it/s][A
+DeepGEMM warmup:  78%|███████▊  | 12781/16384 [00:00<00:00, 12392.88it/s][A
+DeepGEMM warmup:  86%|████████▋ | 14139/16384 [00:00<00:00, 11216.38it/s][A
+DeepGEMM warmup:  94%|█████████▎| 15339/16384 [00:01<00:00, 10108.92it/s][ADeepGEMM warmup: 100%|██████████| 16384/16384 [00:01<00:00, 12619.21it/s]
+[2026-08-19 05:29:14 DP0 TP0 EP0] Entering DeepGEMM JIT Pre-Compile session. It may take a long time (typically 10-20 mins) if you have not run `sglang.compile_deep_gemm`. It is recommended to run `sglang.compile_deep_gemm` with same args as `sglang.launch_server` for pre-compilation to reduce the overhead if you have not run it before. For example: `python3 -m sglang.compile_deep_gemm --model deepseek-ai/DeepSeek-V3 --tp 8 --trust-remote-code`
+[2026-08-19 05:29:14 DP0 TP0 EP0] Try DeepGEMM JIT Compiling for <GEMM_NT_F8F8BF16> N=32768, K=1024, num_groups=1 with all Ms. It only takes a little time (typically 1 sec) if you have run `python3 -m sglang.compile_deep_gemm`. 
+[2026-08-19 05:29:14 DP0 TP0 EP0] Required memory for warmup: 1.046875GB, Available memory: 40.44158935546875GB
+
+DeepGEMM warmup:   0%|          | 0/16384 [00:00<?, ?it/s][A
+DeepGEMM warmup:  13%|█▎        | 2194/16384 [00:00<00:00, 21929.25it/s][A
+DeepGEMM warmup:  27%|██▋       | 4387/16384 [00:00<00:01, 9187.68it/s] [A
+DeepGEMM warmup:  35%|███▍      | 5675/16384 [00:00<00:01, 6556.26it/s][A
+DeepGEMM warmup:  40%|████      | 6564/16384 [00:01<00:01, 5283.87it/s][A
+DeepGEMM warmup:  44%|████▍     | 7233/16384 [00:01<00:02, 4514.67it/s][A
+DeepGEMM warmup:  47%|████▋     | 7766/16384 [00:01<00:02, 3984.17it/s][A
+DeepGEMM warmup:  50%|█████     | 8209/16384 [00:01<00:02, 3593.45it/s][A
+DeepGEMM warmup:  52%|█████▏    | 8589/16384 [00:01<00:02, 3287.14it/s][A
+DeepGEMM warmup:  54%|█████▍    | 8924/16384 [00:01<00:02, 3037.90it/s][A
+DeepGEMM warmup:  56%|█████▋    | 9226/16384 [00:02<00:02, 2836.81it/s][A
+DeepGEMM warmup:  58%|█████▊    | 9504/16384 [00:02<00:02, 2665.47it/s][A
+DeepGEMM warmup:  60%|█████▉    | 9763/16384 [00:02<00:02, 2519.64it/s][A
+DeepGEMM warmup:  61%|██████    | 10007/16384 [00:02<00:02, 2395.52it/s][A
+DeepGEMM warmup:  62%|██████▏   | 10239/16384 [00:02<00:02, 2288.79it/s][A
+DeepGEMM warmup:  64%|██████▍   | 10462/16384 [00:02<00:02, 2195.84it/s][A
+DeepGEMM warmup:  65%|██████▌   | 10676/16384 [00:02<00:02, 2116.05it/s][A
+DeepGEMM warmup:  66%|██████▋   | 10883/16384 [00:02<00:02, 2047.96it/s][A
+DeepGEMM warmup:  68%|██████▊   | 11085/16384 [00:02<00:02, 1988.27it/s][A
+DeepGEMM warmup:  69%|██████▉   | 11281/16384 [00:03<00:02, 1936.67it/s][A
+DeepGEMM warmup:  70%|███████   | 11473/16384 [00:03<00:02, 1889.64it/s][A
+DeepGEMM warmup:  71%|███████   | 11661/16384 [00:03<00:02, 1845.99it/s][A
+DeepGEMM warmup:  72%|███████▏  | 11845/16384 [00:03<00:02, 1807.96it/s][A
+DeepGEMM warmup:  73%|███████▎  | 12025/16384 [00:03<00:02, 1771.71it/s][A
+DeepGEMM warmup:  74%|███████▍  | 12202/16384 [00:03<00:02, 1736.25it/s][A
+DeepGEMM warmup:  76%|███████▌  | 12376/16384 [00:03<00:02, 1705.94it/s][A
+DeepGEMM warmup:  77%|███████▋  | 12547/16384 [00:03<00:02, 1679.06it/s][A
+DeepGEMM warmup:  78%|███████▊  | 12715/16384 [00:03<00:02, 1651.30it/s][A
+DeepGEMM warmup:  79%|███████▊  | 12880/16384 [00:04<00:02, 1628.01it/s][A
+DeepGEMM warmup:  80%|███████▉  | 13043/16384 [00:04<00:02, 1608.21it/s][A
+DeepGEMM warmup:  81%|████████  | 13204/16384 [00:04<00:02, 1587.19it/s][A
+DeepGEMM warmup:  82%|████████▏ | 13363/16384 [00:04<00:01, 1568.24it/s][A
+DeepGEMM warmup:  83%|████████▎ | 13520/16384 [00:04<00:01, 1548.57it/s][A
+DeepGEMM warmup:  83%|████████▎ | 13675/16384 [00:04<00:01, 1528.71it/s][A
+DeepGEMM warmup:  84%|████████▍ | 13828/16384 [00:04<00:01, 1511.68it/s][A
+DeepGEMM warmup:  85%|████████▌ | 13980/16384 [00:04<00:01, 1491.60it/s][A
+DeepGEMM warmup:  86%|████████▌ | 14130/16384 [00:04<00:01, 1474.82it/s][A
+DeepGEMM warmup:  87%|████████▋ | 14278/16384 [00:05<00:01, 1458.40it/s][A
+DeepGEMM warmup:  88%|████████▊ | 14424/16384 [00:05<00:01, 1440.98it/s][A
+DeepGEMM warmup:  89%|████████▉ | 14569/16384 [00:05<00:01, 1424.88it/s][A
+DeepGEMM warmup:  90%|████████▉ | 14712/16384 [00:05<00:01, 1408.60it/s][A
+DeepGEMM warmup:  91%|█████████ | 14853/16384 [00:05<00:01, 1395.41it/s][A
+DeepGEMM warmup:  92%|█████████▏| 14993/16384 [00:05<00:01, 1379.63it/s][A
+DeepGEMM warmup:  92%|█████████▏| 15131/16384 [00:05<00:00, 1366.71it/s][A
+DeepGEMM warmup:  93%|█████████▎| 15268/16384 [00:05<00:00, 1352.13it/s][A
+DeepGEMM warmup:  94%|█████████▍| 15404/16384 [00:05<00:00, 1339.77it/s][A
+DeepGEMM warmup:  95%|█████████▍| 15538/16384 [00:05<00:00, 1327.23it/s][A
+DeepGEMM warmup:  96%|█████████▌| 15671/16384 [00:06<00:00, 1315.25it/s][A
+DeepGEMM warmup:  96%|█████████▋| 15803/16384 [00:06<00:00, 1302.90it/s][A
+DeepGEMM warmup:  97%|█████████▋| 15934/16384 [00:06<00:00, 1291.38it/s][A
+DeepGEMM warmup:  98%|█████████▊| 16064/16384 [00:06<00:00, 1280.08it/s][A
+DeepGEMM warmup:  99%|█████████▉| 16193/16384 [00:06<00:00, 1268.83it/s][A
+DeepGEMM warmup: 100%|█████████▉| 16320/16384 [00:06<00:00, 1257.82it/s][ADeepGEMM warmup: 100%|██████████| 16384/16384 [00:06<00:00, 2477.43it/s]
+[2026-08-19 05:29:22 DP0 TP0 EP0] Entering DeepGEMM JIT Pre-Compile session. It may take a long time (typically 10-20 mins) if you have not run `sglang.compile_deep_gemm`. It is recommended to run `sglang.compile_deep_gemm` with same args as `sglang.launch_server` for pre-compilation to reduce the overhead if you have not run it before. For example: `python3 -m sglang.compile_deep_gemm --model deepseek-ai/DeepSeek-V3 --tp 8 --trust-remote-code`
+[2026-08-19 05:29:22 DP0 TP0 EP0] Try DeepGEMM JIT Compiling for <GEMM_NT_F8F8BF16> N=4096, K=8192, num_groups=1 with all Ms. It only takes a little time (typically 1 sec) if you have run `python3 -m sglang.compile_deep_gemm`. 
+[2026-08-19 05:29:22 DP0 TP0 EP0] Required memory for warmup: 0.28125GB, Available memory: 40.40838623046875GB
+
+DeepGEMM warmup:   0%|          | 0/16384 [00:00<?, ?it/s][A
+DeepGEMM warmup:  12%|█▏        | 1968/16384 [00:00<00:00, 19666.42it/s][A
+DeepGEMM warmup:  24%|██▍       | 3935/16384 [00:00<00:01, 10391.40it/s][A
+DeepGEMM warmup:  32%|███▏      | 5205/16384 [00:00<00:01, 7526.57it/s] [A
+DeepGEMM warmup:  37%|███▋      | 6123/16384 [00:00<00:01, 6033.54it/s][A
+DeepGEMM warmup:  42%|████▏     | 6833/16384 [00:01<00:01, 5221.68it/s][A
+DeepGEMM warmup:  45%|████▌     | 7416/16384 [00:01<00:01, 4628.02it/s][A
+DeepGEMM warmup:  48%|████▊     | 7911/16384 [00:01<00:02, 4163.69it/s][A
+DeepGEMM warmup:  51%|█████     | 8342/16384 [00:01<00:02, 3808.45it/s][A
+DeepGEMM warmup:  53%|█████▎    | 8727/16384 [00:01<00:02, 3539.35it/s][A
+DeepGEMM warmup:  55%|█████▌    | 9079/16384 [00:01<00:02, 3295.96it/s][A
+DeepGEMM warmup:  57%|█████▋    | 9403/16384 [00:01<00:02, 3081.05it/s][A
+DeepGEMM warmup:  59%|█████▉    | 9704/16384 [00:02<00:02, 2919.88it/s][A
+DeepGEMM warmup:  61%|██████    | 9989/16384 [00:02<00:02, 2791.14it/s][A
+DeepGEMM warmup:  63%|██████▎   | 10262/16384 [00:02<00:02, 2632.49it/s][A
+DeepGEMM warmup:  64%|██████▍   | 10520/16384 [00:02<00:02, 2526.88it/s][A
+DeepGEMM warmup:  66%|██████▌   | 10768/16384 [00:02<00:02, 2442.53it/s][A
+DeepGEMM warmup:  67%|██████▋   | 11009/16384 [00:02<00:02, 2373.90it/s][A
+DeepGEMM warmup:  69%|██████▊   | 11243/16384 [00:02<00:02, 2270.77it/s][A
+DeepGEMM warmup:  70%|██████▉   | 11468/16384 [00:02<00:02, 2207.14it/s][A
+DeepGEMM warmup:  71%|███████▏  | 11687/16384 [00:02<00:02, 2155.62it/s][A
+DeepGEMM warmup:  73%|███████▎  | 11901/16384 [00:03<00:02, 2114.85it/s][A
+DeepGEMM warmup:  74%|███████▍  | 12112/16384 [00:03<00:02, 2061.45it/s][A
+DeepGEMM warmup:  75%|███████▌  | 12318/16384 [00:03<00:02, 2007.20it/s][A
+DeepGEMM warmup:  76%|███████▋  | 12518/16384 [00:03<00:01, 1967.67it/s][A
+DeepGEMM warmup:  78%|███████▊  | 12715/16384 [00:03<00:01, 1936.14it/s][A
+DeepGEMM warmup:  79%|███████▉  | 12909/16384 [00:03<00:01, 1910.27it/s][A
+DeepGEMM warmup:  80%|███████▉  | 13100/16384 [00:03<00:01, 1877.82it/s][A
+DeepGEMM warmup:  81%|████████  | 13288/16384 [00:03<00:01, 1830.30it/s][A
+DeepGEMM warmup:  82%|████████▏ | 13471/16384 [00:03<00:01, 1800.15it/s][A
+DeepGEMM warmup:  83%|████████▎ | 13651/16384 [00:04<00:01, 1778.29it/s][A
+DeepGEMM warmup:  84%|████████▍ | 13829/16384 [00:04<00:01, 1754.46it/s][A
+DeepGEMM warmup:  85%|████████▌ | 14005/16384 [00:04<00:01, 1736.95it/s][A
+DeepGEMM warmup:  87%|████████▋ | 14179/16384 [00:04<00:01, 1706.21it/s][A
+DeepGEMM warmup:  88%|████████▊ | 14350/16384 [00:04<00:01, 1676.58it/s][A
+DeepGEMM warmup:  89%|████████▊ | 14518/16384 [00:04<00:01, 1655.14it/s][A
+DeepGEMM warmup:  90%|████████▉ | 14684/16384 [00:04<00:01, 1640.12it/s][A
+DeepGEMM warmup:  91%|█████████ | 14848/16384 [00:04<00:00, 1626.18it/s][A
+DeepGEMM warmup:  92%|█████████▏| 15011/16384 [00:04<00:00, 1612.07it/s][A
+DeepGEMM warmup:  93%|█████████▎| 15173/16384 [00:04<00:00, 1589.10it/s][A
+DeepGEMM warmup:  94%|█████████▎| 15332/16384 [00:05<00:00, 1562.75it/s][A
+DeepGEMM warmup:  95%|█████████▍| 15489/16384 [00:05<00:00, 1544.22it/s][A
+DeepGEMM warmup:  95%|█████████▌| 15644/16384 [00:05<00:00, 1531.22it/s][A
+DeepGEMM warmup:  96%|█████████▋| 15798/16384 [00:05<00:00, 1516.23it/s][A
+DeepGEMM warmup:  97%|█████████▋| 15950/16384 [00:05<00:00, 1504.25it/s][A
+DeepGEMM warmup:  98%|█████████▊| 16101/16384 [00:05<00:00, 1495.98it/s][A
+DeepGEMM warmup:  99%|█████████▉| 16251/16384 [00:05<00:00, 1470.30it/s][ADeepGEMM warmup: 100%|██████████| 16384/16384 [00:05<00:00, 2823.83it/s]
+[2026-08-19 05:29:28 DP0 TP0 EP0] Entering DeepGEMM JIT Pre-Compile session. It may take a long time (typically 10-20 mins) if you have not run `sglang.compile_deep_gemm`. It is recommended to run `sglang.compile_deep_gemm` with same args as `sglang.launch_server` for pre-compilation to reduce the overhead if you have not run it before. For example: `python3 -m sglang.compile_deep_gemm --model deepseek-ai/DeepSeek-V3 --tp 8 --trust-remote-code`
+[2026-08-19 05:29:28 DP0 TP0 EP0] Try DeepGEMM JIT Compiling for <GEMM_NT_F8F8BF16> N=4096, K=4096, num_groups=1 with all Ms. It only takes a little time (typically 1 sec) if you have run `python3 -m sglang.compile_deep_gemm`. 
+[2026-08-19 05:29:28 DP0 TP0 EP0] Required memory for warmup: 0.203125GB, Available memory: 40.40643310546875GB
+
+DeepGEMM warmup:   0%|          | 0/16384 [00:00<?, ?it/s][A
+DeepGEMM warmup:  17%|█▋        | 2711/16384 [00:00<00:00, 27099.62it/s][A
+DeepGEMM warmup:  33%|███▎      | 5421/16384 [00:00<00:00, 14217.88it/s][A
+DeepGEMM warmup:  44%|████▎     | 7165/16384 [00:00<00:00, 10381.67it/s][A
+DeepGEMM warmup:  51%|█████▏    | 8429/16384 [00:00<00:00, 8529.65it/s] [A
+DeepGEMM warmup:  57%|█████▋    | 9420/16384 [00:01<00:00, 7372.63it/s][A
+DeepGEMM warmup:  62%|██████▏   | 10237/16384 [00:01<00:00, 6536.63it/s][A
+DeepGEMM warmup:  67%|██████▋   | 10933/16384 [00:01<00:00, 5910.80it/s][A
+DeepGEMM warmup:  70%|███████   | 11543/16384 [00:01<00:00, 5372.38it/s][A
+DeepGEMM warmup:  74%|███████▍  | 12085/16384 [00:01<00:00, 4975.51it/s][A
+DeepGEMM warmup:  77%|███████▋  | 12579/16384 [00:01<00:00, 4610.14it/s][A
+DeepGEMM warmup:  80%|███████▉  | 13032/16384 [00:01<00:00, 4341.04it/s][A
+DeepGEMM warmup:  82%|████████▏ | 13457/16384 [00:02<00:00, 4067.74it/s][A
+DeepGEMM warmup:  85%|████████▍ | 13854/16384 [00:02<00:00, 3872.18it/s][A
+DeepGEMM warmup:  87%|████████▋ | 14232/16384 [00:02<00:00, 3692.68it/s][A
+DeepGEMM warmup:  89%|████████▉ | 14593/16384 [00:02<00:00, 3531.12it/s][A
+DeepGEMM warmup:  91%|█████████ | 14939/16384 [00:02<00:00, 3413.19it/s][A
+DeepGEMM warmup:  93%|█████████▎| 15275/16384 [00:02<00:00, 3283.30it/s][A
+DeepGEMM warmup:  95%|█████████▌| 15599/16384 [00:02<00:00, 3170.22it/s][A
+DeepGEMM warmup:  97%|█████████▋| 15913/16384 [00:02<00:00, 3090.51it/s][A
+DeepGEMM warmup:  99%|█████████▉| 16219/16384 [00:02<00:00, 3009.99it/s][ADeepGEMM warmup: 100%|██████████| 16384/16384 [00:03<00:00, 5440.14it/s]
+[2026-08-19 05:29:31 DP0 TP0 EP0] Entering DeepGEMM JIT Pre-Compile session. It may take a long time (typically 10-20 mins) if you have not run `sglang.compile_deep_gemm`. It is recommended to run `sglang.compile_deep_gemm` with same args as `sglang.launch_server` for pre-compilation to reduce the overhead if you have not run it before. For example: `python3 -m sglang.compile_deep_gemm --model deepseek-ai/DeepSeek-V3 --tp 8 --trust-remote-code`
+[2026-08-19 05:29:31 DP0 TP0 EP0] Try DeepGEMM JIT Compiling for <GEMM_NT_F8F8BF16> N=4096, K=2048, num_groups=1 with all Ms. It only takes a little time (typically 1 sec) if you have run `python3 -m sglang.compile_deep_gemm`. 
+[2026-08-19 05:29:31 DP0 TP0 EP0] Required memory for warmup: 0.1640625GB, Available memory: 40.40643310546875GB
+
+DeepGEMM warmup:   0%|          | 0/16384 [00:00<?, ?it/s][A
+DeepGEMM warmup:  17%|█▋        | 2775/16384 [00:00<00:00, 27745.20it/s][A
+DeepGEMM warmup:  34%|███▍      | 5550/16384 [00:00<00:00, 23522.16it/s][A
+DeepGEMM warmup:  48%|████▊     | 7943/16384 [00:00<00:00, 16710.55it/s][A
+DeepGEMM warmup:  60%|█████▉    | 9789/16384 [00:00<00:00, 13489.85it/s][A
+DeepGEMM warmup:  69%|██████▉   | 11282/16384 [00:00<00:00, 11421.52it/s][A
+DeepGEMM warmup:  76%|███████▋  | 12527/16384 [00:00<00:00, 9987.04it/s] [A
+DeepGEMM warmup:  83%|████████▎ | 13593/16384 [00:01<00:00, 8907.66it/s][A
+DeepGEMM warmup:  89%|████████▊ | 14524/16384 [00:01<00:00, 8072.48it/s][A
+DeepGEMM warmup:  94%|█████████▎| 15352/16384 [00:01<00:00, 7411.86it/s][A
+DeepGEMM warmup:  98%|█████████▊| 16101/16384 [00:01<00:00, 6870.82it/s][ADeepGEMM warmup: 100%|██████████| 16384/16384 [00:01<00:00, 10010.11it/s]
+WARN: device rdmap85s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap85s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap85s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap86s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap86s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: WARN: device rdmap87s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+device rdmap85s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap86s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap87s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap85s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap86s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap87s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap88s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap88s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap86s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap85s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap87s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap110s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap88s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap110s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap85s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap87s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap86s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap85s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap111s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap88s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap110s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap111s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap86s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap87s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap88s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap86s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap110s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap111s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap112s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap112s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap87s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap88s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap110s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap87s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap111s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap113s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap112s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap113s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap110s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap88s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap111s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap88s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap112s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap113s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap135s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap135s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap111s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap110s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap112s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap110s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap113s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap136s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap135s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap136s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap111s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap112s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap113s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap111s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap135s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap137s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap136s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap137s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap113s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap112s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap135s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap112s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: WARN: device rdmap136s0 is not supported (expected HCA interface: mlx5). Skipping...
+device rdmap138s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+
+WARN: device rdmap137s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap138s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap135s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap136s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap113s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap137s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap160s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap138s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap113s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap160s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap136s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap137s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap138s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap135s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap160s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap161s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap135s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap161s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap137s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap138s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap160s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap136s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap162s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: WARN: device rdmap161s0 is not supported (expected HCA interface: mlx5). Skipping...
+device rdmap136s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+
+WARN: device rdmap162s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap138s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap160s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap137s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap161s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap163s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap137s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap162s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/transport/transport.cpp:nvshmemi_transport_init:282: init failed for transport: IBGDA
+WARN: device rdmap163s0 is not supported (expected HCA interface: mlx5). Skipping...
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/transport/transport.cpp:nvshmemi_transport_init:282: init failed for transport: IBGDA
+
+WARN: device rdmap160s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap138s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap161s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap162s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap138s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap163s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/transport/transport.cpp:nvshmemi_transport_init:282: init failed for transport: IBGDA
+WARN: device rdmap161s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap162s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap160s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap163s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/transport/transport.cpp:nvshmemi_transport_init:282: init failed for transport: IBGDA
+WARN: device rdmap160s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap162s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap161s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap163s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/transport/transport.cpp:nvshmemi_transport_init:282: init failed for transport: IBGDA
+WARN: device rdmap161s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/transport/transport.cpp:nvshmemi_transport_init:282: init failed for transport: IBGDA
+WARN: device rdmap163s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap162s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+WARN: device rdmap162s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/transport/transport.cpp:nvshmemi_transport_init:282: init failed for transport: IBGDA
+WARN: device rdmap163s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/transport/transport.cpp:nvshmemi_transport_init:282: init failed for transport: IBGDA
+WARN: device rdmap163s0 is not supported (expected HCA interface: mlx5). Skipping...
+
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/topo/topo.cpp:469: [GPU 1] Peer GPU 8 is not accessible, exiting ... 
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/init/init.cu:1037: non-zero status: 3 building transport map failed 
+
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/team/team.cu:nvshmem_team_split_strided:63: NVSHMEM API called before NVSHMEM initialization has completed
+
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/topo/topo.cpp:469: [GPU 2] Peer GPU 8 is not accessible, exiting ... 
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/init/init.cu:1037: non-zero status: 3 building transport map failed 
+
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/team/team.cu:nvshmem_team_split_strided:63: NVSHMEM API called before NVSHMEM initialization has completed
+
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/topo/topo.cpp:469: [GPU 3] Peer GPU 8 is not accessible, exiting ... 
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/init/init.cu:1037: non-zero status: 3 building transport map failed 
+
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/team/team.cu:nvshmem_team_split_strided:63: NVSHMEM API called before NVSHMEM initialization has completed
+
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/topo/topo.cpp:469: [GPU 4] Peer GPU 8 is not accessible, exiting ... 
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/init/init.cu:1037: non-zero status: 3 building transport map failed 
+
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/team/team.cu:nvshmem_team_split_strided:63: NVSHMEM API called before NVSHMEM initialization has completed
+
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/topo/topo.cpp:469: [GPU 7] Peer GPU 8 is not accessible, exiting ... 
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/init/init.cu:1037: non-zero status: 3 building transport map failed 
+
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/team/team.cu:nvshmem_team_split_strided:63: NVSHMEM API called before NVSHMEM initialization has completed
+
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/topo/topo.cpp:469: [GPU 6] Peer GPU 8 is not accessible, exiting ... 
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/init/init.cu:1037: non-zero status: 3 building transport map failed 
+
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/team/team.cu:nvshmem_team_split_strided:63: NVSHMEM API called before NVSHMEM initialization has completed
+
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/topo/topo.cpp:469: [GPU 5] Peer GPU 8 is not accessible, exiting ... 
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/init/init.cu:1037: non-zero status: 3 building transport map failed 
+
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/team/team.cu:nvshmem_team_split_strided:63: NVSHMEM API called before NVSHMEM initialization has completed
+
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/topo/topo.cpp:469: [GPU 0] Peer GPU 8 is not accessible, exiting ... 
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/init/init.cu:1037: non-zero status: 3 building transport map failed 
+
+/dvs/p4/build/sw/rel/gpgpu/toolkit/r13.0/main_nvshmem/src/host/team/team.cu:nvshmem_team_split_strided:63: NVSHMEM API called before NVSHMEM initialization has completed
+
+[2026-08-19 05:29:34] DataParallelController hit an exception: Traceback (most recent call last):
+  File "/sgl-workspace/sglang/python/sglang/srt/managers/data_parallel_controller.py", line 840, in run_data_parallel_controller_process
+    controller = DataParallelController(
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/sgl-workspace/sglang/python/sglang/srt/managers/data_parallel_controller.py", line 200, in __init__
+    self.launch_dp_attention_schedulers(server_args, port_args)
+  File "/sgl-workspace/sglang/python/sglang/srt/managers/data_parallel_controller.py", line 590, in launch_dp_attention_schedulers
+    self.launch_tensor_parallel_group(
+  File "/sgl-workspace/sglang/python/sglang/srt/managers/data_parallel_controller.py", line 731, in launch_tensor_parallel_group
+    scheduler_info.append(scheduler_pipe_readers[i].recv())
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 250, in recv
+    buf = self._recv_bytes()
+          ^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 430, in _recv_bytes
+    buf = self._recv(4)
+          ^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/multiprocessing/connection.py", line 399, in _recv
+    raise EOFError
+EOFError
+
+[2026-08-19 05:29:34] Received sigquit from a child process. It usually means the child failed.
+[2026-08-19 05:29:34] kill_process_tree called: parent_pid=1, include_parent=True, pid=1
+[2026-08-19 05:29:34] kill_process_tree called: parent_pid=1, include_parent=False, pid=1

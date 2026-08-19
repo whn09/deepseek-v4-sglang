@@ -1,0 +1,73 @@
+### tag=deepep-uccl-n1-decode-sm20-cap1024-rpr32-nogin-isl1024-osl1024-c1024
+### endpoint=localhost:30000 nnodes=1 tp=8 phase=decode
+### num_sms=20 capacity=1024 gin=gda image=sglang-epv2-efa-uccl:pr29525-sm90
+### isl=1024 osl=1024 num_prompts=2048 concurrency=1024
+### started=2026-08-19T06:37:19Z
+W0819 06:37:23.575000 1 torch/utils/_pytree.py:630] <enum 'KernelPreference'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+W0819 06:37:23.597000 1 torch/utils/_pytree.py:630] <enum 'ScaleCalculationMode'> is an Enum subclass and is now natively supported by torch.compile as an opaque value type. Calling register_constant() on Enum subclasses is deprecated and will be an error in a future release.
+/sgl-workspace/sglang/python/sglang/srt/layers/quantization/awq/awq.py:52: UserWarning: Only CUDA, HIP and XPU support AWQ currently.
+  warnings.warn(f"Only CUDA, HIP and XPU support AWQ currently.")
+/sgl-workspace/sglang/python/sglang/srt/layers/quantization/gguf.py:69: UserWarning: Only CUDA, MUSA and NPU support GGUF quantization currently.
+  warnings.warn(f"Only CUDA, MUSA and NPU support GGUF quantization currently.")
+/sgl-workspace/sglang/python/sglang/bench_serving.py:13: FutureWarning: `sglang.bench_serving` is deprecated and will be removed in a future release; use `sglang.benchmark.serving` instead (e.g. `python -m sglang.benchmark.serving`).
+  warnings.warn(
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+  0%|          | 0/2048 [00:00<?, ?it/s]benchmark_args=Namespace(backend='sglang-oai', base_url=None, host='localhost', port=30000, ready_check_timeout_sec=60, dataset_name='random', dataset_path='', dataset_offset=0, agentic_max_turns=None, speed_bench_category=None, speed_bench_output_len=512, model='deepseek-ai/DeepSeek-V4-Flash', served_model_name=None, tokenizer='/models/DeepSeek-V4-Flash', num_prompts=2048, sharegpt_output_len=None, sharegpt_context_len=None, random_input_len=1024, random_output_len=1024, random_range_ratio=1.0, image_count=1, image_resolution='1080p', random_image_count=False, image_format='jpeg', image_content='random', request_rate=inf, use_trace_timestamps=False, max_concurrency=1024, output_file='/results/deepep-uccl-n1-decode-sm20-cap1024-rpr32-nogin-isl1024-osl1024-c1024.json', output_details=False, print_requests=False, disable_tqdm=False, disable_stream=False, return_logprob=False, top_logprobs_num=0, token_ids_logprob=None, logprob_start_len=-1, return_routed_experts=False, cache_report=False, seed=42, disable_ignore_eos=False, temperature=0.0, top_p=1.0, extra_request_body=None, apply_chat_template=False, profile=False, plot_throughput=False, profile_activities=['CPU', 'GPU'], profile_start_step=None, profile_steps=None, profile_num_steps=None, profile_by_stage=False, profile_stages=None, profile_output_dir=None, profile_prefix=None, lora_name=None, lora_request_distribution='uniform', lora_zipf_alpha=1.5, prompt_suffix='', pd_separated=False, profile_prefill_url=None, profile_decode_url=None, flush_cache=True, flush_cache_timeout=60.0, warmup_requests=1, tokenize_prompt=False, gsp_num_groups=64, gsp_prompts_per_group=16, gsp_system_prompt_len=2048, gsp_question_len=128, gsp_output_len=256, gsp_range_ratio=1.0, gsp_fast_prepare=False, gsp_send_routing_key=False, gsp_num_turns=1, gsp_ordered=False, gsp_group_distribution='uniform', gsp_zipf_alpha=None, mooncake_slowdown_factor=1.0, mooncake_num_rounds=1, mooncake_workload='conversation', fake_prefill=False, tag=None, header=None)
+Waiting up to 60s for http://localhost:30000/v1/models to become ready...
+Server ready in 0.0s.
+
+WARNING It is recommended to use the `Chat` or `Instruct` model for benchmarking.
+Because when the tokenizer counts the output tokens, if there is gibberish, it might count incorrectly.
+
+Namespace(backend='sglang-oai', base_url=None, host='localhost', port=30000, ready_check_timeout_sec=60, dataset_name='random', dataset_path='', dataset_offset=0, agentic_max_turns=None, speed_bench_category=None, speed_bench_output_len=512, model='deepseek-ai/DeepSeek-V4-Flash', served_model_name=None, tokenizer='/models/DeepSeek-V4-Flash', num_prompts=2048, sharegpt_output_len=None, sharegpt_context_len=None, random_input_len=1024, random_output_len=1024, random_range_ratio=1.0, image_count=1, image_resolution='1080p', random_image_count=False, image_format='jpeg', image_content='random', request_rate=inf, use_trace_timestamps=False, max_concurrency=1024, output_file='/results/deepep-uccl-n1-decode-sm20-cap1024-rpr32-nogin-isl1024-osl1024-c1024.json', output_details=False, print_requests=False, disable_tqdm=False, disable_stream=False, return_logprob=False, top_logprobs_num=0, token_ids_logprob=None, logprob_start_len=-1, return_routed_experts=False, cache_report=False, seed=42, disable_ignore_eos=False, temperature=0.0, top_p=1.0, extra_request_body=None, apply_chat_template=False, profile=False, plot_throughput=False, profile_activities=['CPU', 'GPU'], profile_start_step=None, profile_steps=None, profile_num_steps=None, profile_by_stage=False, profile_stages=None, profile_output_dir=None, profile_prefix=None, lora_name=None, lora_request_distribution='uniform', lora_zipf_alpha=1.5, prompt_suffix='', pd_separated=False, profile_prefill_url=None, profile_decode_url=None, flush_cache=True, flush_cache_timeout=60.0, warmup_requests=1, tokenize_prompt=False, gsp_num_groups=64, gsp_prompts_per_group=16, gsp_system_prompt_len=2048, gsp_question_len=128, gsp_output_len=256, gsp_range_ratio=1.0, gsp_fast_prepare=False, gsp_send_routing_key=False, gsp_num_turns=1, gsp_ordered=False, gsp_group_distribution='uniform', gsp_zipf_alpha=None, mooncake_slowdown_factor=1.0, mooncake_num_rounds=1, mooncake_workload='conversation', fake_prefill=False, tag=None, header=None)
+
+#Input tokens: 2097152
+#Output tokens: 2097152
+Starting warmup with 1 sequences...
+Warmup completed with 1 sequences. Starting main benchmark run...
+  0%|          | 1/2048 [00:27<15:47:35, 27.78s/it]  5%|▍         | 97/2048 [00:28<06:42,  4.85it/s]   12%|█▎        | 256/2048 [00:40<06:09,  4.85it/s] 13%|█▎        | 257/2048 [00:54<05:18,  5.63it/s] 17%|█▋        | 353/2048 [00:54<03:08,  8.98it/s] 25%|██▌       | 512/2048 [01:06<02:51,  8.98it/s] 25%|██▌       | 513/2048 [01:21<03:32,  7.23it/s] 28%|██▊       | 577/2048 [01:22<02:41,  9.12it/s] 36%|███▌      | 737/2048 [01:22<01:22, 15.93it/s] 38%|███▊      | 768/2048 [01:36<01:20, 15.93it/s] 38%|███▊      | 769/2048 [01:49<03:09,  6.76it/s] 39%|███▉      | 801/2048 [01:49<02:40,  7.77it/s] 42%|████▏     | 850/2048 [01:49<01:59,  9.99it/s] 48%|████▊     | 993/2048 [01:49<00:54, 19.30it/s] 50%|█████     | 1024/2048 [02:00<00:53, 19.30it/s] 50%|█████     | 1025/2048 [02:16<02:41,  6.32it/s] 52%|█████▏    | 1057/2048 [02:16<02:12,  7.49it/s] 54%|█████▍    | 1101/2048 [02:16<01:36,  9.78it/s] 56%|█████▌    | 1139/2048 [02:16<01:12, 12.52it/s] 59%|█████▉    | 1217/2048 [02:17<00:40, 20.58it/s] 62%|██████▎   | 1280/2048 [02:30<00:37, 20.58it/s] 63%|██████▎   | 1281/2048 [02:43<02:07,  6.01it/s] 64%|██████▍   | 1313/2048 [02:43<01:40,  7.33it/s] 66%|██████▌   | 1345/2048 [02:44<01:17,  9.09it/s] 70%|███████   | 1441/2048 [02:44<00:35, 17.05it/s] 75%|███████▌  | 1536/2048 [02:56<00:30, 17.05it/s] 75%|███████▌  | 1537/2048 [03:11<01:15,  6.74it/s] 78%|███████▊  | 1601/2048 [03:11<00:48,  9.20it/s] 83%|████████▎ | 1697/2048 [03:11<00:24, 14.54it/s] 86%|████████▌ | 1761/2048 [03:12<00:14, 19.45it/s] 88%|████████▊ | 1792/2048 [03:26<00:13, 19.45it/s] 88%|████████▊ | 1793/2048 [03:38<00:44,  5.69it/s] 98%|█████████▊| 2017/2048 [03:39<00:02, 14.61it/s]100%|██████████| 2048/2048 [03:39<00:00,  9.35it/s]
+
+============ Serving Benchmark Result ============
+Backend:                                 sglang-oai
+Traffic request rate:                    inf       
+Max request concurrency:                 1024      
+Successful requests:                     2048      
+Benchmark duration (s):                  219.10    
+Total input tokens:                      2097152   
+Total input text tokens:                 2097152   
+Total generated tokens:                  2097152   
+Total generated tokens (retokenized):    2096848   
+Request throughput (req/s):              9.35      
+Input token throughput (tok/s):          9571.51   
+Output token throughput (tok/s):         9571.51   
+Peak output token throughput (tok/s):    12288.00  
+Peak concurrent requests:                1280      
+Total token throughput (tok/s):          19143.02  
+Concurrency:                             829.60    
+----------------End-to-End Latency----------------
+Mean E2E Latency (ms):                   88753.91  
+Median E2E Latency (ms):                 108863.04 
+P90 E2E Latency (ms):                    109720.19 
+P95 E2E Latency (ms):                    109901.53 
+P99 E2E Latency (ms):                    110076.71 
+---------------Time to First Token----------------
+Mean TTFT (ms):                          64517.18  
+Median TTFT (ms):                        83407.62  
+P90 TTFT (ms):                           86584.66  
+P95 TTFT (ms):                           87033.90  
+P99 TTFT (ms):                           87613.16  
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          23.69     
+Median TPOT (ms):                        23.61     
+P90 TPOT (ms):                           25.76     
+P95 TPOT (ms):                           26.05     
+P99 TPOT (ms):                           26.40     
+---------------Inter-Token Latency----------------
+Mean ITL (ms):                           23.71     
+Median ITL (ms):                         20.99     
+P90 ITL (ms):                            26.71     
+P95 ITL (ms):                            28.22     
+P99 ITL (ms):                            30.91     
+Max ITL (ms):                            5291.00   
+==================================================
+### finished=2026-08-19T06:41:29Z rc=0

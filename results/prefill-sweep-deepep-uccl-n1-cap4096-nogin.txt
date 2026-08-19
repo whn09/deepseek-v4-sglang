@@ -1,0 +1,10 @@
+### prefill sweep  a2a=deepep nnodes=1 tp=8 isl=4096 osl=8
+### started=2026-08-19T06:10:13Z
+conc   prompts  in_tok/s     out_tok/s    ttft_ms_mean ttft_ms_p99  req/s     
+### warmup (JIT compile; discarded)
+32     96       45588.9      89.0         1125.0       1680.4       11.13     
+64     192      66423.2      129.7        1659.1       2716.0       16.22     
+128    384      83695.4      163.5        2862.1       4894.5       20.43     
+256    512      95906.4      187.3        5238.4       9412.7       23.41     
+512    512      95196.4      185.9        10994.1      20029.8      23.24     
+### finished=2026-08-19T06:14:03Z
