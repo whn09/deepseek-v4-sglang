@@ -1,0 +1,551 @@
+NCCL version 2.31.1+cuda13.0
+[DEBUG] IP distribution across 16 ranks:
+[DEBUG]   172.31.9.118: 8 ranks
+[DEBUG]   172.31.6.47: 8 ranks
+Registered proxies for device 5 (low-latency mode)
+Registered proxies for device 3 (low-latency mode)
+Registered proxies for device 6 (low-latency mode)
+Registered proxies for device 7 (low-latency mode)
+Registered proxies for device 4 (low-latency mode)
+Registered proxies for device 1 (low-latency mode)
+Registered proxies for device 0 (low-latency mode)
+Registered proxies for device 2 (low-latency mode)
+[RDMA] Selected NIC rdmap85s0 (index 0) for affinity rank 0, CUDA device 0, NUMA node 0
+[RDMA] Selected NIC rdmap86s0 (index 1) for affinity rank 0, CUDA device 0, NUMA node 0
+[RDMA] Selected NIC rdmap87s0 (index 2) for affinity rank 1, CUDA device 1, NUMA node 0
+[RDMA] Selected NIC rdmap87s0 (index 2) for affinity rank 1, CUDA device 1, NUMA node 0
+[RDMA] Selected NIC rdmap85s0 (index 0) for affinity rank 0, CUDA device 0, NUMA node 0
+[RDMA] Selected NIC rdmap88s0 (index 3) for affinity rank 1, CUDA device 1, NUMA node 0
+[RDMA] Selected NIC rdmap86s0 (index 1) for affinity rank 0, CUDA device 0, NUMA node 0
+[RDMA] Selected NIC rdmap88s0 (index 3) for affinity rank 1, CUDA device 1, NUMA node 0
+[RDMA] Selected NIC rdmap137s0 (index 10) for affinity rank 5, CUDA device 5, NUMA node 1
+[RDMA] Selected NIC rdmap110s0 (index 4) for affinity rank 2, CUDA device 2, NUMA node 0
+[RDMA] Selected NIC rdmap138s0 (index 11) for affinity rank 5, CUDA device 5, NUMA node 1
+[RDMA] Selected NIC rdmap111s0 (index 5) for affinity rank 2, CUDA device 2, NUMA node 0
+[RDMA] Selected NIC rdmap110s0 (index 4) for affinity rank 2, CUDA device 2, NUMA node 0
+[RDMA] Selected NIC rdmap112s0 (index 6) for affinity rank 3, CUDA device 3, NUMA node 0
+[RDMA] Selected NIC rdmap135s0 (index 8) for affinity rank 4, CUDA device 4, NUMA node 1
+[RDMA] Selected NIC rdmap111s0 (index 5) for affinity rank 2, CUDA device 2, NUMA node 0
+[RDMA] Selected NIC rdmap113s0 (index 7) for affinity rank 3, CUDA device 3, NUMA node 0
+[RDMA] Selected NIC rdmap136s0 (index 9) for affinity rank 4, CUDA device 4, NUMA node 1
+[RDMA] Selected NIC rdmap161s0 (index 13) for affinity rank 6, CUDA device 6, NUMA node 1
+[RDMA] Selected NIC rdmap112s0 (index 6) for affinity rank 3, CUDA device 3, NUMA node 0
+[RDMA] Selected NIC rdmap162s0 (index 14) for affinity rank 7, CUDA device 7, NUMA node 1
+[RDMA] Selected NIC rdmap163s0 (index 15) for affinity rank 7, CUDA device 7, NUMA node 1
+[RDMA] Selected NIC rdmap113s0 (index 7) for affinity rank 3, CUDA device 3, NUMA node 0
+[RDMA] Selected NIC rdmap162s0 (index 14) for affinity rank 7, CUDA device 7, NUMA node 1
+[RDMA] Selected NIC rdmap160s0 (index 12) for affinity rank 6, CUDA device 6, NUMA node 1
+[RDMA] Selected NIC rdmap163s0 (index 15) for affinity rank 7, CUDA device 7, NUMA node 1
+[RDMA] Selected NIC rdmap161s0 (index 13) for affinity rank 6, CUDA device 6, NUMA node 1
+[RDMA] Selected NIC rdmap160s0 (index 12) for affinity rank 6, CUDA device 6, NUMA node 1
+[RDMA] Selected NIC rdmap137s0 (index 10) for affinity rank 5, CUDA device 5, NUMA node 1
+[RDMA] Selected NIC rdmap136s0 (index 9) for affinity rank 4, CUDA device 4, NUMA node 1
+[RDMA] Selected NIC rdmap135s0 (index 8) for affinity rank 4, CUDA device 4, NUMA node 1
+[RDMA] Selected NIC rdmap138s0 (index 11) for affinity rank 5, CUDA device 5, NUMA node 1
+Pinned to NUMA node 0, thread_idx: 2, local_rank: 1, running on CPU 6.
+Local CPU thread pinned to NUMA node 0, thread_idx: 2, local_rank: 1, running on CPU 6.
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x783b39c00000, len=81960, rkey=0x100002
+Pinned to NUMA node 1, thread_idx: 0, local_rank: 5, running on CPU 68.
+Local CPU thread pinned to NUMA node 1, thread_idx: 0, local_rank: 5, running on CPU 68.
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x744953c00000, len=81960, rkey=0xf00024
+[RDMA] Auto-detected GID index 0 for rdmap87s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x783b39c00000, len=81960, rkey=0x100002
+[RDMA] Auto-detected GID index 0 for rdmap137s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x744953c00000, len=81960, rkey=0xf00024
+Pinned to NUMA node 0, thread_idx: 0, local_rank: 0, running on CPU 0.
+Local CPU thread pinned to NUMA node 0, thread_idx: 0, local_rank: 0, running on CPU 0.
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x7ccf9bc00000, len=81960, rkey=0xf00043
+Pinned to NUMA node 1, thread_idx: 0, local_rank: 4, running on CPU 64.
+Local CPU thread pinned to NUMA node 1, thread_idx: 0, local_rank: 4, running on CPU 64.
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x7adf93c00000, len=81960, rkey=0xf0004f
+Pinned to NUMA node 0, thread_idx: 0, local_rank: 1, running on CPU 4.
+Local CPU thread pinned to NUMA node 0, thread_idx: 0, local_rank: 1, running on CPU 4.
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x783b39c00000, len=81960, rkey=0x30
+[RDMA] Auto-detected GID index 0 for rdmap85s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x7ccf9bc00000, len=81960, rkey=0xf00043
+Pinned to NUMA node 0, thread_idx: 1, local_rank: 0, running on CPU 1.
+Local CPU thread pinned to NUMA node 0, thread_idx: 1, local_rank: 0, running on CPU 1.
+[RDMA] Auto-detected GID index 0 for rdmap135s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x7adf93c00000, len=81960, rkey=0xf0004f
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x7ccf9bc00000, len=81960, rkey=0xf00027
+Pinned to NUMA node 1, thread_idx: 1, local_rank: 4, running on CPU 65.
+Local CPU thread pinned to NUMA node 1, thread_idx: 1, local_rank: 4, running on CPU 65.
+[RDMA] Auto-detected GID index 0 for rdmap87s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x783b39c00000, len=81960, rkey=0x30
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x7adf93c00000, len=81960, rkey=0xc00072
+Pinned to NUMA node 0, thread_idx: 2, local_rank: 0, running on CPU 2.
+Local CPU thread pinned to NUMA node 0, thread_idx: 2, local_rank: 0, running on CPU 2.
+Pinned to NUMA node 0, thread_idx: 1, local_rank: 1, running on CPU 5.
+Local CPU thread pinned to NUMA node 0, thread_idx: 1, local_rank: 1, running on CPU 5.
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x7ccf9bc00000, len=81960, rkey=0xc00035
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x783b39c00000, len=81960, rkey=0x42
+[RDMA] Auto-detected GID index 0 for rdmap86s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x7ccf9bc00000, len=81960, rkey=0xf00027
+[RDMA] Auto-detected GID index 0 for rdmap136s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x7adf93c00000, len=81960, rkey=0xc00072
+[RDMA] Auto-detected GID index 0 for rdmap85s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x7ccf9bc00000, len=81960, rkey=0xc00035
+[RDMA] Auto-detected GID index 0 for rdmap88s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x783b39c00000, len=81960, rkey=0x42
+Pinned to NUMA node 1, thread_idx: 3, local_rank: 7, running on CPU 79.
+Local CPU thread pinned to NUMA node 1, thread_idx: 3, local_rank: 7, running on CPU 79.
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x76691bc00000, len=81960, rkey=0x400054
+Pinned to NUMA node 0, thread_idx: 0, local_rank: 3, running on CPU 12.
+Local CPU thread pinned to NUMA node 0, thread_idx: 0, local_rank: 3, running on CPU 12.
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x797c07c00000, len=81960, rkey=0x80002e
+Pinned to NUMA node 1, thread_idx: 2, local_rank: 7, running on CPU 78.
+Local CPU thread pinned to NUMA node 1, thread_idx: 2, local_rank: 7, running on CPU 78.
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x76691bc00000, len=81960, rkey=0xf00055
+[RDMA] Auto-detected GID index 0 for rdmap163s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x76691bc00000, len=81960, rkey=0x400054
+Pinned to NUMA node 0, thread_idx: 3, local_rank: 1, running on CPU 7.
+Local CPU thread pinned to NUMA node 0, thread_idx: 3, local_rank: 1, running on CPU 7.
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x783b39c00000, len=81960, rkey=0x800029
+[RDMA] Auto-detected GID index 0 for rdmap112s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x797c07c00000, len=81960, rkey=0x80002e
+Pinned to NUMA node 0, thread_idx: 0, local_rank: 2, running on CPU 8.
+Local CPU thread pinned to NUMA node 0, thread_idx: 0, local_rank: 2, running on CPU 8.
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x72a483c00000, len=81960, rkey=0xe00055
+Pinned to NUMA node 0, thread_idx: 3, local_rank: 0, running on CPU 3.
+Local CPU thread pinned to NUMA node 0, thread_idx: 3, local_rank: 0, running on CPU 3.
+[RDMA] Auto-detected GID index 0 for rdmap162s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x76691bc00000, len=81960, rkey=0xf00055
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x7ccf9bc00000, len=81960, rkey=0x200006
+[RDMA] Auto-detected GID index 0 for rdmap88s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x783b39c00000, len=81960, rkey=0x800029
+Pinned to NUMA node 0, thread_idx: 3, local_rank: 2, running on CPU 11.
+Local CPU thread pinned to NUMA node 0, thread_idx: 3, local_rank: 2, running on CPU 11.
+Pinned to NUMA node 0, thread_idx: 2, local_rank: 3, running on CPU 14.
+Local CPU thread pinned to NUMA node 0, thread_idx: 2, local_rank: 3, running on CPU 14.
+[RDMA] Auto-detected GID index 0 for rdmap86s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x7ccf9bc00000, len=81960, rkey=0x200006
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x797c07c00000, len=81960, rkey=0xe0002c
+Pinned to NUMA node 0, thread_idx: 3, local_rank: 3, running on CPU 15.
+Local CPU thread pinned to NUMA node 0, thread_idx: 3, local_rank: 3, running on CPU 15.
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x797c07c00000, len=81960, rkey=0x40004e
+Pinned to NUMA node 0, thread_idx: 1, local_rank: 2, running on CPU 9.
+Local CPU thread pinned to NUMA node 0, thread_idx: 1, local_rank: 2, running on CPU 9.
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x72a483c00000, len=81960, rkey=0x100050
+[RDMA] Auto-detected GID index 0 for rdmap110s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x72a483c00000, len=81960, rkey=0xe00055
+Pinned to NUMA node 0, thread_idx: 2, local_rank: 2, running on CPU 10.
+Local CPU thread pinned to NUMA node 0, thread_idx: 2, local_rank: 2, running on CPU 10.
+[RDMA] Auto-detected GID index 0 for rdmap112s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x797c07c00000, len=81960, rkey=0xe0002c
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x72a483c00000, len=81960, rkey=0xc00078
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x72a483c00000, len=81960, rkey=0xd0003b
+Pinned to NUMA node 1, thread_idx: 2, local_rank: 5, running on CPU 70.
+Local CPU thread pinned to NUMA node 1, thread_idx: 2, local_rank: 5, running on CPU 70.
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x744953c00000, len=81960, rkey=0xd00046
+Pinned to NUMA node 1, thread_idx: 2, local_rank: 6, running on CPU 74.
+Local CPU thread pinned to NUMA node 1, thread_idx: 2, local_rank: 6, running on CPU 74.
+[RDMA] Auto-detected GID index 0 for rdmap113s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x797c07c00000, len=81960, rkey=0x40004e
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x7b35e7c00000, len=81960, rkey=0x700018
+[RDMA] Auto-detected GID index 0 for rdmap111s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x72a483c00000, len=81960, rkey=0x100050
+[RDMA] Auto-detected GID index 0 for rdmap111s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x72a483c00000, len=81960, rkey=0xc00078
+Pinned to NUMA node 1, thread_idx: 3, local_rank: 5, running on CPU 71.
+Local CPU thread pinned to NUMA node 1, thread_idx: 3, local_rank: 5, running on CPU 71.
+[RDMA] Auto-detected GID index 0 for rdmap110s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x72a483c00000, len=81960, rkey=0xd0003b
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x744953c00000, len=81960, rkey=0xe00056
+Pinned to NUMA node 1, thread_idx: 3, local_rank: 4, running on CPU 67.
+Local CPU thread pinned to NUMA node 1, thread_idx: 3, local_rank: 4, running on CPU 67.
+[RDMA] Auto-detected GID index 0 for rdmap137s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x744953c00000, len=81960, rkey=0xd00046
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x7adf93c00000, len=81960, rkey=0xf00054
+[RDMA] Auto-detected GID index 0 for rdmap160s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x7b35e7c00000, len=81960, rkey=0x700018
+Pinned to NUMA node 1, thread_idx: 3, local_rank: 6, running on CPU 75.
+Local CPU thread pinned to NUMA node 1, thread_idx: 3, local_rank: 6, running on CPU 75.
+[RDMA] Auto-detected GID index 0 for rdmap138s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x744953c00000, len=81960, rkey=0xe00056
+Pinned to NUMA node 0, thread_idx: 1, local_rank: 3, running on CPU 13.
+Local CPU thread pinned to NUMA node 0, thread_idx: 1, local_rank: 3, running on CPU 13.
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x797c07c00000, len=81960, rkey=0x400006
+[RDMA] Auto-detected GID index 0 for rdmap136s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x7adf93c00000, len=81960, rkey=0xf00054
+Pinned to NUMA node 1, thread_idx: 0, local_rank: 7, running on CPU 76.
+Local CPU thread pinned to NUMA node 1, thread_idx: 0, local_rank: 7, running on CPU 76.
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x76691bc00000, len=81960, rkey=0x100045
+Pinned to NUMA node 1, thread_idx: 1, local_rank: 6, running on CPU 73.
+Local CPU thread pinned to NUMA node 1, thread_idx: 1, local_rank: 6, running on CPU 73.
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x7b35e7c00000, len=81960, rkey=0xc00072
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x7b35e7c00000, len=81960, rkey=0xc00052
+[RDMA] Auto-detected GID index 0 for rdmap113s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x797c07c00000, len=81960, rkey=0x400006
+Pinned to NUMA node 1, thread_idx: 1, local_rank: 7, running on CPU 77.
+Local CPU thread pinned to NUMA node 1, thread_idx: 1, local_rank: 7, running on CPU 77.
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x76691bc00000, len=81960, rkey=0xe0006b
+Pinned to NUMA node 1, thread_idx: 0, local_rank: 6, running on CPU 72.
+Local CPU thread pinned to NUMA node 1, thread_idx: 0, local_rank: 6, running on CPU 72.
+[RDMA] Auto-detected GID index 0 for rdmap162s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x76691bc00000, len=81960, rkey=0x100045
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x7b35e7c00000, len=81960, rkey=0x400059
+[RDMA] Auto-detected GID index 0 for rdmap161s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x7b35e7c00000, len=81960, rkey=0xc00072
+Pinned to NUMA node 1, thread_idx: 2, local_rank: 4, running on CPU 66.
+Local CPU thread pinned to NUMA node 1, thread_idx: 2, local_rank: 4, running on CPU 66.
+[RDMA] Auto-detected GID index 0 for rdmap161s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x7b35e7c00000, len=81960, rkey=0xc00052
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x7adf93c00000, len=81960, rkey=0x600000
+Pinned to NUMA node 1, thread_idx: 1, local_rank: 5, running on CPU 69.
+Local CPU thread pinned to NUMA node 1, thread_idx: 1, local_rank: 5, running on CPU 69.
+[RDMA] Auto-detected GID index 0 for rdmap163s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x76691bc00000, len=81960, rkey=0xe0006b
+[Proxy] Registered atomic_buffer_ptr MR: addr=0x744953c00000, len=81960, rkey=0xb00070
+[RDMA] Auto-detected GID index 0 for rdmap160s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x7b35e7c00000, len=81960, rkey=0x400059
+[RDMA] Auto-detected GID index 0 for rdmap135s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x7adf93c00000, len=81960, rkey=0x600000
+[RDMA] Auto-detected GID index 0 for rdmap138s0 (set UCCL_IB_GID_INDEX to override)
+[create_per_thread_qp] Populated atomic buffer info: addr=0x744953c00000, len=81960, rkey=0xb00070
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0x50001c
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0x50001c
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0x50001c
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0x20000f
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0x50001c
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0x50001c
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0x20000f
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0x50001c
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0x20000f
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0x100035
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0x20000f
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0x20000f
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0x100035
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0x100035
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0x20000f
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0x900054
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0x100035
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0x100035
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0x900054
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0x900054
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0x50001c
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0x100035
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0x600070
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0x900054
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0x900054
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0x600070
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0x20000f
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0x900054
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0x600070
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x20001d
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0x600070
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0x600070
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x20001d
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0x100035
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0x600070
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x20001d
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0x56
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x20001d
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x20001d
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0xe00069
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x20001d
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0x56
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0x900054
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0x56
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0xf0005d
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0x56
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0x56
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0xe00069
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0xd00034
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0xe00069
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0x56
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0x600070
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0xf0005d
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0xf0005d
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0x800051
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0xd00034
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0xf0005d
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0xf0005d
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0xd00034
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0xe00069
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0xe00069
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0xf0005d
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x20001d
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0xf00074
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0x800051
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0x800051
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0xd00034
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0xd00034
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0xb00016
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0xf00074
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0xf00074
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0x56
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0x800051
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0x800051
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x27
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0xb00016
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0xb00016
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0xf0005d
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0xf00074
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0xf00074
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0x600014
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0xf00039
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0xd0001f
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x27
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x27
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0xb00016
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0xb00016
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0x600014
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0xf00050
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0xd00029
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0xd0001f
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0x600014
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0x100038
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0xf00039
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x27
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0xd0001f
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x27
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0x600014
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0xd00029
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0xd00029
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0xf00050
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0xf00039
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0xc00043
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0x100038
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0xd0001f
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0xd0001f
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0xf00050
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0x800051
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0x600014
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0x600014
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0xd00029
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0xc00043
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0x600014
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0xf00039
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0x100038
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0xf00050
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0xc00043
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0xf00050
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0xd00018
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0x800051
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0xf00039
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0xa0007f
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0xf00039
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0xd00029
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0xd00029
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0xc00043
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0xd00018
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0xf00039
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0x100038
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0x800051
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0xd00029
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0xd00018
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0x33
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0x100038
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0xa0007f
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0x50001c
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0x100038
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0xd00018
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0x1c
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0xc00043
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0xc00043
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0x800051
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0x33
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0x100038
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0xc00043
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0xa0007f
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0xe00069
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0x33
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x20005c
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0x800051
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0x1c
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0x800051
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0x33
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x67
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0xd00018
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0x20000f
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0xd00018
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0xa0007f
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x20005c
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0xd00034
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0x800051
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0xd00018
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0x1c
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x20005c
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0xe00050
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0xa0007f
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x67
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0xa0007f
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x20005c
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0x300046
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0x33
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0x100035
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0x33
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0x1c
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0xe00050
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0x800051
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0xa0007f
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0xe00069
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0x33
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0x1c
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x67
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0xe00050
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0xf0004e
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0x1c
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0x300046
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x20005c
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0xe00050
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0x200051
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0x900054
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x20005c
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0xd00034
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x67
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x20005c
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0xf0004e
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0xf00074
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0x1c
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x67
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x67
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0xf0004e
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0x300046
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0xe00050
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0x200051
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0x800051
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0xf0004e
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0x600070
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0xe00050
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0x300046
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0xe00050
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0x200051
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0xb00016
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x67
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0x300046
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0x300046
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0xf00074
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0xf0004e
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0xf0004e
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0x200051
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x20001d
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0x300046
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0xf0004e
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0xb00016
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x27
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0x200051
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0x200051
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0x200051
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0x56
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x27
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0xd0001f
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0xf00039
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0xd0001f
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0xf0005d
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0xf00050
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0x100038
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0xf00050
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0x800051
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0xa0007f
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0x1c
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x67
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0x600014
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0x300046
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0xd00029
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0x200051
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0xc00043
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0xd00018
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0x33
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x20005c
+[Proxy] Remote atomic buffer info for peer 8: addr=0x7839dbc00000, len=81960, rkey=0xe00069
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0xe00050
+[Proxy] Remote atomic buffer info for peer 9: addr=0x766c71c00000, len=81960, rkey=0xd00034
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0xf0004e
+[Proxy] Remote atomic buffer info for peer 10: addr=0x7af76fc00000, len=81960, rkey=0x800051
+[Proxy] Remote atomic buffer info for peer 11: addr=0x7f41c1c00000, len=81960, rkey=0xf00074
+[Proxy] Remote atomic buffer info for peer 12: addr=0x7bda23c00000, len=81960, rkey=0xb00016
+[Proxy] Remote atomic buffer info for peer 13: addr=0x79d0edc00000, len=81960, rkey=0x27
+[Proxy] Remote atomic buffer info for peer 14: addr=0x78d5abc00000, len=81960, rkey=0xd0001f
+[Proxy] Remote atomic buffer info for peer 15: addr=0x7dfcb7c00000, len=81960, rkey=0xf00050
+=== capacity=1024 ranks=16 ===
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+  tokens=4     pair=  164.66 us (p50  163.68, rank-max  164.98) | disp     99.4 KiB  comb    192.0 KiB
+              disp=   77.13 us  comb(sub)=   87.53 us
+  tokens=8     pair=  165.02 us (p50  161.63, rank-max  165.57) | disp    198.8 KiB  comb    384.0 KiB
+              disp=   77.71 us  comb(sub)=   87.32 us
+  tokens=16    pair=  161.19 us (p50  160.61, rank-max  161.70) | disp    397.5 KiB  comb    768.0 KiB
+              disp=   78.29 us  comb(sub)=   82.90 us
+  tokens=32    pair=  169.55 us (p50  168.38, rank-max  169.89) | disp    795.0 KiB  comb   1536.0 KiB
+              disp=   79.10 us  comb(sub)=   90.46 us
+  tokens=128   pair=  358.96 us (p50  359.42, rank-max  359.29) | disp   3180.0 KiB  comb   6144.0 KiB
+              disp=  175.50 us  comb(sub)=  183.46 us
+[rank0]:[W819 08:00:04.487335800 ProcessGroupNCCL.cpp:1624] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+[rank3]:[W819 08:00:05.465730415 TCPStore.cpp:125] [c10d] recvValue failed on SocketImpl(fd=71, addr=[ip-172-31-9-118.us-east-2.compute.internal]:56670, remote=[ip-172-31-9-118.us-east-2.compute.internal]:18361): Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?
+Exception raised from recvBytes at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/Utils.hpp:787 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x7981a3d63bfd in /usr/local/lib/python3.12/dist-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7981a3d64bd2 in /usr/local/lib/python3.12/dist-packages/torch/lib/libc10.so)
+frame #2: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7981a3d65092 in /usr/local/lib/python3.12/dist-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x66acf0d (0x79811cdebf0d in /usr/local/lib/python3.12/dist-packages/torch/lib/libtorch_cpu.so)
+frame #4: c10d::TCPStore::check(std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&) + 0x383 (0x79811cde53e3 in /usr/local/lib/python3.12/dist-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::ProcessGroupNCCL::HeartbeatMonitor::runLoop() + 0x43d (0x7980fed4619d in /usr/local/lib/python3.12/dist-packages/torch/lib/libtorch_cuda.so)
+frame #6: <unknown function> + 0xecdb4 (0x798321353db4 in /lib/x86_64-linux-gnu/libstdc++.so.6)
+frame #7: <unknown function> + 0x9cb84 (0x798323f27b84 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #8: <unknown function> + 0x129d6c (0x798323fb4d6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+[rank3]:[W819 08:00:05.468095675 ProcessGroupNCCL.cpp:1876] [PG ID 0 PG GUID 0(default_pg) Rank 3] Failed to check the "should dump" flag on TCPStore, (maybe TCPStore server has shut down too early), with error: Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?
+[rank1]:[W819 08:00:05.465755236 TCPStore.cpp:125] [c10d] recvValue failed on SocketImpl(fd=71, addr=[ip-172-31-9-118.us-east-2.compute.internal]:56654, remote=[ip-172-31-9-118.us-east-2.compute.internal]:18361): Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?
+Exception raised from recvBytes at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/Utils.hpp:787 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x7840d3163bfd in /usr/local/lib/python3.12/dist-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7840d3164bd2 in /usr/local/lib/python3.12/dist-packages/torch/lib/libc10.so)
+frame #2: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7840d3165092 in /usr/local/lib/python3.12/dist-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x66acf0d (0x78404c1ebf0d in /usr/local/lib/python3.12/dist-packages/torch/lib/libtorch_cpu.so)
+frame #4: c10d::TCPStore::check(std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&) + 0x383 (0x78404c1e53e3 in /usr/local/lib/python3.12/dist-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::ProcessGroupNCCL::HeartbeatMonitor::runLoop() + 0x43d (0x78402e14619d in /usr/local/lib/python3.12/dist-packages/torch/lib/libtorch_cuda.so)
+frame #6: <unknown function> + 0xecdb4 (0x784250752db4 in /lib/x86_64-linux-gnu/libstdc++.so.6)
+frame #7: <unknown function> + 0x9cb84 (0x784253326b84 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #8: <unknown function> + 0x129d6c (0x7842533b3d6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+[rank1]:[W819 08:00:05.468154946 ProcessGroupNCCL.cpp:1876] [PG ID 0 PG GUID 0(default_pg) Rank 1] Failed to check the "should dump" flag on TCPStore, (maybe TCPStore server has shut down too early), with error: Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?
+W0819 08:00:05.723000 1 torch/multiprocessing/spawn.py:165] Terminating process 394 via signal SIGTERM
+W0819 08:00:05.724000 1 torch/multiprocessing/spawn.py:165] Terminating process 395 via signal SIGTERM
+W0819 08:00:05.724000 1 torch/multiprocessing/spawn.py:165] Terminating process 396 via signal SIGTERM
+W0819 08:00:05.724000 1 torch/multiprocessing/spawn.py:165] Terminating process 397 via signal SIGTERM
+W0819 08:00:05.725000 1 torch/multiprocessing/spawn.py:165] Terminating process 398 via signal SIGTERM
+W0819 08:00:05.725000 1 torch/multiprocessing/spawn.py:165] Terminating process 399 via signal SIGTERM
+W0819 08:00:05.726000 1 torch/multiprocessing/spawn.py:165] Terminating process 400 via signal SIGTERM
+Traceback (most recent call last):
+  File "/bench/bench_a2a_ll.py", line 487, in <module>
+    torch.multiprocessing.spawn(run, args=(args.num_processes, args), nprocs=args.num_processes)
+  File "/usr/local/lib/python3.12/dist-packages/torch/multiprocessing/spawn.py", line 340, in spawn
+    return start_processes(fn, args, nprocs, join, daemon, start_method="spawn")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/multiprocessing/spawn.py", line 296, in start_processes
+    while not context.join():
+              ^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/multiprocessing/spawn.py", line 211, in join
+    raise ProcessRaisedException(msg, error_index, failed_process.pid)
+torch.multiprocessing.spawn.ProcessRaisedException: 
+
+-- Process 7 terminated with the following error:
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/dist-packages/torch/multiprocessing/spawn.py", line 87, in _wrap
+    fn(i, *args)
+  File "/bench/bench_a2a_ll.py", line 454, in run
+    dist.barrier()
+  File "/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py", line 83, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/torch/distributed/distributed_c10d.py", line 5349, in barrier
+    work = group.barrier(opts=opts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+torch.AcceleratorError: CUDA error: invalid argument
+Search for `cudaErrorInvalidValue' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+For more detailed error information, run with CUDA_LOG_FILE=stderr
+
+

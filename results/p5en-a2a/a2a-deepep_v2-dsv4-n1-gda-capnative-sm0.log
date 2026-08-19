@@ -1,0 +1,112 @@
+NCCL version 2.31.1+cuda13.0
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+=== capacity=4 ranks=8 num_sms=14 num_qps=17/17 ===
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+  tokens=4     pair=  176.64 us (p50  170.66, rank-max  176.83) | disp     99.4 KiB  comb    192.0 KiB
+              disp=  122.64 us  comb(sub)=   53.99 us
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+=== capacity=8 ranks=8 num_sms=14 num_qps=17/17 ===
+  tokens=8     pair=   93.70 us (p50   90.98, rank-max   94.38) | disp    198.8 KiB  comb    384.0 KiB
+              disp=   65.94 us  comb(sub)=   27.76 us
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+=== capacity=16 ranks=8 num_sms=14 num_qps=17/17 ===
+  tokens=16    pair=   93.59 us (p50   90.18, rank-max   94.05) | disp    397.5 KiB  comb    768.0 KiB
+              disp=   64.28 us  comb(sub)=   29.31 us
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+=== capacity=32 ranks=8 num_sms=14 num_qps=17/17 ===
+  tokens=32    pair=   96.51 us (p50   93.50, rank-max   97.82) | disp    795.0 KiB  comb   1536.0 KiB
+              disp=   64.22 us  comb(sub)=   32.29 us
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 8 to 3
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+=== capacity=128 ranks=8 num_sms=14 num_qps=17/17 ===
+  tokens=128   pair=  168.22 us (p50  165.44, rank-max  180.79) | disp   3180.0 KiB  comb   6144.0 KiB
+              disp=  118.61 us  comb(sub)=   49.61 us

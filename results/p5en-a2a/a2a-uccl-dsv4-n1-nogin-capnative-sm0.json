@@ -1,0 +1,167 @@
+{
+ "meta": {
+  "backend": "v1",
+  "eplib": "uccl",
+  "shape": "dsv4",
+  "hidden": 4096,
+  "num_topk": 6,
+  "num_experts": 256,
+  "num_ranks": 8,
+  "nnodes": 1,
+  "cap_policy": "bench-native",
+  "capacity_fixed": 1024,
+  "num_sms_req": 0,
+  "gin_type": "2",
+  "iters": 50,
+  "warmups": 30,
+  "torch": "2.13.0+cu130",
+  "gpu": "NVIDIA H200"
+ },
+ "rows": [
+  {
+   "num_tokens": 4,
+   "capacity": 4,
+   "dispatch_bytes_per_rank": 101760.0,
+   "combine_bytes_per_rank": 196608,
+   "pair_us": {
+    "avg": 79.09485758567342,
+    "p50": 78.68800312280655,
+    "min": 69.60000097751617,
+    "max": 93.66399794816971
+   },
+   "pair_us_across_ranks": {
+    "min": 79.09485758567342,
+    "mean": 79.18612244633997,
+    "max": 79.27118333018555
+   },
+   "pair_us_rep2": {
+    "avg": 79.49061235603023,
+    "p50": 78.46400141716003
+   },
+   "dispatch_us": {
+    "avg": 46.67428554016716,
+    "p50": 45.152001082897186
+   },
+   "combine_us_by_subtraction": {
+    "avg": 32.42057204550626,
+    "p50": 33.53600203990937
+   }
+  },
+  {
+   "num_tokens": 8,
+   "capacity": 8,
+   "dispatch_bytes_per_rank": 203520.0,
+   "combine_bytes_per_rank": 393216,
+   "pair_us": {
+    "avg": 70.01534674544723,
+    "p50": 68.9919963479042,
+    "min": 60.67200005054474,
+    "max": 85.08799970149994
+   },
+   "pair_us_across_ranks": {
+    "min": 70.01534674544723,
+    "mean": 70.1265304577442,
+    "max": 70.24457108001319
+   },
+   "pair_us_rep2": {
+    "avg": 68.51526555054042,
+    "p50": 68.09599697589874
+   },
+   "dispatch_us": {
+    "avg": 47.977796318579685,
+    "p50": 46.04800045490265
+   },
+   "combine_us_by_subtraction": {
+    "avg": 22.037550426867544,
+    "p50": 22.943995893001564
+   }
+  },
+  {
+   "num_tokens": 16,
+   "capacity": 16,
+   "dispatch_bytes_per_rank": 407040.0,
+   "combine_bytes_per_rank": 786432,
+   "pair_us": {
+    "avg": 66.03820401490951,
+    "p50": 64.38399851322174,
+    "min": 58.62399935722351,
+    "max": 87.00799942016602
+   },
+   "pair_us_across_ranks": {
+    "min": 66.03820401490951,
+    "mean": 66.21763272667114,
+    "max": 66.33926525103803
+   },
+   "pair_us_rep2": {
+    "avg": 67.37371389659084,
+    "p50": 65.21599739789963
+   },
+   "dispatch_us": {
+    "avg": 47.667591775558435,
+    "p50": 46.30399867892265
+   },
+   "combine_us_by_subtraction": {
+    "avg": 18.37061223935107,
+    "p50": 18.079999834299088
+   }
+  },
+  {
+   "num_tokens": 32,
+   "capacity": 32,
+   "dispatch_bytes_per_rank": 814080.0,
+   "combine_bytes_per_rank": 1572864,
+   "pair_us": {
+    "avg": 66.66318403214824,
+    "p50": 64.67200070619583,
+    "min": 60.80000102519989,
+    "max": 89.66399729251862
+   },
+   "pair_us_across_ranks": {
+    "min": 66.66318403214824,
+    "mean": 66.77812245693437,
+    "max": 66.83167283024108
+   },
+   "pair_us_rep2": {
+    "avg": 65.42497880908907,
+    "p50": 64.54399973154068
+   },
+   "dispatch_us": {
+    "avg": 47.10204078226674,
+    "p50": 46.33599892258644
+   },
+   "combine_us_by_subtraction": {
+    "avg": 19.5611432498815,
+    "p50": 18.336001783609394
+   }
+  },
+  {
+   "num_tokens": 128,
+   "capacity": 128,
+   "dispatch_bytes_per_rank": 3256320.0,
+   "combine_bytes_per_rank": 6291456,
+   "pair_us": {
+    "avg": 87.5735506415367,
+    "p50": 87.90399879217148,
+    "min": 81.216000020504,
+    "max": 93.1520015001297
+   },
+   "pair_us_across_ranks": {
+    "min": 87.5735506415367,
+    "mean": 87.81069368884272,
+    "max": 87.8726534393369
+   },
+   "pair_us_rep2": {
+    "avg": 87.55004101870013,
+    "p50": 87.39200234413147
+   },
+   "dispatch_us": {
+    "avg": 48.788245083117964,
+    "p50": 46.751998364925385
+   },
+   "combine_us_by_subtraction": {
+    "avg": 38.78530555841874,
+    "p50": 41.15200042724609
+   }
+  }
+ ]
+}

@@ -1,0 +1,82 @@
+NCCL version 2.31.1+cuda13.0
+Registered proxies for device 4 (low-latency mode)
+Registered proxies for device 1 (low-latency mode)
+Registered proxies for device 6 (low-latency mode)
+Registered proxies for device 2 (low-latency mode)
+[DEBUG] IP distribution across 8 ranks:
+[DEBUG]   172.31.9.118: 8 ranks
+Registered proxies for device 7 (low-latency mode)
+Registered proxies for device 0 (low-latency mode)
+Registered proxies for device 3 (low-latency mode)
+Registered proxies for device 5 (low-latency mode)
+=== capacity=4 ranks=8 ===
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+  tokens=4     pair=   79.09 us (p50   78.69, rank-max   79.27) | disp     99.4 KiB  comb    192.0 KiB
+              disp=   46.67 us  comb(sub)=   32.42 us
+Registered proxies for device 7 (low-latency mode)
+Registered proxies for device 4 (low-latency mode)
+Registered proxies for device 6 (low-latency mode)
+Registered proxies for device 2 (low-latency mode)
+[DEBUG] IP distribution across 8 ranks:
+[DEBUG]   172.31.9.118: 8 ranks
+Registered proxies for device 0 (low-latency mode)
+Registered proxies for device 3 (low-latency mode)
+Registered proxies for device 1 (low-latency mode)
+Registered proxies for device 5 (low-latency mode)
+=== capacity=8 ranks=8 ===
+  tokens=8     pair=   70.02 us (p50   68.99, rank-max   70.24) | disp    198.8 KiB  comb    384.0 KiB
+              disp=   47.98 us  comb(sub)=   22.04 us
+Registered proxies for device 7 (low-latency mode)
+Registered proxies for device 2 (low-latency mode)
+Registered proxies for device 6 (low-latency mode)
+[DEBUG] IP distribution across 8 ranks:
+[DEBUG]   172.31.9.118: 8 ranks
+Registered proxies for device 0 (low-latency mode)
+Registered proxies for device 4 (low-latency mode)
+Registered proxies for device 3 (low-latency mode)
+Registered proxies for device 1 (low-latency mode)
+Registered proxies for device 5 (low-latency mode)
+=== capacity=16 ranks=8 ===
+  tokens=16    pair=   66.04 us (p50   64.38, rank-max   66.34) | disp    397.5 KiB  comb    768.0 KiB
+              disp=   47.67 us  comb(sub)=   18.37 us
+[DEBUG] IP distribution across 8 ranks:
+Registered proxies for device 6 (low-latency mode)
+Registered proxies for device 7 (low-latency mode)
+[DEBUG]   172.31.9.118: 8 ranks
+Registered proxies for device 4 (low-latency mode)
+Registered proxies for device 0 (low-latency mode)
+Registered proxies for device 2 (low-latency mode)
+Registered proxies for device 3 (low-latency mode)
+Registered proxies for device 1 (low-latency mode)
+Registered proxies for device 5 (low-latency mode)
+=== capacity=32 ranks=8 ===
+  tokens=32    pair=   66.66 us (p50   64.67, rank-max   66.83) | disp    795.0 KiB  comb   1536.0 KiB
+              disp=   47.10 us  comb(sub)=   19.56 us
+Registered proxies for device 7 (low-latency mode)
+Registered proxies for device 6 (low-latency mode)
+Registered proxies for device 4 (low-latency mode)
+[DEBUG] IP distribution across 8 ranks:
+[DEBUG]   172.31.9.118: 8 ranks
+Registered proxies for device 2 (low-latency mode)
+Registered proxies for device 0 (low-latency mode)
+Registered proxies for device 3 (low-latency mode)
+Registered proxies for device 1 (low-latency mode)
+Registered proxies for device 5 (low-latency mode)
+=== capacity=128 ranks=8 ===
+  tokens=128   pair=   87.57 us (p50   87.90, rank-max   87.87) | disp   3180.0 KiB  comb   6144.0 KiB
+              disp=   48.79 us  comb(sub)=   38.79 us

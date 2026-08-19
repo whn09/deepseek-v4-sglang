@@ -1,0 +1,44 @@
+NCCL version 2.31.1+cuda13.0
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 7 to 3
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 7 to 3
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 7 to 3
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 7 to 3
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 7 to 3
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 7 to 3
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 7 to 3
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+[WARN] DeepEP GIN signal budget reduced the number of channels per SM from 7 to 3
+GIN auto-tuner: gin_context_cnt=17, gin_indexed_signals_cnt=13, num_qp=17, num_max_sms=55
+=== capacity=1024 ranks=16 num_sms=6 num_qps=17/17 ===
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+/usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+  tokens=4     pair=  200.86 us (p50  190.08, rank-max  201.17) | disp    231.5 KiB  comb    448.0 KiB
+              disp=  116.89 us  comb(sub)=   83.96 us
+  tokens=8     pair=  265.66 us (p50  194.94, rank-max  265.92) | disp    463.0 KiB  comb    896.0 KiB
+              disp=  117.95 us  comb(sub)=  147.71 us
+  tokens=16    pair=  196.51 us (p50  195.20, rank-max  196.81) | disp    926.0 KiB  comb   1792.0 KiB
+              disp=  118.08 us  comb(sub)=   78.43 us
+  tokens=32    pair=  227.84 us (p50  226.53, rank-max  228.02) | disp   1852.0 KiB  comb   3584.0 KiB
+              disp=  121.82 us  comb(sub)=  106.02 us
+  tokens=128   pair=  379.47 us (p50  379.14, rank-max  379.72) | disp   7408.0 KiB  comb  14336.0 KiB
+              disp=  140.06 us  comb(sub)=  239.41 us

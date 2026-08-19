@@ -1,0 +1,6 @@
+deepep_v2 dsv4 bench-native n2 rc=0
+deepep_v2 dsv3 bench-native n2 rc=0
+uccl dsv4 bench-native n2 rc=1
+uccl dsv3 bench-native n2 rc=1
+deepep_v1 dsv4 bench-native n2 rc=1
+deepep_v1 dsv3 bench-native n2 rc=1

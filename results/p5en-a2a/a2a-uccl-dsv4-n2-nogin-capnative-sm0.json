@@ -1,0 +1,51 @@
+{
+ "meta": {
+  "backend": "v1",
+  "eplib": "uccl",
+  "shape": "dsv4",
+  "hidden": 4096,
+  "num_topk": 6,
+  "num_experts": 256,
+  "num_ranks": 16,
+  "nnodes": 2,
+  "cap_policy": "bench-native",
+  "capacity_fixed": 1024,
+  "num_sms_req": 0,
+  "gin_type": "2",
+  "iters": 50,
+  "warmups": 30,
+  "torch": "2.13.0+cu130",
+  "gpu": "NVIDIA H200"
+ },
+ "rows": [
+  {
+   "num_tokens": 4,
+   "capacity": 4,
+   "dispatch_bytes_per_rank": 101760.0,
+   "combine_bytes_per_rank": 196608,
+   "pair_us": {
+    "avg": 162.25828564896875,
+    "p50": 162.04799711704254,
+    "min": 152.76800096035004,
+    "max": 176.35199427604675
+   },
+   "pair_us_across_ranks": {
+    "min": 161.6770615991281,
+    "mean": 162.17493877879213,
+    "max": 162.40195960414655
+   },
+   "pair_us_rep2": {
+    "avg": 163.35216438283726,
+    "p50": 163.16799819469452
+   },
+   "dispatch_us": {
+    "avg": 74.82906157264904,
+    "p50": 73.37599992752075
+   },
+   "combine_us_by_subtraction": {
+    "avg": 87.42922407631973,
+    "p50": 88.67199718952179
+   }
+  }
+ ]
+}
