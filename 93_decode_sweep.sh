@@ -89,7 +89,13 @@ CAPACITY="${CAPACITY:-1024}"
 # $ISL is in the name for the same reason: a capacity-wall ladder at ISL 32768 and
 # a latency-wall ladder at ISL 1024 are two experiments on one server, and the JSON
 # rows already carry isl while the summary did not.
-SUMMARY="${SUMMARY:-$SCRIPT_DIR_HOST/results/decode-sweep-${A2A}-n${NNODES}-sm${NUM_SMS:-20}-cap${CAPACITY}-rpr${RPR}-isl${ISL}.txt}"
+# ${GIN} belongs here for the same reason ${RPR} and ${CAPACITY} do, and it was
+# added the hard way: on p5en, where GDA-vs-proxy is the whole point of the box, the
+# proxy ladder wrote this exact filename and DELETED the GDA ladder's summary. The
+# per-rung .json/.log survived (TAG below already carries ${GIN}), so the table was
+# rebuildable -- but only because the JSONs were checked before the next run. Every
+# variable that distinguishes two experiments must be in the summary name too.
+SUMMARY="${SUMMARY:-$SCRIPT_DIR_HOST/results/decode-sweep-${A2A}-n${NNODES}-sm${NUM_SMS:-20}-cap${CAPACITY}-rpr${RPR}-${GIN}-isl${ISL}.txt}"
 mkdir -p "$(dirname "$SUMMARY")"
 
 {

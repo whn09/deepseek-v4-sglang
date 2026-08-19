@@ -58,7 +58,10 @@ GIN=$([[ "$GDAKI" == "1" ]] && echo gda || echo proxy)
 # host (the per-row .json/.log names from 91_bench.sh DO carry $A2A, so only the
 # summary was lost). 93_decode_sweep.sh already stamps it; this one did not.
 A2A="${A2A:-deepep_v2}"
-SUMMARY="${SUMMARY:-$SCRIPT_DIR_HOST/results/prefill-sweep-${A2A}-n${NNODES}-cap${CAPACITY}.txt}"
+# ...and ${GIN} for the third time, found on p5en: a GDAKI=0 control ladder wrote the
+# GDAKI=1 ladder's summary name and deleted it. On p5/b300 the GIN type was fixed by
+# the hardware so this could not bite; p5en is the first box where both arms are real.
+SUMMARY="${SUMMARY:-$SCRIPT_DIR_HOST/results/prefill-sweep-${A2A}-n${NNODES}-cap${CAPACITY}-${GIN}.txt}"
 mkdir -p "$(dirname "$SUMMARY")"
 
 {

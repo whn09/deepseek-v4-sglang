@@ -131,9 +131,23 @@ TP="${TP:-$((NNODES * GPUS_PER_NODE))}"
 # 1 -> NCCL_GIN_TYPE=5 (EFA GDA / GDAKI, zero-CPU device puts)
 # 0 -> NCCL_GIN_TYPE=2 (proxy GIN)
 #
-# DEFAULTS OFF ON PRE-BLACKWELL, because EFA GDA needs the GPU to write a WQE and
-# ring an MMIO doorbell itself, which p5/p5en (sm_90) cannot do -- there GIN is
-# always proxy. The default mattered beyond the launch: 92/93_*_sweep.sh put
+# DEFAULTS OFF ON PRE-BLACKWELL -- but the arch is a PROXY FOR THE FLEET, not the
+# actual gate, and the reason written here before ("sm_90 cannot write a WQE and
+# ring the doorbell") was WRONG. Hopper can; AWS's own validated GDAKI list
+# (device_tests_v1.21, 2026-08-10) includes p5en.48xlarge, which is sm_90. The real
+# prerequisite is counting events (CE), and it splits by INSTANCE, not by GPU:
+#   p5.48xlarge   EFA gen-1, hw_ver=0xEFA1, CAPS_COMP_CNTR clear -> impossible,
+#                 no installer can fix silicon (see env_p5.sh).
+#   p5en.48xlarge CE-capable hardware, but a fresh DLAMI ships the public EFA
+#                 1.49.0 stack (efa.ko 3.1.0g, libfabric 2.4) which is proxy-only;
+#                 needs the dev installer 1.50.0 on the HOST *and* an image whose
+#                 aws-ofi-nccl was CONFIGURED against libfabric >= 2.5
+#                 (see env_p5en.sh). Both, or GIN init fails outright.
+# So keying off the arch happens to give the right default for both sm_90 boxes we
+# own today, and require_epv2_image() is what actually prevents a wrong GDAKI=1
+# from becoming a confusing runtime failure. Do not re-derive hardware capability
+# from compute_cap -- run check_gdaki_prereqs.sh.
+# The default mattered beyond the launch: 92/93_*_sweep.sh put
 # `gda` vs `proxy` in every output filename from THIS variable rather than from
 # the server, so a stale GDAKI=1 silently labelled a whole proxy-GIN p5 campaign
 # as `gda`. Kept overridable so an sm_90 host can still be asked to try.
